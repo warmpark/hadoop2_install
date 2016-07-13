@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<configuration>
+  <property>
+    <name>dfs.namenode.name.dir</name>
+    <value>/var/data/hadoop/hdfs/nn</value>
+  </property>
+  <property>
+    <name>dfs.namenode.checkpoint.dir</name>
+    <value>/var/data/hadoop/hdfs/snn</value>
+  </property>
+  <property>
+    <name>dfs.namenode.checkpoint.edits.dir</name>
+    <value>/var/data/hadoop/hdfs/snn</value>
+  </property>
+  <property>
+    <name>dfs.datanode.data.dir</name>
+    <value>/var/data/hadoop/hdfs/dn</value>
+  </property>
+  <property>
+    <name>dfs.namenode.http-address</name>
+    <value>big01:50070</value>
+  </property>
+  <property>
+    <name>dfs.namenode.secondary.http-address</name>
+    <value>big02:50090</value>
+  </property>
+</configuration>
