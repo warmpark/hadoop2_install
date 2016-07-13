@@ -10,7 +10,7 @@
   </property>
   <property>
     <name>yarn.web-proxy.address</name>
-    <value>big02.t3q.com:8081</value>
+    <value>big01:8081</value>
   </property>
   <property>
     <name>yarn.resourcemanager.scheduler.address</name>
@@ -42,7 +42,7 @@
   </property>
   <property>
     <name>yarn.scheduler.maximum-allocation-mb</name>
-    <value>2048</value>
+    <value>768</value>
   </property>
   <property>
     <name>yarn.nodemanager.vmem-check-enabled</name>
@@ -50,7 +50,7 @@
   </property>
   <property>
     <name>yarn.nodemanager.vmem-pmem-ratio</name>
-    <value>3</value>
+    <value>5.1</value>
   </property>
   <property>
     <name>yarn.nodemanager.resource.cpu-vcores</name>
@@ -58,6 +58,6 @@
   </property>
   <property>
     <name>yarn.scheduler.maximum-allocation-vcores</name>
-    <value>8</value>
+    <value>4</value>
   </property>
 </configuration>

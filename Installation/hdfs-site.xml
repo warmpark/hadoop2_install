@@ -22,6 +22,6 @@
   </property>
   <property>
     <name>dfs.namenode.secondary.http-address</name>
-    <value>big02:50090</value>
+    <value>big01:50090</value>
   </property>
 </configuration>

@@ -36,7 +36,7 @@ HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
 
 
 ## VM Memory management by warmpark add.
-YARN_NODEMANAGER_HEAPSIZE=512
+YARN_NODEMANAGER_HEAPSIZE=256
 
 
 
@@ -151,12 +151,12 @@ fi
         # for VM Memory Management  by warmpark
         put_config --file yarn-site.xml --property yarn.nodemanager.resource.memory-mb --value 4096
         put_config --file yarn-site.xml --property yarn.scheduler.minimum-allocation-mb --value 256 
-        put_config --file yarn-site.xml --property yarn.scheduler.maximum-allocation-mb --value 2048
+        put_config --file yarn-site.xml --property yarn.scheduler.maximum-allocation-mb --value 768
        #put_config --file yarn-site.xml --property yarn.resourcemanager.scheduler.class --value "org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler"
         put_config --file yarn-site.xml --property yarn.nodemanager.vmem-check-enabled --value true
-        put_config --file yarn-site.xml --property yarn.nodemanager.vmem-pmem-ratio --value 3
+        put_config --file yarn-site.xml --property yarn.nodemanager.vmem-pmem-ratio --value 5.1
         put_config --file yarn-site.xml --property yarn.nodemanager.resource.cpu-vcores --value 2
-        put_config --file yarn-site.xml --property yarn.scheduler.maximum-allocation-vcores --value 8
+        put_config --file yarn-site.xml --property yarn.scheduler.maximum-allocation-vcores --value 4
 
 	
 	create_config --file mapred-site.xml
@@ -165,12 +165,12 @@ fi
 	put_config --file mapred-site.xml --property mapreduce.jobhistory.webapp.address --value "$mr_hist:19888"
 	put_config --file mapred-site.xml --property yarn.app.mapreduce.am.staging-dir --value /mapred
 	# for VM Memory Management  by warmpark	
-	put_config --file mapred-site.xml --property yarn.app.mapreduce.am.resource.mb --value 1024
-	put_config --file mapred-site.xml --property mapreduce.map.memory.mb --value 1024 
-        put_config --file mapred-site.xml --property mapreduce.reduce.memory.mb --value 1024
+	put_config --file mapred-site.xml --property yarn.app.mapreduce.am.resource.mb --value 768
+	put_config --file mapred-site.xml --property mapreduce.map.memory.mb --value 408 
+        put_config --file mapred-site.xml --property mapreduce.reduce.memory.mb --value 408 
         put_config --file mapred-site.xml --property mapreduce.map.java.opts --value "-Xmx384m" 
-        put_config --file mapred-site.xml --property mapreduce.reduce.java.opts --value "-Xmx512m" 
-        put_config --file mapred-site.xml --property mapreduce.task.io.sort.mb --value 256 
+        put_config --file mapred-site.xml --property mapreduce.reduce.java.opts --value "-Xmx384m" 
+        put_config --file mapred-site.xml --property mapreduce.task.io.sort.mb --value 128 
 	
 	
 	echo "Copying base Hadoop XML config files to all hosts..."
@@ -216,7 +216,7 @@ fi
 	source /etc/profile.d/hadoop.sh
 	source /etc/hadoop/hadoop-env.sh
 	source /etc/hadoop/yarn-env.sh
-	hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-$HADOOP_VERSION.jar pi -Dmapreduce.clientfactory.class.name=org.apache.hadoop.mapred.YarnClientFactory -libjars $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-$HADOOP_VERSION.jar 16 10000
+	hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-$HADOOP_VERSION.jar pi -Dmapreduce.clientfactory.class.name=org.apache.hadoop.mapred.YarnClientFactory -libjars $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-$HADOOP_VERSION.jar 6 100
 }
 
 interactive()

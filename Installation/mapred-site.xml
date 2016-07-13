@@ -6,11 +6,11 @@
   </property>
   <property>
     <name>mapreduce.jobhistory.address</name>
-    <value>big02:10020</value>
+    <value>big01:10020</value>
   </property>
   <property>
     <name>mapreduce.jobhistory.webapp.address</name>
-    <value>big02:19888</value>
+    <value>big01:19888</value>
   </property>
   <property>
     <name>yarn.app.mapreduce.am.staging-dir</name>
@@ -18,15 +18,15 @@
   </property>
   <property>
     <name>yarn.app.mapreduce.am.resource.mb</name>
-    <value>1024</value>
+    <value>768</value>
   </property>
   <property>
     <name>mapreduce.map.memory.mb</name>
-    <value>1024</value>
+    <value>408</value>
   </property>
   <property>
     <name>mapreduce.reduce.memory.mb</name>
-    <value>1024</value>
+    <value>408</value>
   </property>
   <property>
     <name>mapreduce.map.java.opts</name>
@@ -34,10 +34,10 @@
   </property>
   <property>
     <name>mapreduce.reduce.java.opts</name>
-    <value>-Xmx512m</value>
+    <value>-Xmx384m</value>
   </property>
   <property>
     <name>mapreduce.task.io.sort.mb</name>
-    <value>256</value>
+    <value>128</value>
   </property>
 </configuration>
