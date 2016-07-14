@@ -139,12 +139,8 @@ fi
     put_config --file core-site.xml --property dfs.journalnode.edits.dir --value "$JN_DATA_DIR"
     put_config --file core-site.xml --property hadoop.http.staticuser.user --value "$HTTP_STATIC_USER"
 
-	
-	
-
 
     create_config --file hdfs-site.xml
-
     put_config --file hdfs-site.xml --property dfs.nameservices --value "$DFS_NAMESERVICES"
     put_config --file hdfs-site.xml --property dfs.ha.namenodes."$DFS_NAMESERVICES" --value "nn1,nn2"
     put_config --file hdfs-site.xml --property dfs.namenode.rpc-address."$DFS_NAMESERVICES".nn1 --value "$nn:8020"
@@ -165,7 +161,6 @@ fi
 
     create_config --file yarn-site.xml
     put_config --file yarn-site.xml --property yarn.nodemanager.aux-services --value mapreduce_shuffle
-   #put_config --file yarn-site.xml --property yarn.nodemanager.aux-services.mapreduce.shuffle.class --value org.apache.hadoop.mapred.ShuffleHandler
     put_config --file yarn-site.xml --property yarn.nodemanager.aux-services.mapreduce_shuffle.class --value org.apache.hadoop.mapred.ShuffleHandler
     put_config --file yarn-site.xml --property yarn.web-proxy.address --value "$yarn_proxy:$YARN_PROXY_PORT"
     put_config --file yarn-site.xml --property yarn.resourcemanager.scheduler.address --value "$rmgr:8030"
@@ -177,7 +172,6 @@ fi
     put_config --file yarn-site.xml --property yarn.nodemanager.resource.memory-mb --value 4096
     put_config --file yarn-site.xml --property yarn.scheduler.minimum-allocation-mb --value 256 
     put_config --file yarn-site.xml --property yarn.scheduler.maximum-allocation-mb --value 768
-   #put_config --file yarn-site.xml --property yarn.resourcemanager.scheduler.class --value "org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler"
     put_config --file yarn-site.xml --property yarn.nodemanager.vmem-check-enabled --value true
     put_config --file yarn-site.xml --property yarn.nodemanager.vmem-pmem-ratio --value 5.1
     put_config --file yarn-site.xml --property yarn.nodemanager.resource.cpu-vcores --value 2
@@ -192,10 +186,10 @@ fi
 	# for VM Memory Management  by warmpark	
 	put_config --file mapred-site.xml --property yarn.app.mapreduce.am.resource.mb --value 768
 	put_config --file mapred-site.xml --property mapreduce.map.memory.mb --value 408 
-        put_config --file mapred-site.xml --property mapreduce.reduce.memory.mb --value 408 
-        put_config --file mapred-site.xml --property mapreduce.map.java.opts --value "-Xmx384m" 
-        put_config --file mapred-site.xml --property mapreduce.reduce.java.opts --value "-Xmx384m" 
-        put_config --file mapred-site.xml --property mapreduce.task.io.sort.mb --value 128 
+    put_config --file mapred-site.xml --property mapreduce.reduce.memory.mb --value 408 
+    put_config --file mapred-site.xml --property mapreduce.map.java.opts --value "-Xmx384m" 
+    put_config --file mapred-site.xml --property mapreduce.reduce.java.opts --value "-Xmx384m" 
+    put_config --file mapred-site.xml --property mapreduce.task.io.sort.mb --value 128 
 	
 	
 	echo "Copying base Hadoop XML config files to all hosts..."
@@ -207,19 +201,20 @@ fi
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/libexec/* /usr/libexec"
 
 	echo "Formatting the NameNode..."
-
 	pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'"
+    
 	echo "Copying startup scripts to all hosts..."
 	pdcp -w ^nn_host hadoop-namenode /etc/init.d/
-	pdcp -w ^snn_host hadoop-secondarynamenode /etc/init.d/
+	#pdcp -w ^snn_host hadoop-secondarynamenode /etc/init.d/
 	pdcp -w ^dn_hosts hadoop-datanode /etc/init.d/
 	pdcp -w ^rm_host hadoop-resourcemanager /etc/init.d/
 	pdcp -w ^nm_hosts hadoop-nodemanager /etc/init.d/
 	pdcp -w ^mr_history_host hadoop-historyserver /etc/init.d/
 	pdcp -w ^yarn_proxy_host hadoop-proxyserver /etc/init.d/
+    
 	echo "Starting Hadoop $HADOOP_VERSION services on all hosts..."
 	pdsh -w ^nn_host "chmod 755 /etc/init.d/hadoop-namenode && chkconfig hadoop-namenode on && service hadoop-namenode start"
-	pdsh -w ^snn_host "chmod 755 /etc/init.d/hadoop-secondarynamenode && chkconfig hadoop-secondarynamenode on && service hadoop-secondarynamenode start"
+	pdsh -w ^snn_host "chmod 755 /etc/init.d/hadoop-namenode && chkconfig hadoop-namenode on && service hadoop-namenode start"
 	pdsh -w ^dn_hosts "chmod 755 /etc/init.d/hadoop-datanode && chkconfig hadoop-datanode on && service hadoop-datanode start"
 	pdsh -w ^rm_host "chmod 755 /etc/init.d/hadoop-resourcemanager && chkconfig hadoop-resourcemanager on && service hadoop-resourcemanager start"
 	pdsh -w ^nm_hosts "chmod 755 /etc/init.d/hadoop-nodemanager && chkconfig hadoop-nodemanager on && service hadoop-nodemanager start"

@@ -81,7 +81,7 @@ echo "Removing NameNode data directory..."
 pdsh -w ^nn_host "rm -Rf $NN_DATA_DIR"
 
 echo "Removing Secondary NameNode data directory..."
-pdsh -w ^snn_host "rm -Rf $SNN_DATA_DIR"
+pdsh -w ^snn_host "rm -Rf $NN_DATA_DIR"
 
 echo "Removing DataNode data directories..."
 pdsh -w ^dn_hosts "rm -Rf $DN_DATA_DIR"
