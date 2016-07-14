@@ -36,7 +36,7 @@ HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
 
 
 ## VM Memory management by warmpark add.
-YARN_NODEMANAGER_HEAPSIZE=256
+YARN_NODEMANAGER_HEAPSIZE=308
 
 
 
@@ -216,7 +216,7 @@ fi
 	source /etc/profile.d/hadoop.sh
 	source /etc/hadoop/hadoop-env.sh
 	source /etc/hadoop/yarn-env.sh
-	hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-$HADOOP_VERSION.jar pi -Dmapreduce.clientfactory.class.name=org.apache.hadoop.mapred.YarnClientFactory -libjars $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-$HADOOP_VERSION.jar 6 100
+	hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-$HADOOP_VERSION.jar pi -Dmapreduce.clientfactory.class.name=org.apache.hadoop.mapred.YarnClientFactory -libjars $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-$HADOOP_VERSION.jar 16 10000
 }
 
 interactive()
