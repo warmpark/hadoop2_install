@@ -48,8 +48,6 @@ CMD_OPTIONS=$(getopt -n "$0"  -o hif --long "help,interactive,file"  -- "$@")
 #HADOOP_CONF_DIR=/etc/hadoop
 HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
 
-
-
 ## VM Memory management by warmpark add.
 YARN_NODEMANAGER_HEAPSIZE=308
 
@@ -160,9 +158,9 @@ fi
     pdsh -w ^jn_hosts echo "server.3=big03:2888:3888 >> $ZOOKEEPER_CONF_DIR/zoo.cfg"
     
     echo "Make zookeeper id in  $ZOOKEEPER_DATA_DIR/myid - 나중에 보완할 필요...."
-    pdsh -w big01 sudo hdfs echo "1 >> $ZOOKEEPER_DATA_DIR/myid"
-    pdsh -w big02 sudo hdfs echo "2 >> $ZOOKEEPER_DATA_DIR/myid"
-    pdsh -w big03 sudo hdfs echo "3 >> $ZOOKEEPER_DATA_DIR/myid"
+    pdsh -w big01 echo "1 >> $ZOOKEEPER_DATA_DIR/myid"
+    pdsh -w big02 echo "2 >> $ZOOKEEPER_DATA_DIR/myid"
+    pdsh -w big03 echo "3 >> $ZOOKEEPER_DATA_DIR/myid"
    
     
 
@@ -232,7 +230,7 @@ fi
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/bin/* /usr/bin"
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/libexec/* /usr/libexec"
     
-    pdsh -w ^all_hosts "ln -s $ZOOKEEPER_CONF_DIR /etc/zookeeper/conf"
+    pdsh -w ^all_hosts "ln -s $ZOOKEEPER_CONF_DIR /etc/zookeeper"
 	pdsh -w ^all_hosts "ln -s $ZOOKEEPER_HOME/bin/* /usr/bin"
 
 	echo "Formatting the NameNode..."
