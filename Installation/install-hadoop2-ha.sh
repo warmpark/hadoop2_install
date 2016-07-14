@@ -244,10 +244,13 @@ fi
 	pdcp -w ^nm_hosts hadoop-nodemanager /etc/init.d/
 	pdcp -w ^mr_history_host hadoop-historyserver /etc/init.d/
 	pdcp -w ^yarn_proxy_host hadoop-proxyserver /etc/init.d/
-    pdcp -w ^jn_hosts "$ZOOKEEPER_HOME/bin/zkServer.sh /etc/init.d/"
     
+    #pdcp -w ^jn_hosts $ZOOKEEPER_HOME/bin/zkServer.sh /etc/init.d/
+    
+    ## 아래처럼 하기 위해서는 서비를 만들어야 한다. 
     echo "Starting Zookeeper $ZOOKEEPER_VERSION on Journal Hosts ... ..."
-	pdsh -w ^nn_host "chmod 755 /etc/init.d/zkServer.sh start"
+	pdsh -w ^jn_hosts chmod 755 $ZOOKEEPER_HOME/bin/zkServer.sh
+    pdsh -w ^jn_hosts $ZOOKEEPER_HOME/bin/zkServer.sh start
 
     
 	echo "Starting Hadoop $HADOOP_VERSION services on all hosts... "
