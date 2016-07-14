@@ -8,14 +8,21 @@
 #
 
 # Basic environment variables.  Edit as necessary
+# zookeeper-3.4.8.tar.gz
+#http://apache.mirror.cdnetworks.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz
 
-IS_ZK_HA=true
+ZOOKEEPER_VERSION=3.4.8
+ZOOKEEPER_HOME="/opt/zookeeper-${ZOOKEEPER_VERSION}"
+ZOOKEEPER_LOG_DIR="${ZOOKEEPER_HOME}/logs"
+ZOOKEEPER_PREFIX="${ZOOKEEPER_HOME}"
+ZOOKEEPER_CONF_DIR="${ZOOKEEPER_HOME}/conf"
+ZOOKEEPER_DATA_DIR="${ZOOKEEPER_HOME}/data"
+
 DFS_NAMESERVICES=big-cluster
 HA_ZOOKEEPER_QUOREM=big01:2181,big02:2181,big03:2181
-JN_DATA_DIR=/var/data/hadoop/jounal/data
+JN_EDITS_DIR=/var/data/hadoop/journal/data
 NAMENODE_SHARED_EDITS_DIR="qjournal://big01:8485;big02:8485;big03:8485/${DFS_NAMESERVICES}"
 
-#http://apache.mirror.cdnetworks.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz
 
 
 HADOOP_VERSION=2.7.2
@@ -69,6 +76,7 @@ install()
 {
 	echo "Copying Hadoop $HADOOP_VERSION to all hosts..."
 	pdcp -w ^all_hosts hadoop-"$HADOOP_VERSION".tar.gz /opt
+    pdcp -w ^jn_hosts zookeeper-"$ZOOKEEPER_VERSION".tar.gz /opt
 if [ -z "$JAVA_HOME" ]; then
 	echo "Copying JDK 1.8.0_92 to all hosts..."
 	pdcp -w ^all_hosts jdk-8u92-linux-x64.rpm /opt
@@ -84,13 +92,23 @@ fi
 	
 	echo "JAVA_HOME=$JAVA_HOME > /etc/profile.d/java.sh"
 	pdsh -w ^all_hosts "echo export JAVA_HOME=$JAVA_HOME > /etc/profile.d/java.sh"
-
 	pdsh -w ^all_hosts "source /etc/profile.d/java.sh"
+    
 	pdsh -w ^all_hosts "echo export HADOOP_HOME=$HADOOP_HOME > /etc/profile.d/hadoop.sh"
 	pdsh -w ^all_hosts 'echo export HADOOP_PREFIX=$HADOOP_HOME >> /etc/profile.d/hadoop.sh'
 	pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
-	echo "Extracting Hadoop $HADOOP_VERSION distribution on all hosts..."
+    
+	pdsh -w ^jn_hosts "echo export ZOOKEEPER_HOME=$ZOOKEEPER_HOME > /etc/profile.d/zookeeper.sh"
+	pdsh -w ^jn_hosts 'echo export ZOOKEEPER_PREFIX=$ZOOKEEPER_HOME >> /etc/profile.d/zookeeper.sh'
+	pdsh -w ^jn_hosts "source /etc/profile.d/zookeeper.sh"
+    
+    
+	
+    echo "Extracting Hadoop $HADOOP_VERSION distribution on all hosts..."
 	pdsh -w ^all_hosts tar -zxf /opt/hadoop-"$HADOOP_VERSION".tar.gz -C /opt
+
+    echo "Extracting Zookeeper $ZOOKEEPER_VERSION distribution on all Journal hosts..."
+	pdsh -w ^all_hosts tar -zxf /opt/zookeeper-"$ZOOKEEPER_VERSION".tar.gz -C /opt
 
 	echo "Creating system accounts and groups on all hosts..."
 	pdsh -w ^all_hosts groupadd hadoop
@@ -102,7 +120,8 @@ fi
     pdsh -w ^nn_host "mkdir -p $NN_DATA_DIR && chown hdfs:hadoop $NN_DATA_DIR"
     pdsh -w ^snn_host "mkdir -p $NN_DATA_DIR && chown hdfs:hadoop $NN_DATA_DIR"
 	pdsh -w ^dn_hosts "mkdir -p $DN_DATA_DIR && chown hdfs:hadoop $DN_DATA_DIR"
-    pdsh -w ^jn_hosts "mkdir -p $JN_DATA_DIR && chown hdfs:hadoop $JN_DATA_DIR"
+    pdsh -w ^jn_hosts "mkdir -p $JN_EDITS_DIR && chown hdfs:hadoop $JN_EDITS_DIR"
+    pdsh -w ^jn_hosts "mkdir -p $ZOOKEEPER_DATA_DIR && chown hdfs:hadoop $ZOOKEEPER_DATA_DIR"
     
     
 
@@ -110,6 +129,7 @@ fi
 	pdsh -w ^all_hosts "mkdir -p $YARN_LOG_DIR && chown yarn:hadoop $YARN_LOG_DIR"
 	pdsh -w ^all_hosts "mkdir -p $HADOOP_LOG_DIR && chown hdfs:hadoop $HADOOP_LOG_DIR"
 	pdsh -w ^all_hosts "mkdir -p $HADOOP_MAPRED_LOG_DIR && chown mapred:hadoop $HADOOP_MAPRED_LOG_DIR"
+    pdsh -w ^jn_hosts "mkdir -p $ZOOKEEPER_LOG_DIR && chown hdfs:hadoop $ZOOKEEPER_LOG_DIR"
 
 	echo "Creating pid directories on all hosts..."
 	pdsh -w ^all_hosts "mkdir -p $YARN_PID_DIR && chown yarn:hadoop $YARN_PID_DIR"
@@ -130,13 +150,27 @@ fi
 	then 
 		echo "for VM Memory Management  by warmpark   Editing Hadoop yarn-env.sh environment for YARN_NODEMANAGER_HEAPSIZE on all hosts..."
 		pdsh -w ^all_hosts echo "export YARN_NODEMANAGER_HEAPSIZE=$YARN_NODEMANAGER_HEAPSIZE >> $HADOOP_HOME/etc/hadoop/yarn-env.sh"
-	fi	
+	fi
+    
+    echo "Editing zookeeper conf zoo.cfg - 나중에 보완할 필요...."
+	pdsh -w ^jn_hosts echo "dataDir=$ZOOKEEPER_DATA_DIR >> $ZOOKEEPER_CONF_DIR/zoo.cfg"
+	pdsh -w ^jn_hosts echo "dataLogDir=$ZOOKEEPER_LOG_DIR >> $ZOOKEEPER_CONF_DIR/zoo.cfg"
+	pdsh -w ^jn_hosts echo "server.1=big01:2888:3888 >> $ZOOKEEPER_CONF_DIR/zoo.cfg"
+    pdsh -w ^jn_hosts echo "server.2=big02:2888:3888 >> $ZOOKEEPER_CONF_DIR/zoo.cfg"
+    pdsh -w ^jn_hosts echo "server.3=big03:2888:3888 >> $ZOOKEEPER_CONF_DIR/zoo.cfg"
+    
+    echo "Make zookeeper id in  $ZOOKEEPER_DATA_DIR/myid - 나중에 보완할 필요...."
+    pdsh -w big01 sudo hdfs echo "1 >> $ZOOKEEPER_DATA_DIR/myid"
+    pdsh -w big02 sudo hdfs echo "2 >> $ZOOKEEPER_DATA_DIR/myid"
+    pdsh -w big03 sudo hdfs echo "3 >> $ZOOKEEPER_DATA_DIR/myid"
+   
+    
 
 	echo "Creating base Hadoop XML config files..."
 	create_config --file core-site.xml
     put_config --file core-site.xml --property fs.defaultFS --value "hdfs://$DFS_NAMESERVICES"
     put_config --file core-site.xml --property ha.zookeeper.quorum --value "$HA_ZOOKEEPER_QUOREM"
-    put_config --file core-site.xml --property dfs.journalnode.edits.dir --value "$JN_DATA_DIR"
+    put_config --file core-site.xml --property dfs.journalnode.edits.dir --value "$JN_EDITS_DIR"
     put_config --file core-site.xml --property hadoop.http.staticuser.user --value "$HTTP_STATIC_USER"
 
 
@@ -156,8 +190,6 @@ fi
     put_config --file hdfs-site.xml --property dfs.namenode.name.dir --value "$NN_DATA_DIR"
     put_config --file hdfs-site.xml --property dfs.datanode.data.dir --value "$DN_DATA_DIR"
     
-
-
 
     create_config --file yarn-site.xml
     put_config --file yarn-site.xml --property yarn.nodemanager.aux-services --value mapreduce_shuffle
@@ -199,6 +231,9 @@ fi
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/etc/hadoop /etc/hadoop"
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/bin/* /usr/bin"
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/libexec/* /usr/libexec"
+    
+    pdsh -w ^all_hosts "ln -s $ZOOKEEPER_CONF_DIR /etc/zookeeper/conf"
+	pdsh -w ^all_hosts "ln -s $ZOOKEEPER_HOME/bin/* /usr/bin"
 
 	echo "Formatting the NameNode..."
 	pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'"
@@ -211,16 +246,22 @@ fi
 	pdcp -w ^nm_hosts hadoop-nodemanager /etc/init.d/
 	pdcp -w ^mr_history_host hadoop-historyserver /etc/init.d/
 	pdcp -w ^yarn_proxy_host hadoop-proxyserver /etc/init.d/
+    pdcp -w ^jn_hosts "$ZOOKEEPER_HOME/bin/zkServer.sh /etc/init.d/"
     
-	echo "Starting Hadoop $HADOOP_VERSION services on all hosts..."
+    echo "Starting Zookeeper $ZOOKEEPER_VERSION on Journal Hosts ... ..."
+	pdsh -w ^nn_host "chmod 755 /etc/init.d/zkServer.sh start"
+
+    
+	echo "Starting Hadoop $HADOOP_VERSION services on all hosts... "
+    pdsh -w ^dn_hosts "chmod 755 /etc/init.d/hadoop-datanode && chkconfig hadoop-datanode on && service hadoop-datanode start"
 	pdsh -w ^nn_host "chmod 755 /etc/init.d/hadoop-namenode && chkconfig hadoop-namenode on && service hadoop-namenode start"
 	pdsh -w ^snn_host "chmod 755 /etc/init.d/hadoop-namenode && chkconfig hadoop-namenode on && service hadoop-namenode start"
 	pdsh -w ^dn_hosts "chmod 755 /etc/init.d/hadoop-datanode && chkconfig hadoop-datanode on && service hadoop-datanode start"
 	pdsh -w ^rm_host "chmod 755 /etc/init.d/hadoop-resourcemanager && chkconfig hadoop-resourcemanager on && service hadoop-resourcemanager start"
 	pdsh -w ^nm_hosts "chmod 755 /etc/init.d/hadoop-nodemanager && chkconfig hadoop-nodemanager on && service hadoop-nodemanager start"
-
 	pdsh -w ^yarn_proxy_host "chmod 755 /etc/init.d/hadoop-proxyserver && chkconfig hadoop-proxyserver on && service hadoop-proxyserver start"
-
+    
+   
 	echo "Creating MapReduce Job History directories..."
 	su - hdfs -c "hdfs dfs -mkdir -p /mapred/history/done_intermediate"
 	su - hdfs -c "hdfs dfs -chown -R mapred:hadoop /mapred"

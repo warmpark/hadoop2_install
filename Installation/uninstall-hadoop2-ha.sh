@@ -1,5 +1,15 @@
 #!/bin/bash
 
+
+ZOOKEEPER_VERSION=3.4.8
+ZOOKEEPER_HOME="/opt/zookeeper-${ZOOKEEPER_VERSION}"
+ZOOKEEPER_LOG_DIR="${ZOOKEEPER_HOME}/logs"
+ZOOKEEPER_PREFIX="${ZOOKEEPER_HOME}"
+ZOOKEEPER_CONF_DIR="${ZOOKEEPER_HOME}/conf"
+ZOOKEEPER_DATA_DIR="${ZOOKEEPER_HOME}/data"
+JN_EDITS_DIR=/var/data/hadoop/journal/data
+
+
 HADOOP_VERSION=2.7.2
 HADOOP_HOME="/opt/hadoop-${HADOOP_VERSION}"
 NN_DATA_DIR=/var/data/hadoop/hdfs/nn
@@ -8,6 +18,17 @@ DN_DATA_DIR=/var/data/hadoop/hdfs/dn
 YARN_LOG_DIR=/var/log/hadoop/yarn
 HADOOP_LOG_DIR=/var/log/hadoop/hdfs
 HADOOP_MAPRED_LOG_DIR=/var/log/hadoop/mapred
+
+
+
+#HADOOP_CONF_DIR=/etc/hadoop
+HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+
+## VM Memory management by warmpark add.
+YARN_NODEMANAGER_HEAPSIZE=308
+
+
+
 # If using jdk-8u92-linux-x64.rpm, then
 # set JAVA_HOME=""
 # JAVA_HOME= /usr/lib/jvm/java-1.7.0-openjdk-1.7.0.101-2.6.6.1.el7_2.x86_64/jre/
@@ -87,7 +108,7 @@ echo "Removing DataNode data directories..."
 pdsh -w ^dn_hosts "rm -Rf $DN_DATA_DIR"
 
 echo "Removing JournalNode data directories..."
-pdsh -w ^jn_hosts "rm -Rf $JN_DATA_DIR"
+pdsh -w ^jn_hosts "rm -Rf $JN_EDITS_DIR"
 
 echo "Removing YARN log directories..."
 pdsh -w ^all_hosts "rm -Rf $YARN_LOG_DIR"
