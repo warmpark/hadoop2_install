@@ -14,23 +14,23 @@
   </property>
   <property>
     <name>yarn.resourcemanager.scheduler.address</name>
-    <value>big01:8030</value>
+    <value>big02:8030</value>
   </property>
   <property>
     <name>yarn.resourcemanager.resource-tracker.address</name>
-    <value>big01:8031</value>
+    <value>big02:8031</value>
   </property>
   <property>
     <name>yarn.resourcemanager.address</name>
-    <value>big01:8032</value>
+    <value>big02:8032</value>
   </property>
   <property>
     <name>yarn.resourcemanager.admin.address</name>
-    <value>big01:8033</value>
+    <value>big02:8033</value>
   </property>
   <property>
     <name>yarn.resourcemanager.webapp.address</name>
-    <value>big01:8088</value>
+    <value>big02:8088</value>
   </property>
   <property>
     <name>yarn.nodemanager.resource.memory-mb</name>
