@@ -56,6 +56,7 @@ pdsh -w ^all_hosts "rm -f /etc/init.d/hadoop-*"
 
 echo "Removing Hadoop 2 distribution tarball..."
 pdsh -w ^all_hosts "rm -f /opt/hadoop-2*.tar.gz"
+push -w ˆjn_hosts "rm -r /opt/zookeeper-$ZOOKEEPER_VERSION.tar.gz"
 
 if [ -z "$JAVA_HOME" ]; then
   echo "Removing JDK 1.8.0_92 distribution..."
@@ -66,8 +67,6 @@ if [ -z "$JAVA_HOME" ]; then
   pdsh -w ^all_hosts "rm -f jdk*"
 fi
 
-echo "Removing Hadoop 2 home directory..."
-pdsh -w ^all_hosts "rm -Rf $HADOOP_HOME"
 
 echo "Removing Hadoop 2 bash environment setting..."
 pdsh -w ^all_hosts "rm -f /etc/profile.d/hadoop.sh"
@@ -86,7 +85,7 @@ pdsh -w ^all_hosts "rm /usr/bin/mapred*"
 pdsh -w ^all_hosts "rm /usr/bin/rcc*"
 pdsh -w ^all_hosts "rm /usr/bin/test-container-executor"
 pdsh -w ^all_hosts "rm /usr/bin/yarn*"
-#pdsh -w ˆjn_hosts "rm /usr/bin/zk*"
+pdsh -w ˆjn_hosts "rm /usr/bin/zk*"
 
 echo "Removing Hadoop 2 script links..."
 pdsh -w ^all_hosts "rm /usr/libexec/hadoop-config.*"
@@ -119,6 +118,15 @@ pdsh -w ^all_hosts "rm -Rf $HADOOP_LOG_DIR"
 
 echo "Removing MapReduce log directories..."
 pdsh -w ^all_hosts "rm -Rf $HADOOP_MAPRED_LOG_DIR"
+
+
+
+echo "Removing Hadoop 2 home directory..."
+pdsh -w ^all_hosts "rm -Rf $HADOOP_HOME"
+
+echo "Removing Zookeeper home directory..."
+push -w ˆjn_hosts "rm -Rf $ZOOKEEPER_HOME"
+
 
 echo "Removing hdfs system account..."
 pdsh -w ^all_hosts "userdel -r hdfs"
