@@ -55,7 +55,7 @@ pdsh -w ^all_hosts "rm -f /etc/init.d/hadoop-*"
 
 echo "Removing Hadoop 2 distribution tarball..."
 pdsh -w ^all_hosts "rm -f /opt/hadoop-2*.tar.gz"
-pdsh -w ˆjn_hosts "rm -r /opt/zookeeper-$ZOOKEEPER_VERSION.tar.gz"
+pdsh -w ^jn_hosts "rm -r /opt/zookeeper-$ZOOKEEPER_VERSION.tar.gz"
 
 if [ -z "$JAVA_HOME" ]; then
   echo "Removing JDK 1.8.0_92 distribution..."
