@@ -73,6 +73,11 @@ pdsh -w ^all_hosts "rm -f /etc/profile.d/hadoop.sh"
 echo "Removing Java bash environment setting..."
 pdsh -w ^all_hosts "rm -f /etc/profile.d/java.sh"
 
+echo "Removing Zookeeper bash environment setting..."
+pdsh -w ^jn_hosts "rm -f /etc/profile.d/zookeeper.sh"
+
+
+
 echo "Removing /etc/hadoop link..."
 pdsh -w ^all_hosts "rm /etc/hadoop"
 

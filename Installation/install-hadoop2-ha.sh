@@ -46,7 +46,6 @@ YARN_PROXY_PORT=8081
 JAVA_HOME=""
 source ./hadoop-xml-conf.sh
 CMD_OPTIONS=$(getopt -n "$0"  -o hif --long "help,interactive,file"  -- "$@")
-#HADOOP_CONF_DIR=/etc/hadoop
 HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
 
 ## VM Memory management by warmpark add.
@@ -99,6 +98,8 @@ fi
     
 	pdsh -w ^jn_hosts "echo export ZOOKEEPER_HOME=$ZOOKEEPER_HOME > /etc/profile.d/zookeeper.sh"
 	pdsh -w ^jn_hosts 'echo export ZOOKEEPER_PREFIX=$ZOOKEEPER_HOME >> /etc/profile.d/zookeeper.sh'
+	pdsh -w ^jn_hosts 'echo export ZOOKEEPER_LOG_DIR=$ZOOKEEPER_HOME/logs >> /etc/profile.d/zookeeper.sh'
+	pdsh -w ^jn_hosts 'echo export ZOO_LOG_DIR=$ZOOKEEPER_HOME/logs >> /etc/profile.d/zookeeper.sh'
 	pdsh -w ^jn_hosts "source /etc/profile.d/zookeeper.sh"
     
     
@@ -152,8 +153,11 @@ fi
 	fi
     
     echo "Editing zookeeper conf zoo.cfg - 나중에 보완할 필요...."
-    pdsh -w ^jn_hosts  "echo 'dataDir=$ZOOKEEPER_HOME/data
+    pdsh -w ^jn_hosts "echo     'dataDir=$ZOOKEEPER_HOME/data
     dataLogDir=$ZOOKEEPER_HOME/logs
+    clientPort=2181
+    initLimit=5
+    syncLimit=2
     server.1=big01:2888:3888
     server.2=big02:2888:3888
     server.3=big03:2888:3888' >  $ZOOKEEPER_HOME/conf/zoo.cfg"
@@ -231,7 +235,7 @@ fi
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/etc/hadoop /etc/hadoop"
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/bin/* /usr/bin"
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/libexec/* /usr/libexec"
-    pdsh -w ^all_hosts "ln -s $$ZOOKEEPER_HOME/conf /etc/zookeeper"
+    pdsh -w ^all_hosts "ln -s $ZOOKEEPER_HOME/conf/* /etc/zookeeper"
 	#pdsh -w ^all_hosts "ln -s $ZOOKEEPER_HOME/bin/* /usr/bin"
 
 	echo "Formatting the NameNode..."
