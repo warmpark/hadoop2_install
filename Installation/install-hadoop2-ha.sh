@@ -151,16 +151,17 @@ fi
 	fi
     
     echo "Editing zookeeper conf zoo.cfg - 나중에 보완할 필요...."
-	pdsh -w ^jn_hosts echo "dataDir=$ZOOKEEPER_DATA_DIR >> $ZOOKEEPER_CONF_DIR/zoo.cfg"
-	pdsh -w ^jn_hosts echo "dataLogDir=$ZOOKEEPER_LOG_DIR >> $ZOOKEEPER_CONF_DIR/zoo.cfg"
-	pdsh -w ^jn_hosts echo "server.1=big01:2888:3888 >> $ZOOKEEPER_CONF_DIR/zoo.cfg"
-    pdsh -w ^jn_hosts echo "server.2=big02:2888:3888 >> $ZOOKEEPER_CONF_DIR/zoo.cfg"
-    pdsh -w ^jn_hosts echo "server.3=big03:2888:3888 >> $ZOOKEEPER_CONF_DIR/zoo.cfg"
+    pdsh -w ^jn_hosts  "echo 'dataDir=/opt/zookeeper-3.4.8/data
+    dataLogDir=$ZOOKEEPER_LOG_DIR
+    server.1=big01:2888:3888
+    server.2=big02:2888:3888
+    server.3=big03:2888:3888' >  $ZOOKEEPER_CONF_DIR/zoo.cfg"
+
     
     echo "Make zookeeper id in  $ZOOKEEPER_DATA_DIR/myid - 나중에 보완할 필요...."
-    pdsh -w big01 echo "1 >> $ZOOKEEPER_DATA_DIR/myid"
-    pdsh -w big02 echo "2 >> $ZOOKEEPER_DATA_DIR/myid"
-    pdsh -w big03 echo "3 >> $ZOOKEEPER_DATA_DIR/myid"
+    pdsh -w big01 "echo 1 > $ZOOKEEPER_DATA_DIR/myid"
+    pdsh -w big02 "echo 2 > $ZOOKEEPER_DATA_DIR/myid"
+    pdsh -w big03 "echo 3 > $ZOOKEEPER_DATA_DIR/myid"
    
     
 
@@ -229,9 +230,8 @@ fi
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/etc/hadoop /etc/hadoop"
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/bin/* /usr/bin"
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/libexec/* /usr/libexec"
-    
     pdsh -w ^all_hosts "ln -s $ZOOKEEPER_CONF_DIR /etc/zookeeper"
-	pdsh -w ^all_hosts "ln -s $ZOOKEEPER_HOME/bin/* /usr/bin"
+	#pdsh -w ^all_hosts "ln -s $ZOOKEEPER_HOME/bin/* /usr/bin"
 
 	echo "Formatting the NameNode..."
 	pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'"
@@ -244,15 +244,12 @@ fi
 	pdcp -w ^nm_hosts hadoop-nodemanager /etc/init.d/
 	pdcp -w ^mr_history_host hadoop-historyserver /etc/init.d/
 	pdcp -w ^yarn_proxy_host hadoop-proxyserver /etc/init.d/
-    
-    #pdcp -w ^jn_hosts $ZOOKEEPER_HOME/bin/zkServer.sh /etc/init.d/
+    pdcp -w ^jn_hosts hadoop-zookeeper /etc/init.d/
     
     ## 아래처럼 하기 위해서는 서비를 만들어야 한다. 
     echo "Starting Zookeeper $ZOOKEEPER_VERSION on Journal Hosts ... ..."
-	pdsh -w ^jn_hosts chmod 755 $ZOOKEEPER_HOME/bin/zkServer.sh
-    pdsh -w ^jn_hosts $ZOOKEEPER_HOME/bin/zkServer.sh start
+    pdsh -w ^jn_hosts "chmod 755 /etc/init.d/hadoop-zookeeper && chkconfig hadoop-zookeeper on && service hadoop-zookeeper start"
 
-    
 	echo "Starting Hadoop $HADOOP_VERSION services on all hosts... "
     pdsh -w ^dn_hosts "chmod 755 /etc/init.d/hadoop-datanode && chkconfig hadoop-datanode on && service hadoop-datanode start"
 	pdsh -w ^nn_host "chmod 755 /etc/init.d/hadoop-namenode && chkconfig hadoop-namenode on && service hadoop-namenode start"
