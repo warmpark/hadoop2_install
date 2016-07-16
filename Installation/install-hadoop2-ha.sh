@@ -187,7 +187,7 @@ fi
     put_config --file hdfs-site.xml --property dfs.namenode.http-address."$DFS_NAMESERVICES".nn2 --value "$snn:50070"
     put_config --file hdfs-site.xml --property dfs.namenode.shared.edits.dir --value "$NAMENODE_SHARED_EDITS_DIR"
     put_config --file hdfs-site.xml --property dfs.ha.automatic-failover.enabled --value true
-    put_config --file hdfs-site.xml --property dfs.client.failover.proxy.provider."$DFS_NAMESERVICES" --value "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvide"
+    put_config --file hdfs-site.xml --property dfs.client.failover.proxy.provider."$DFS_NAMESERVICES" --value "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider"
     put_config --file hdfs-site.xml --property dfs.ha.fencing.methods --value "sshfence"
     put_config --file hdfs-site.xml --property dfs.ha.fencing.ssh.private-key-files --value "/root/.ssh/id_rsa"
 
