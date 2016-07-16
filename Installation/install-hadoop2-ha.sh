@@ -111,7 +111,7 @@ fi
 	pdsh -w ^all_hosts tar -zxf /opt/hadoop-"$HADOOP_VERSION".tar.gz -C /opt
 
     echo "Extracting Zookeeper $ZOOKEEPER_VERSION distribution on all ZK hosts..."
-	pdsh -w ^jk_hosts tar -zxf /opt/zookeeper-"$ZOOKEEPER_VERSION".tar.gz -C /opt
+	pdsh -w ^zk_hosts tar -zxf /opt/zookeeper-"$ZOOKEEPER_VERSION".tar.gz -C /opt
 
 	echo "Creating system accounts and groups on all hosts..."
 	pdsh -w ^all_hosts groupadd hadoop
