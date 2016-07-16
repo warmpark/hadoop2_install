@@ -82,11 +82,11 @@ pdsh -w ^all_hosts "rm -f /opt/hadoop-2*.tar.gz"
 
 if [ -z "$JAVA_HOME" ]; then
   echo "Removing JDK 1.8.0_92 distribution..."
-  pdsh -w ^all_hosts "rm -f /opt/jdk*"
+  #pdsh -w ^all_hosts "rm -f /opt/jdk*"
 
   echo "Removing JDK 1.8.0_92 artifacts..."
-  pdsh -w ^all_hosts "rm -f sun-java*"
-  pdsh -w ^all_hosts "rm -f jdk*"
+  #pdsh -w ^all_hosts "rm -f sun-java*"
+  #pdsh -w ^all_hosts "rm -f jdk*"
 fi
 
 
@@ -120,7 +120,7 @@ pdsh -w ^all_hosts "rm /usr/libexec/yarn-config.*"
 pdsh -w ^all_hosts "rm /usr/libexec/kms-config.*"
 
 echo "Uninstalling JDK 1.8.0_92 RPM..."
-pdsh -w ^all_hosts "rpm -ev jdk1.8.0_92"
+#pdsh -w ^all_hosts "rpm -ev jdk1.8.0_92"
 
 echo "Removing NameNode data directory..."
 pdsh -w ^nn_host "rm -Rf $NN_DATA_DIR"
