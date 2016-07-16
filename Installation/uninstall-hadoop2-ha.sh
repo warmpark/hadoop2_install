@@ -44,21 +44,20 @@ pdsh -w ^yarn_proxy_host "service hadoop-proxyserver stop"
 pdsh -w ^nm_hosts "service hadoop-nodemanager stop"
 pdsh -w ^rm_host "service hadoop-resourcemanager stop"
 
-#1. Zookeeper 정지(모든  JouralNode)
-#pdsh -w ^jn_hosts "$ZOOKEEPER_HOME/bin/zkServer.sh stop"
-pdsh -w ^jn_hosts "chmod 755 /etc/init.d/hadoop-zookeeper && chkconfig hadoop-zookeeper on && service hadoop-zookeeper stop"
+#1. Zookeeper 정지
+pdsh -w ^zk_hosts "service hadoop-zookeeper stop"
 
 echo "Removing Zookeeper services from run levels..."
 pdsh -w ^dn_hosts "chkconfig --del hadoop-zookeeper"
 
 echo "Removing Zookeeper distribution tarball..."
-pdsh -w ^jn_hosts "rm -r /opt/zookeeper-$ZOOKEEPER_VERSION.tar.gz"
+pdsh -w ^zk_hosts "rm -r /opt/zookeeper-$ZOOKEEPER_VERSION.tar.gz"
 
 echo "Removing Zookeeper bash environment setting..."
-pdsh -w ^jn_hosts "rm -f /etc/profile.d/zookeeper.sh"
+pdsh -w ^zk_hosts "rm -f /etc/profile.d/zookeeper.sh"
 
 echo "Removing Zookeeper home directory..."
-pdsh -w ^jn_hosts "rm -Rf $ZOOKEEPER_HOME"
+pdsh -w ^zk_hosts "rm -Rf $ZOOKEEPER_HOME"
 
 
 
@@ -110,7 +109,7 @@ pdsh -w ^all_hosts "rm /usr/bin/mapred*"
 pdsh -w ^all_hosts "rm /usr/bin/rcc*"
 pdsh -w ^all_hosts "rm /usr/bin/test-container-executor"
 pdsh -w ^all_hosts "rm /usr/bin/yarn*"
-pdsh -w ^jn_hosts "rm /usr/bin/zk*"
+pdsh -w ^zk_hosts "rm /usr/bin/zk*"
 
 echo "Removing Hadoop 2 script links..."
 pdsh -w ^all_hosts "rm /usr/libexec/hadoop-config.*"

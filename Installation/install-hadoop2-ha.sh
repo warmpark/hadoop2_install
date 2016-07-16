@@ -68,13 +68,13 @@ rm_host="rm_host"
 nm_hosts="nm_hosts"
 mr_history_host="mr_history_host"
 yarn_proxy_host="yarn_proxy_host"
-jn_hosts="jn_hosts"
+zk_hosts="zk_hosts"
 
 install()
 {
 	echo "Copying Hadoop $HADOOP_VERSION to all hosts..."
 	pdcp -w ^all_hosts hadoop-"$HADOOP_VERSION".tar.gz /opt
-    pdcp -w ^jn_hosts zookeeper-"$ZOOKEEPER_VERSION".tar.gz /opt
+    pdcp -w ^zk_hosts zookeeper-"$ZOOKEEPER_VERSION".tar.gz /opt
 if [ -z "$JAVA_HOME" ]; then
 	echo "Copying JDK 1.8.0_92 to all hosts..."
 	pdcp -w ^all_hosts jdk-8u92-linux-x64.rpm /opt
@@ -96,11 +96,11 @@ fi
 	pdsh -w ^all_hosts 'echo export HADOOP_PREFIX=$HADOOP_HOME >> /etc/profile.d/hadoop.sh'
 	pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
     
-	pdsh -w ^jn_hosts "echo export ZOOKEEPER_HOME=$ZOOKEEPER_HOME > /etc/profile.d/zookeeper.sh"
-	pdsh -w ^jn_hosts 'echo export ZOOKEEPER_PREFIX=$ZOOKEEPER_HOME >> /etc/profile.d/zookeeper.sh'
-	pdsh -w ^jn_hosts 'echo export ZOOKEEPER_LOG_DIR=$ZOOKEEPER_HOME/logs >> /etc/profile.d/zookeeper.sh'
-	pdsh -w ^jn_hosts 'echo export ZOO_LOG_DIR=$ZOOKEEPER_HOME/logs >> /etc/profile.d/zookeeper.sh'
-	pdsh -w ^jn_hosts "source /etc/profile.d/zookeeper.sh"
+	pdsh -w ^zk_hosts "echo export ZOOKEEPER_HOME=$ZOOKEEPER_HOME > /etc/profile.d/zookeeper.sh"
+	pdsh -w ^zk_hosts 'echo export ZOOKEEPER_PREFIX=$ZOOKEEPER_HOME >> /etc/profile.d/zookeeper.sh'
+	pdsh -w ^zk_hosts 'echo export ZOOKEEPER_LOG_DIR=$ZOOKEEPER_HOME/logs >> /etc/profile.d/zookeeper.sh'
+	pdsh -w ^zk_hosts 'echo export ZOO_LOG_DIR=$ZOOKEEPER_HOME/logs >> /etc/profile.d/zookeeper.sh'
+	pdsh -w ^zk_hosts "source /etc/profile.d/zookeeper.sh"
     
     
 	
@@ -121,7 +121,7 @@ fi
     pdsh -w ^snn_host "mkdir -p $NN_DATA_DIR && chown hdfs:hadoop $NN_DATA_DIR"
 	pdsh -w ^dn_hosts "mkdir -p $DN_DATA_DIR && chown hdfs:hadoop $DN_DATA_DIR"
     pdsh -w ^jn_hosts "mkdir -p $JN_EDITS_DIR && chown hdfs:hadoop $JN_EDITS_DIR"
-    pdsh -w ^jn_hosts "mkdir -p $ZOOKEEPER_DATA_DIR && chown hdfs:hadoop $ZOOKEEPER_DATA_DIR"
+    pdsh -w ^zk_hosts "mkdir -p $ZOOKEEPER_DATA_DIR && chown hdfs:hadoop $ZOOKEEPER_DATA_DIR"
     
     
 
@@ -129,7 +129,7 @@ fi
 	pdsh -w ^all_hosts "mkdir -p $YARN_LOG_DIR && chown yarn:hadoop $YARN_LOG_DIR"
 	pdsh -w ^all_hosts "mkdir -p $HADOOP_LOG_DIR && chown hdfs:hadoop $HADOOP_LOG_DIR"
 	pdsh -w ^all_hosts "mkdir -p $HADOOP_MAPRED_LOG_DIR && chown mapred:hadoop $HADOOP_MAPRED_LOG_DIR"
-    pdsh -w ^jn_hosts "mkdir -p $ZOOKEEPER_LOG_DIR && chown hdfs:hadoop $ZOOKEEPER_LOG_DIR"
+    pdsh -w ^zk_hosts "mkdir -p $ZOOKEEPER_LOG_DIR && chown hdfs:hadoop $ZOOKEEPER_LOG_DIR"
 
 	echo "Creating pid directories on all hosts..."
 	pdsh -w ^all_hosts "mkdir -p $YARN_PID_DIR && chown yarn:hadoop $YARN_PID_DIR"
@@ -153,7 +153,7 @@ fi
 	fi
     
     echo "Editing zookeeper conf zoo.cfg - 나중에 보완할 필요...."
-    pdsh -w ^jn_hosts "echo     'dataDir=$ZOOKEEPER_HOME/data
+    pdsh -w ^zk_hosts "echo     'dataDir=$ZOOKEEPER_HOME/data
     dataLogDir=$ZOOKEEPER_HOME/logs
     clientPort=2181
     initLimit=5
@@ -256,11 +256,11 @@ fi
 	pdcp -w ^nm_hosts hadoop-nodemanager /etc/init.d/
 	pdcp -w ^mr_history_host hadoop-historyserver /etc/init.d/
 	pdcp -w ^yarn_proxy_host hadoop-proxyserver /etc/init.d/
-    pdcp -w ^jn_hosts hadoop-zookeeper /etc/init.d/
+    pdcp -w ^zk_hosts hadoop-zookeeper /etc/init.d/
     
     ## 아래처럼 하기 위해서는 서비를 만들어야 한다. 
     echo "Starting Zookeeper $ZOOKEEPER_VERSION on Journal Hosts ... ..."
-    pdsh -w ^jn_hosts "chmod 755 /etc/init.d/hadoop-zookeeper && chkconfig hadoop-zookeeper on && service hadoop-zookeeper start"
+    pdsh -w ^zk_hosts "chmod 755 /etc/init.d/hadoop-zookeeper && chkconfig hadoop-zookeeper on && service hadoop-zookeeper start"
 
 	echo "Starting Hadoop $HADOOP_VERSION services on all hosts... 잠시 중지...."
     #pdsh -w ^dn_hosts "chmod 755 /etc/init.d/hadoop-datanode && chkconfig hadoop-datanode on && service hadoop-datanode start"
@@ -316,11 +316,11 @@ interactive()
 	echo "$yarn_proxy" > "$yarn_proxy_host"
 	dn_hosts_var=$(sed 's/\,/\n/g' <<< $dns)
 	nm_hosts_var=$(sed 's/\,/\n/g' <<< $nms)
-    jn_hosts_var=$(sed 's/\,/\n/g' <<< $jns)
+    zk_hosts_var=$(sed 's/\,/\n/g' <<< $jns)
 	echo "$dn_hosts_var" > "$dn_hosts"
 	echo "$nm_hosts_var" > "$nm_hosts"
-    echo "$jn_hosts_var" > "$jn_hosts"
-	echo "$(echo "$nn $snn $rmgr $mr_hist $yarn_proxy $dn_hosts_var $nm_hosts_var $jn_hosts_var" | tr ' ' '\n' | sort -u)" > "$all_hosts"
+    echo "$zk_hosts_var" > "$zk_hosts"
+	echo "$(echo "$nn $snn $rmgr $mr_hist $yarn_proxy $dn_hosts_var $nm_hosts_var $zk_hosts_var" | tr ' ' '\n' | sort -u)" > "$all_hosts"
 }
 
 file()
@@ -332,7 +332,7 @@ file()
 	yarn_proxy=$(cat yarn_proxy_host)
 	dns=$(cat dn_hosts)
 	nms=$(cat nm_hosts)
-    jns=$(cat jn_hosts)
+    jns=$(cat zk_hosts)
 	
 	echo "$(echo "$nn $snn $rmgr $mr_hist $dns $nms $jns" | tr ' ' '\n' | sort -u)" > "$all_hosts"
 }
