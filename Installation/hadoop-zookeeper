@@ -21,75 +21,50 @@
 # chkconfig: 2345 80 10
 # description: Zookeeper for Hadoop HA
 
-source /etc/profile.d/hadoop.sh
+
 source /etc/profile.d/java.sh
-source /etc/rc.d/init.d/functions
-source ${HADOOP_HOME}/etc/hadoop/hadoop-env.sh
 source /etc/profile.d/zookeeper.sh
 
-
 RETVAL=0
-PIDFILE="${HADOOP_PID_DIR}/hadoop-hdfs-datanode.pid"
 desc="Zookeeper Quorum daemon"
-
-start() {
-  echo -n $"Starting $desc (hadoop-datanode): "
-  if [ -n "$HADOOP_SECURE_DN_USER" ]; then
-    daemon ${HADOOP_HOME}/sbin/hadoop-daemon.sh --config "${HADOOP_CONF_DIR}" start datanode
-  else
-    daemon --user hdfs ${HADOOP_HOME}/sbin/hadoop-daemon.sh --config "${HADOOP_CONF_DIR}" start datanode
-  fi
-  RETVAL=$?
-  echo
-  [ $RETVAL -eq 0 ] && touch /var/lock/subsys/hadoop-datanode
-  return $RETVAL
-}
-
-stop() {
-  echo -n $"Stopping $desc (hadoop-datanode): "
-  if [ -n "$HADOOP_SECURE_DN_USER" ]; then
-    daemon ${HADOOP_HOME}/sbin/hadoop-daemon.sh --config "${HADOOP_CONF_DIR}" stop datanode
-  else
-    daemon --user hdfs ${HADOOP_HOME}/sbin/hadoop-daemon.sh --config "${HADOOP_CONF_DIR}" stop datanode
-  fi
-  RETVAL=$?
-  sleep 5
-  echo
-  [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/hadoop-datanode $PIDFILE
-}
-
-restart() {
-  stop
-  start
-}
 
 
 case "$1" in
   start)
     $ZOOKEEPER_HOME/bin/zkServer.sh start
+     RETVAL=$?
     ;;
   start-foreground)
     $ZOOKEEPER_HOME/bin/zkServer.sh start-foreground
+     RETVAL=$?
     ;;
   stop)
     $ZOOKEEPER_HOME/bin/zkServer.sh stop
+     RETVAL=$?
     ;;
   restart)
     $ZOOKEEPER_HOME/bin/zkServer.sh restart
+     RETVAL=$?
     ;;
   status)
     $ZOOKEEPER_HOME/bin/zkServer.sh status
+     RETVAL=$?
     ;;
   restart)
     $ZOOKEEPER_HOME/bin/zkServer.sh restart
+     RETVAL=$?
     ;;
   upgrade)
     $ZOOKEEPER_HOME/bin/zkServer.sh upgrade
+     RETVAL=$?
     ;;
   print-cmd)
     $ZOOKEEPER_HOME/bin/zkServer.sh print-cmd
+     RETVAL=$?
     ;;
   *)
     echo $"Usage: $0 {start|start-foreground|stop|restart|status|upgrade|print-cmd}"
     exit 1
 esac
+
+exit $RETVAL
