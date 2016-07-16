@@ -268,46 +268,12 @@ fi
     
 
     #1. ZK Quarum Daemon 실행 
-    pdsh -w ^zk_hosts "chmod 755 /etc/init.d/hadoop-zookeeper && chkconfig hadoop-zookeeper on && service hadoop-zookeeper start"
-    
-    #2. ZK 내에 NameNode (Active & Standby) 이중화 관련 디렉토리 정리.  hdfs zkfc -formatZK
-    pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/bin/hdfs zkfc -formatZK'"
-    
-    #3. JournalNode 실행 - 저널 서버 데몬 만들고 시작해야 함. : hadoop-daemons.sh start journalnode
-    pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start journalnode'"
-    
-    #4. Active Name Node  포멧 ( 저널노드가 실행되고 있어야 함. ) : hdfs namenode -format
-    pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'"
-    
-    #5. NameNode Daemon 실행 (Active & Standby)
-    pdsh -w ^dn_hosts "chmod 755 /etc/init.d/hadoop-datanode && chkconfig hadoop-datanode on && service hadoop-datanode start"
-    pdsh -w ^nn_host "chmod 755 /etc/init.d/hadoop-namenode && chkconfig hadoop-namenode on && service hadoop-namenode start"
-    pdsh -w ^snn_host "chmod 755 /etc/init.d/hadoop-namenode && chkconfig hadoop-namenode on && service hadoop-namenode start"
+   
+    pdsh -w ^zk_hosts "su - hdfs -c '$ZOOKEEPER_HOME/bin/zkServer.sh start'"
+    pdsh -w ^nn_host "su - hdfs -c '$$HADOOP_HOME/sbin/start-dfs.sh'"
+    pdsh -w ^nn_host "su - yarn -c '$$HADOOP_HOME/sbin/start-yarn.sh'"
     
 
-    
-    #6. ZK Failover Controller Daemon 수행 - ZKFC 서버 만들고 시작.. :  
-    pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start zkfc'"
-    
-    #7. Active Name Node의 filesystem 데이터를 Stand-by Name Node로 복사. (Stand-by Name Node에서 수행.) : hdfs namenode -bootstrapStandby
-    pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -bootstrapStandby'"
-    
-    #8. Name Node의 데이터를 Journal Node에 초기화 (Stan-by Name Node에서 실행) : hdfs namenode -initializeSharedEdits
-    pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -initializeSharedEdits'"
-    
-    ## 이하   yarn 
-    #9. start resource manager : pdsh -w ^rm_host ${HADOOP_HOME}/sbin/yarn-daemon.sh --config /opt/hadoop-2.7.2/etc/hadoop start resourcemanager
-    pdsh -w ^rm_host "chmod 755 /etc/init.d/hadoop-resourcemanager && chkconfig hadoop-resourcemanager on && service hadoop-resourcemanager start"
-    #10. start nodemanagers.
-    pdsh -w ^nm_hosts "chmod 755 /etc/init.d/hadoop-nodemanager && chkconfig hadoop-nodemanager on && service hadoop-nodemanager start"
-    
-    #11. start proxy server
-    pdsh -w ^yarn_proxy_host "chmod 755 /etc/init.d/hadoop-proxyserver && chkconfig hadoop-proxyserver on && service hadoop-proxyserver start"
-    
-    # 12. start history server
-    pdsh -w ^mr_history_host "chmod 755 /etc/init.d/hadoop-historyserver && chkconfig hadoop-historyserver on && service hadoop-historyserver start"
-
-	
     
 	#echo "Starting Hadoop $HADOOP_VERSION services on all hosts... 잠시 중지...."
     #pdsh -w ^dn_hosts "chmod 755 /etc/init.d/hadoop-datanode && chkconfig hadoop-datanode on && service hadoop-datanode start"
