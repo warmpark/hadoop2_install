@@ -65,11 +65,6 @@ pdsh -w ^zk_hosts "rm -r /opt/zookeeper-$ZOOKEEPER_VERSION.tar.gz"
 echo "Removing Zookeeper bash environment setting..."
 pdsh -w ^zk_hosts "rm -f /etc/profile.d/zookeeper.sh"
 
-echo "Removing Zookeeper home directory..."
-pdsh -w ^zk_hosts "rm -Rf $ZOOKEEPER_HOME"
-
-
-
 
 
 echo "Removing Hadoop 2 services from run levels..."
@@ -154,8 +149,23 @@ pdsh -w ^all_hosts "rm -Rf $HADOOP_MAPRED_LOG_DIR"
 
 
 
+echo "Removing Zookeeper home directory..."
+pdsh -w ^zk_hosts "rm -Rf $ZOOKEEPER_HOME"
+
 echo "Removing Hadoop 2 home directory..."
 pdsh -w ^all_hosts "rm -Rf $HADOOP_HOME"
+pdsh -w ^all_hosts "rm -Rf $NN_DATA_DIR"
+pdsh -w ^all_hosts "rm -Rf $SNN_DATA_DIR"
+pdsh -w ^all_hosts "rm -Rf $DN_DATA_DIR"
+pdsh -w ^all_hosts "rm -Rf $YARN_LOG_DIR"
+pdsh -w ^all_hosts "rm -Rf $YARN_LOG_DIR"
+pdsh -w ^all_hosts "rm -Rf $HADOOP_LOG_DIR"
+pdsh -w ^all_hosts "rm -Rf $HADOOP_MAPRED_LOG_DIR"
+
+
+
+
+
 
 
 
