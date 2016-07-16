@@ -244,8 +244,8 @@ fi
 	pdcp -w ^all_hosts core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml $HADOOP_HOME/etc/hadoop/
     
     echo "Copying the slaves file on each all hosts, in $HADOOP_CONF_DIR .... "
-	pdcp -w ^all_hosts  dn_hosts $HADOOP_HOME/etc/hadoop/slaves
-    pdcp -w ^all_hosts  jn_hosts $HADOOP_HOME/etc/hadoop/journalnodes
+	#pdcp -w ^all_hosts  dn_hosts $HADOOP_HOME/etc/hadoop/slaves
+    #pdcp -w ^all_hosts  jn_hosts $HADOOP_HOME/etc/hadoop/journalnodes
     
     
 
@@ -270,8 +270,8 @@ fi
     #1. ZK Quarum Daemon 실행 
    
     pdsh -w ^zk_hosts "su - hdfs -c '$ZOOKEEPER_HOME/bin/zkServer.sh start'"
-    pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/sbin/start-dfs.sh'"
-    pdsh -w ^nn_host "su - yarn -c '$HADOOP_HOME/sbin/start-yarn.sh'"
+    #pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/sbin/start-dfs.sh'"
+    #pdsh -w ^nn_host "su - yarn -c '$HADOOP_HOME/sbin/start-yarn.sh'"
     
 
     
