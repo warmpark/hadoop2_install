@@ -189,7 +189,7 @@ fi
     put_config --file hdfs-site.xml --property dfs.ha.automatic-failover.enabled --value true
     put_config --file hdfs-site.xml --property dfs.client.failover.proxy.provider."$DFS_NAMESERVICES" --value "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvide"
     put_config --file hdfs-site.xml --property dfs.ha.fencing.methods --value "sshfence"
-    put_config --file hdfs-site.xml --property dfs.ha.fencing.methods --value "/root/.ssh/id_rsa"
+    put_config --file hdfs-site.xml --property dfs.ha.fencing.ssh.private-key-files --value "/root/.ssh/id_rsa"
 
     put_config --file hdfs-site.xml --property dfs.namenode.name.dir --value "$NN_DATA_DIR"
     put_config --file hdfs-site.xml --property dfs.datanode.data.dir --value "$DN_DATA_DIR"
@@ -204,6 +204,7 @@ fi
     put_config --file yarn-site.xml --property yarn.resourcemanager.address --value "$rmgr:8032"
     put_config --file yarn-site.xml --property yarn.resourcemanager.admin.address --value "$rmgr:8033"
     put_config --file yarn-site.xml --property yarn.resourcemanager.webapp.address --value "$rmgr:8088"
+    put_config --file yarn-site.xml --property yarn.log-aggregation-enable --value true
     # for VM Memory Management  by warmpark
     put_config --file yarn-site.xml --property yarn.nodemanager.resource.memory-mb --value 4096
     put_config --file yarn-site.xml --property yarn.scheduler.minimum-allocation-mb --value 256 
@@ -212,6 +213,7 @@ fi
     put_config --file yarn-site.xml --property yarn.nodemanager.vmem-pmem-ratio --value 5.1
     put_config --file yarn-site.xml --property yarn.nodemanager.resource.cpu-vcores --value 2
     put_config --file yarn-site.xml --property yarn.scheduler.maximum-allocation-vcores --value 4
+
 
 	
 	create_config --file mapred-site.xml
