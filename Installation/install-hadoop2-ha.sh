@@ -230,6 +230,9 @@ fi
 
 	echo "Copying base Hadoop XML config files to all hosts..."
 	pdcp -w ^all_hosts core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml $HADOOP_HOME/etc/hadoop/
+    
+    echo "Copying the slaves file on each datanode, in $HADOOP_CONF_DIR .... "
+	pdcp -w ^dn_hosts  $HADOOP_HOME/etc/hadoop/slaves
 
 	echo "Creating configuration, command, and script links on all hosts..."
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/etc/hadoop /etc/hadoop"
