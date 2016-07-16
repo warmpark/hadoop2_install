@@ -45,7 +45,8 @@ pdsh -w ^nm_hosts "service hadoop-nodemanager stop"
 pdsh -w ^rm_host "service hadoop-resourcemanager stop"
 
 #1. Zookeeper 정지(모든  JouralNode)
-pdsh -w ^jn_hosts "$ZOOKEEPER_HOME/bin/zkServer.sh stop"
+#pdsh -w ^jn_hosts "$ZOOKEEPER_HOME/bin/zkServer.sh stop"
+pdsh -w ^jn_hosts "chmod 755 /etc/init.d/hadoop-zookeeper && chkconfig hadoop-zookeeper on && service hadoop-zookeeper stop"
 
 echo "Removing Zookeeper services from run levels..."
 pdsh -w ^dn_hosts "chkconfig --del hadoop-zookeeper"
