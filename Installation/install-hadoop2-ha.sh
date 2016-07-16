@@ -231,8 +231,8 @@ fi
 	echo "Copying base Hadoop XML config files to all hosts..."
 	pdcp -w ^all_hosts core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml $HADOOP_HOME/etc/hadoop/
     
-    echo "Copying the slaves file on each datanode, in $HADOOP_CONF_DIR .... "
-	pdcp -w ^dn_hosts  $HADOOP_HOME/etc/hadoop/slaves
+    echo "Copying the slaves file on each all hosts, in $HADOOP_CONF_DIR .... "
+	pdcp -w ^all_hosts  dn_hosts $HADOOP_HOME/etc/hadoop/slaves
 
 	echo "Creating configuration, command, and script links on all hosts..."
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/etc/hadoop /etc/hadoop"
@@ -254,7 +254,7 @@ fi
     
 	echo "Copying startup scripts to all hosts..."
 	pdcp -w ^nn_host hadoop-namenode /etc/init.d/
-	#pdcp -w ^snn_host hadoop-secondarynamenode /etc/init.d/
+	pdcp -w ^snn_host hadoop-secondarynamenode /etc/init.d/
 	pdcp -w ^dn_hosts hadoop-datanode /etc/init.d/
 	pdcp -w ^rm_host hadoop-resourcemanager /etc/init.d/
 	pdcp -w ^nm_hosts hadoop-nodemanager /etc/init.d/

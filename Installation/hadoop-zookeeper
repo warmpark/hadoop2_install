@@ -28,6 +28,42 @@ source ${HADOOP_HOME}/etc/hadoop/hadoop-env.sh
 source /etc/profile.d/zookeeper.sh
 
 
+RETVAL=0
+PIDFILE="${HADOOP_PID_DIR}/hadoop-hdfs-datanode.pid"
+desc="Zookeeper Quorum daemon"
+
+start() {
+  echo -n $"Starting $desc (hadoop-datanode): "
+  if [ -n "$HADOOP_SECURE_DN_USER" ]; then
+    daemon ${HADOOP_HOME}/sbin/hadoop-daemon.sh --config "${HADOOP_CONF_DIR}" start datanode
+  else
+    daemon --user hdfs ${HADOOP_HOME}/sbin/hadoop-daemon.sh --config "${HADOOP_CONF_DIR}" start datanode
+  fi
+  RETVAL=$?
+  echo
+  [ $RETVAL -eq 0 ] && touch /var/lock/subsys/hadoop-datanode
+  return $RETVAL
+}
+
+stop() {
+  echo -n $"Stopping $desc (hadoop-datanode): "
+  if [ -n "$HADOOP_SECURE_DN_USER" ]; then
+    daemon ${HADOOP_HOME}/sbin/hadoop-daemon.sh --config "${HADOOP_CONF_DIR}" stop datanode
+  else
+    daemon --user hdfs ${HADOOP_HOME}/sbin/hadoop-daemon.sh --config "${HADOOP_CONF_DIR}" stop datanode
+  fi
+  RETVAL=$?
+  sleep 5
+  echo
+  [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/hadoop-datanode $PIDFILE
+}
+
+restart() {
+  stop
+  start
+}
+
+
 case "$1" in
   start)
     $ZOOKEEPER_HOME/bin/zkServer.sh start

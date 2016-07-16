@@ -13,19 +13,15 @@ big01: starting zkfc, logging to /var/log/hadoop/hdfs/hadoop-root-zkfc-big01.out
 [root@big01 Installation]# jps
 7744 NameNode
 7861 DataNode
-8437 Jps
 8079 JournalNode
-[root@big01 Installation]# ssh big02
-Last login: Sat Jul 16 12:06:12 2016 from big01
+
 [root@big02 ~]# jps
 4608 NameNode
 4712 JournalNode
-5071 Jps
-[root@big02 ~]# ssh big03
-Last login: Sat Jul 16 12:06:21 2016 from big02
+
 [root@big03 ~]# jps
 21353 JournalNode
-21645 Jps
+
 
 
 
