@@ -272,7 +272,7 @@ fi
 
     #2. ZK 내에 NameNode (Active & Standby) 이중화 관련 디렉토리 정리. - 반드시 ZK 가 실행 중이어야 함.
     # su - hdfs -c '$HADOOP_HOME/bin/hdfs zkfc -formatZK'
-    pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/bin/hdfs zkfc -formatZK'"
+    #pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/bin/hdfs zkfc -formatZK'"
 
     #3. JournalNode 실행 . : hadoop-daemons.sh start journalnode
     pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start journalnode'"
