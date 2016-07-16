@@ -257,14 +257,14 @@ fi
 	#pdsh -w ^all_hosts "ln -s $ZOOKEEPER_HOME/bin/* /usr/bin"
 
     echo "Copying startup scripts to all hosts..."
-	pdcp -w ^nn_host hadoop-namenode /etc/init.d/
-	pdcp -w ^snn_host hadoop-secondarynamenode /etc/init.d/
-	pdcp -w ^dn_hosts hadoop-datanode /etc/init.d/
-	pdcp -w ^rm_host hadoop-resourcemanager /etc/init.d/
-	pdcp -w ^nm_hosts hadoop-nodemanager /etc/init.d/
-	pdcp -w ^mr_history_host hadoop-historyserver /etc/init.d/
-	pdcp -w ^yarn_proxy_host hadoop-proxyserver /etc/init.d/
-    pdcp -w ^zk_hosts hadoop-zookeeper /etc/init.d/
+	pdcp -w ^all_hosts hadoop-namenode /etc/init.d/
+	pdcp -w ^all_hosts hadoop-secondarynamenode /etc/init.d/
+	pdcp -w ^all_hosts hadoop-datanode /etc/init.d/
+	pdcp -w ^all_hosts hadoop-resourcemanager /etc/init.d/
+	pdcp -w ^all_hosts hadoop-nodemanager /etc/init.d/
+	pdcp -w ^all_hosts hadoop-historyserver /etc/init.d/
+	pdcp -w ^all_hosts hadoop-proxyserver /etc/init.d/
+    pdcp -w ^all_hosts hadoop-zookeeper /etc/init.d/
     
 
     #1. ZK Quarum Daemon 실행 
