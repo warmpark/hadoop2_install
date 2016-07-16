@@ -32,6 +32,9 @@ YARN_NODEMANAGER_HEAPSIZE=308
 # set JAVA_HOME=""
 # JAVA_HOME= /usr/lib/jvm/java-1.7.0-openjdk-1.7.0.101-2.6.6.1.el7_2.x86_64/jre/
 JAVA_HOME=""
+
+
+
 echo "Stopping Hadoop 2 services..."
 pdsh -w ^dn_hosts "service hadoop-datanode stop"
 pdsh -w ^nn_host "service hadoop-namenode stop"
@@ -40,6 +43,25 @@ pdsh -w ^mr_history_host "service hadoop-historyserver stop"
 pdsh -w ^yarn_proxy_host "service hadoop-proxyserver stop"
 pdsh -w ^nm_hosts "service hadoop-nodemanager stop"
 pdsh -w ^rm_host "service hadoop-resourcemanager stop"
+
+#1. Zookeeper 정지(모든  JouralNode)
+pdsh -w ^jn_hosts "$ZOOKEEPER_HOME/bin/zkServer.sh stop"
+
+echo "Removing Zookeeper services from run levels..."
+pdsh -w ^dn_hosts "chkconfig --del hadoop-zookeeper"
+
+echo "Removing Zookeeper distribution tarball..."
+pdsh -w ^jn_hosts "rm -r /opt/zookeeper-$ZOOKEEPER_VERSION.tar.gz"
+
+echo "Removing Zookeeper bash environment setting..."
+pdsh -w ^jn_hosts "rm -f /etc/profile.d/zookeeper.sh"
+
+echo "Removing Zookeeper home directory..."
+pdsh -w ^jn_hosts "rm -Rf $ZOOKEEPER_HOME"
+
+
+
+
 
 echo "Removing Hadoop 2 services from run levels..."
 pdsh -w ^dn_hosts "chkconfig --del hadoop-datanode"
@@ -50,12 +72,13 @@ pdsh -w ^yarn_proxy_host "chkconfig --del hadoop-proxyserver"
 pdsh -w ^nm_hosts "chkconfig --del hadoop-nodemanager"
 pdsh -w ^rm_host "chkconfig --del hadoop-resourcemanager"
 
+
+
 echo "Removing Hadoop 2 startup scripts..."
 pdsh -w ^all_hosts "rm -f /etc/init.d/hadoop-*"
 
 echo "Removing Hadoop 2 distribution tarball..."
 pdsh -w ^all_hosts "rm -f /opt/hadoop-2*.tar.gz"
-pdsh -w ^jn_hosts "rm -r /opt/zookeeper-$ZOOKEEPER_VERSION.tar.gz"
 
 if [ -z "$JAVA_HOME" ]; then
   echo "Removing JDK 1.8.0_92 distribution..."
@@ -72,9 +95,6 @@ pdsh -w ^all_hosts "rm -f /etc/profile.d/hadoop.sh"
 
 echo "Removing Java bash environment setting..."
 pdsh -w ^all_hosts "rm -f /etc/profile.d/java.sh"
-
-echo "Removing Zookeeper bash environment setting..."
-pdsh -w ^jn_hosts "rm -f /etc/profile.d/zookeeper.sh"
 
 
 
@@ -128,8 +148,6 @@ pdsh -w ^all_hosts "rm -Rf $HADOOP_MAPRED_LOG_DIR"
 echo "Removing Hadoop 2 home directory..."
 pdsh -w ^all_hosts "rm -Rf $HADOOP_HOME"
 
-echo "Removing Zookeeper home directory..."
-pdsh -w ^jn_hosts "rm -Rf $ZOOKEEPER_HOME"
 
 
 echo "Removing hdfs system account..."
