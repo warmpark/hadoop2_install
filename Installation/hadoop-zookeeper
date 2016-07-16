@@ -23,6 +23,7 @@
 
 
 source /etc/profile.d/java.sh
+source /etc/rc.d/init.d/functions
 source /etc/profile.d/zookeeper.sh
 
 RETVAL=0
@@ -31,35 +32,35 @@ desc="Zookeeper Quorum daemon"
 
 case "$1" in
   start)
-    $ZOOKEEPER_HOME/bin/zkServer.sh start
+    daemon --user hdfs $ZOOKEEPER_HOME/bin/zkServer.sh start
      RETVAL=$?
     ;;
   start-foreground)
-    $ZOOKEEPER_HOME/bin/zkServer.sh start-foreground
+    daemon --user hdfs $ZOOKEEPER_HOME/bin/zkServer.sh start-foreground
      RETVAL=$?
     ;;
   stop)
-    $ZOOKEEPER_HOME/bin/zkServer.sh stop
+    daemon --user hdfs $ZOOKEEPER_HOME/bin/zkServer.sh stop
      RETVAL=$?
     ;;
   restart)
-    $ZOOKEEPER_HOME/bin/zkServer.sh restart
+    daemon --user hdfs $ZOOKEEPER_HOME/bin/zkServer.sh restart
      RETVAL=$?
     ;;
   status)
-    $ZOOKEEPER_HOME/bin/zkServer.sh status
+    daemon --user hdfs $ZOOKEEPER_HOME/bin/zkServer.sh status
      RETVAL=$?
     ;;
   restart)
-    $ZOOKEEPER_HOME/bin/zkServer.sh restart
+    daemon --user hdfs $ZOOKEEPER_HOME/bin/zkServer.sh restart
      RETVAL=$?
     ;;
   upgrade)
-    $ZOOKEEPER_HOME/bin/zkServer.sh upgrade
+    daemon --user hdfs $ZOOKEEPER_HOME/bin/zkServer.sh upgrade
      RETVAL=$?
     ;;
   print-cmd)
-    $ZOOKEEPER_HOME/bin/zkServer.sh print-cmd
+    daemon --user hdfs $ZOOKEEPER_HOME/bin/zkServer.sh print-cmd
      RETVAL=$?
     ;;
   *)

@@ -245,12 +245,6 @@ fi
 
 
 
-
-    #1. Zookeeper 실행 (모든  JouralNode)
-    pdsh -w ^jn_hosts "$ZOOKEEPER_HOME/bin/zkServer.sh restart"
-    
-    #2. 
-
 	echo "Formatting the NameNode..."
 	pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'"
     
@@ -268,32 +262,32 @@ fi
     echo "Starting Zookeeper $ZOOKEEPER_VERSION on Journal Hosts ... ..."
     pdsh -w ^jn_hosts "chmod 755 /etc/init.d/hadoop-zookeeper && chkconfig hadoop-zookeeper on && service hadoop-zookeeper start"
 
-	echo "Starting Hadoop $HADOOP_VERSION services on all hosts... "
-    pdsh -w ^dn_hosts "chmod 755 /etc/init.d/hadoop-datanode && chkconfig hadoop-datanode on && service hadoop-datanode start"
-	pdsh -w ^nn_host "chmod 755 /etc/init.d/hadoop-namenode && chkconfig hadoop-namenode on && service hadoop-namenode start"
-	pdsh -w ^snn_host "chmod 755 /etc/init.d/hadoop-namenode && chkconfig hadoop-namenode on && service hadoop-namenode start"
-	pdsh -w ^dn_hosts "chmod 755 /etc/init.d/hadoop-datanode && chkconfig hadoop-datanode on && service hadoop-datanode start"
-	pdsh -w ^rm_host "chmod 755 /etc/init.d/hadoop-resourcemanager && chkconfig hadoop-resourcemanager on && service hadoop-resourcemanager start"
-	pdsh -w ^nm_hosts "chmod 755 /etc/init.d/hadoop-nodemanager && chkconfig hadoop-nodemanager on && service hadoop-nodemanager start"
-	pdsh -w ^yarn_proxy_host "chmod 755 /etc/init.d/hadoop-proxyserver && chkconfig hadoop-proxyserver on && service hadoop-proxyserver start"
+	echo "Starting Hadoop $HADOOP_VERSION services on all hosts... 잠시 중지...."
+    #pdsh -w ^dn_hosts "chmod 755 /etc/init.d/hadoop-datanode && chkconfig hadoop-datanode on && service hadoop-datanode start"
+	#pdsh -w ^nn_host "chmod 755 /etc/init.d/hadoop-namenode && chkconfig hadoop-namenode on && service hadoop-namenode start"
+	#pdsh -w ^snn_host "chmod 755 /etc/init.d/hadoop-namenode && chkconfig hadoop-namenode on && service hadoop-namenode start"
+	#pdsh -w ^dn_hosts "chmod 755 /etc/init.d/hadoop-datanode && chkconfig hadoop-datanode on && service hadoop-datanode start"
+	#pdsh -w ^rm_host "chmod 755 /etc/init.d/hadoop-resourcemanager && chkconfig hadoop-resourcemanager on && service hadoop-resourcemanager start"
+	#pdsh -w ^nm_hosts "chmod 755 /etc/init.d/hadoop-nodemanager && chkconfig hadoop-nodemanager on && service hadoop-nodemanager start"
+	#pdsh -w ^yarn_proxy_host "chmod 755 /etc/init.d/hadoop-proxyserver && chkconfig hadoop-proxyserver on && service hadoop-proxyserver start"
     
    
-	echo "Creating MapReduce Job History directories..."
-	su - hdfs -c "hdfs dfs -mkdir -p /mapred/history/done_intermediate"
-	su - hdfs -c "hdfs dfs -chown -R mapred:hadoop /mapred"
-	su - hdfs -c "hdfs dfs -chmod -R g+rwx /mapred"
+	#echo "Creating MapReduce Job History directories..."
+	#su - hdfs -c "hdfs dfs -mkdir -p /mapred/history/done_intermediate"
+	#su - hdfs -c "hdfs dfs -chown -R mapred:hadoop /mapred"
+	#su - hdfs -c "hdfs dfs -chmod -R g+rwx /mapred"
 
-	pdsh -w ^mr_history_host "chmod 755 /etc/init.d/hadoop-historyserver && chkconfig hadoop-historyserver on && service hadoop-historyserver start"
+	#pdsh -w ^mr_history_host "chmod 755 /etc/init.d/hadoop-historyserver && chkconfig hadoop-historyserver on && service hadoop-historyserver start"
 
-	echo "Running YARN smoke test..."
-	pdsh -w ^all_hosts "usermod -a -G hadoop $(whoami)"
-	su - hdfs -c "hadoop fs -mkdir -p /user/$(whoami)"
-	su - hdfs -c "hadoop fs -chown $(whoami):$(whoami) /user/$(whoami)"
-	source /etc/profile.d/java.sh
-	source /etc/profile.d/hadoop.sh
-	source /etc/hadoop/hadoop-env.sh
-	source /etc/hadoop/yarn-env.sh
-	hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-$HADOOP_VERSION.jar pi -Dmapreduce.clientfactory.class.name=org.apache.hadoop.mapred.YarnClientFactory -libjars $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-$HADOOP_VERSION.jar 16 10000
+	#echo "Running YARN smoke test..."
+	#pdsh -w ^all_hosts "usermod -a -G hadoop $(whoami)"
+	#su - hdfs -c "hadoop fs -mkdir -p /user/$(whoami)"
+	#su - hdfs -c "hadoop fs -chown $(whoami):$(whoami) /user/$(whoami)"
+	#source /etc/profile.d/java.sh
+	#source /etc/profile.d/hadoop.sh
+	#source /etc/hadoop/hadoop-env.sh
+	#source /etc/hadoop/yarn-env.sh
+	#hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-$HADOOP_VERSION.jar pi -Dmapreduce.clientfactory.class.name=org.apache.hadoop.mapred.YarnClientFactory -libjars $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-$HADOOP_VERSION.jar 16 10000
 }
 
 interactive()
