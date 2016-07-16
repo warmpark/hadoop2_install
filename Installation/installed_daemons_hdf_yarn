@@ -1,0 +1,52 @@
+[root@big01 Installation]# /opt/hadoop-2.7.2/sbin/start-dfs.sh
+Starting namenodes on [big01 big02]
+big01: starting namenode, logging to /var/log/hadoop/hdfs/hadoop-root-namenode-big01.out
+big02: starting namenode, logging to /var/log/hadoop/hdfs/hadoop-root-namenode-big02.out
+localhost: starting datanode, logging to /var/log/hadoop/hdfs/hadoop-root-datanode-big01.out
+Starting journal nodes [big01 big02 big03]
+big02: starting journalnode, logging to /var/log/hadoop/hdfs/hadoop-root-journalnode-big02.out
+big01: starting journalnode, logging to /var/log/hadoop/hdfs/hadoop-root-journalnode-big01.out
+big03: starting journalnode, logging to /var/log/hadoop/hdfs/hadoop-root-journalnode-big03.out
+Starting ZK Failover Controllers on NN hosts [big01 big02]
+big02: starting zkfc, logging to /var/log/hadoop/hdfs/hadoop-root-zkfc-big02.out
+big01: starting zkfc, logging to /var/log/hadoop/hdfs/hadoop-root-zkfc-big01.out
+[root@big01 Installation]# jps
+7744 NameNode
+7861 DataNode
+8437 Jps
+8079 JournalNode
+[root@big01 Installation]# ssh big02
+Last login: Sat Jul 16 12:06:12 2016 from big01
+[root@big02 ~]# jps
+4608 NameNode
+4712 JournalNode
+5071 Jps
+[root@big02 ~]# ssh big03
+Last login: Sat Jul 16 12:06:21 2016 from big02
+[root@big03 ~]# jps
+21353 JournalNode
+21645 Jps
+
+
+
+[root@big01 Installation]# /opt/hadoop-2.7.2/sbin/start-yarn.sh
+starting yarn daemons
+starting resourcemanager, logging to /var/log/hadoop/yarn/yarn-root-resourcemanager-big01.out
+localhost: starting nodemanager, logging to /var/log/hadoop/yarn/yarn-root-nodemanager-big01.out
+[root@big01 Installation]# jps
+7744 NameNode
+7861 DataNode
+9016 NodeManager
+9227 Jps
+8079 JournalNode
+[root@big01 Installation]# ssh big02
+Last login: Sat Jul 16 12:08:29 2016 from big01
+[root@big02 ~]# jps
+4608 NameNode
+4712 JournalNode
+5614 Jps
+[root@big02 ~]# ssh big03
+Last login: Sat Jul 16 12:08:38 2016 from big02
+[root@big03 ~]# jps
+21353 JournalNode
+22157 Jps

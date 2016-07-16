@@ -20,7 +20,7 @@ ZOOKEEPER_CONF_DIR="${ZOOKEEPER_HOME}/conf"
 ZOOKEEPER_DATA_DIR="${ZOOKEEPER_HOME}/data"
 
 DFS_NAMESERVICES=big-cluster
-HA_ZOOKEEPER_QUOREM=big01:2181,big02:2181,big03:2181
+HA_ZOOKEEPER_QUORUM=big01:2181,big02:2181,big03:2181
 JN_EDITS_DIR=/var/data/hadoop/journal/data
 NAMENODE_SHARED_EDITS_DIR="qjournal://big01:8485;big02:8485;big03:8485/${DFS_NAMESERVICES}"
 
@@ -173,7 +173,7 @@ fi
 	echo "Creating base Hadoop XML config files..."
 	create_config --file core-site.xml
     put_config --file core-site.xml --property fs.defaultFS --value "hdfs://$DFS_NAMESERVICES"
-    put_config --file core-site.xml --property ha.zookeeper.quorum --value "$HA_ZOOKEEPER_QUOREM"
+    put_config --file core-site.xml --property ha.zookeeper.quorum --value "$HA_ZOOKEEPER_QUORUM"
     put_config --file core-site.xml --property dfs.journalnode.edits.dir --value "$JN_EDITS_DIR"
     put_config --file core-site.xml --property hadoop.http.staticuser.user --value "$HTTP_STATIC_USER"
 
@@ -185,11 +185,11 @@ fi
     put_config --file hdfs-site.xml --property dfs.namenode.rpc-address."$DFS_NAMESERVICES".nn2 --value "$snn:8020"
     put_config --file hdfs-site.xml --property dfs.namenode.http-address."$DFS_NAMESERVICES".nn1 --value "$nn:50070"
     put_config --file hdfs-site.xml --property dfs.namenode.http-address."$DFS_NAMESERVICES".nn2 --value "$snn:50070"
-    put_config --file hdfs-site.xml --property dfs.ha.automatic-failover.enabled --value true
     put_config --file hdfs-site.xml --property dfs.namenode.shared.edits.dir --value "$NAMENODE_SHARED_EDITS_DIR"
+    put_config --file hdfs-site.xml --property dfs.ha.automatic-failover.enabled --value true
     put_config --file hdfs-site.xml --property dfs.client.failover.proxy.provider."$DFS_NAMESERVICES" --value "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvide"
+    put_config --file hdfs-site.xml --property dfs.ha.fencing.methods --value "sshfence"
     put_config --file hdfs-site.xml --property dfs.ha.fencing.methods --value "/root/.ssh/id_rsa"
-
 
     put_config --file hdfs-site.xml --property dfs.namenode.name.dir --value "$NN_DATA_DIR"
     put_config --file hdfs-site.xml --property dfs.datanode.data.dir --value "$DN_DATA_DIR"
@@ -227,7 +227,7 @@ fi
     put_config --file mapred-site.xml --property mapreduce.reduce.java.opts --value "-Xmx384m" 
     put_config --file mapred-site.xml --property mapreduce.task.io.sort.mb --value 128 
 	
-	
+
 	echo "Copying base Hadoop XML config files to all hosts..."
 	pdcp -w ^all_hosts core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml $HADOOP_HOME/etc/hadoop/
 
@@ -237,6 +237,14 @@ fi
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/libexec/* /usr/libexec"
     pdsh -w ^all_hosts "ln -s $ZOOKEEPER_HOME/conf/* /etc/zookeeper"
 	#pdsh -w ^all_hosts "ln -s $ZOOKEEPER_HOME/bin/* /usr/bin"
+
+
+
+
+    #1. Zookeeper 실행 (모든  JouralNode)
+    pdsh -w ^jn_hosts "$ZOOKEEPER_HOME/bin/zkServer.sh restart"
+    
+    #2. 
 
 	echo "Formatting the NameNode..."
 	pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'"
