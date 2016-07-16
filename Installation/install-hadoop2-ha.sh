@@ -94,6 +94,9 @@ fi
     
 	pdsh -w ^all_hosts "echo export HADOOP_HOME=$HADOOP_HOME > /etc/profile.d/hadoop.sh"
 	pdsh -w ^all_hosts 'echo export HADOOP_PREFIX=$HADOOP_HOME >> /etc/profile.d/hadoop.sh'
+    pdsh -w ^all_hosts 'echo export HADOOP_CONF_DIR=$HADOOP_CONF_DIR >> /etc/profile.d/hadoop.sh'
+    
+    
 	pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
     
 	pdsh -w ^zk_hosts "echo export ZOOKEEPER_HOME=$ZOOKEEPER_HOME > /etc/profile.d/zookeeper.sh"
@@ -107,8 +110,8 @@ fi
     echo "Extracting Hadoop $HADOOP_VERSION distribution on all hosts..."
 	pdsh -w ^all_hosts tar -zxf /opt/hadoop-"$HADOOP_VERSION".tar.gz -C /opt
 
-    echo "Extracting Zookeeper $ZOOKEEPER_VERSION distribution on all Journal hosts..."
-	pdsh -w ^all_hosts tar -zxf /opt/zookeeper-"$ZOOKEEPER_VERSION".tar.gz -C /opt
+    echo "Extracting Zookeeper $ZOOKEEPER_VERSION distribution on all ZK hosts..."
+	pdsh -w ^jk_hosts tar -zxf /opt/zookeeper-"$ZOOKEEPER_VERSION".tar.gz -C /opt
 
 	echo "Creating system accounts and groups on all hosts..."
 	pdsh -w ^all_hosts groupadd hadoop
@@ -130,11 +133,13 @@ fi
 	pdsh -w ^all_hosts "mkdir -p $HADOOP_LOG_DIR && chown hdfs:hadoop $HADOOP_LOG_DIR"
 	pdsh -w ^all_hosts "mkdir -p $HADOOP_MAPRED_LOG_DIR && chown mapred:hadoop $HADOOP_MAPRED_LOG_DIR"
     pdsh -w ^zk_hosts "mkdir -p $ZOOKEEPER_LOG_DIR && chown hdfs:hadoop $ZOOKEEPER_LOG_DIR"
+    
 
 	echo "Creating pid directories on all hosts..."
 	pdsh -w ^all_hosts "mkdir -p $YARN_PID_DIR && chown yarn:hadoop $YARN_PID_DIR"
 	pdsh -w ^all_hosts "mkdir -p $HADOOP_PID_DIR && chown hdfs:hadoop $HADOOP_PID_DIR"
 	pdsh -w ^all_hosts "mkdir -p $HADOOP_MAPRED_PID_DIR && chown mapred:hadoop $HADOOP_MAPRED_PID_DIR"
+    ##TODO JK PID는 어떻게 ? 어디에 ? 구글링해봐야...
 
 	echo "Editing Hadoop environment scripts for log directories on all hosts..."
 	pdsh -w ^all_hosts echo "export HADOOP_LOG_DIR=$HADOOP_LOG_DIR >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh"
@@ -145,6 +150,8 @@ fi
 	pdsh -w ^all_hosts echo "export HADOOP_PID_DIR=$HADOOP_PID_DIR >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh"
 	pdsh -w ^all_hosts echo "export YARN_PID_DIR=$YARN_PID_DIR >> $HADOOP_HOME/etc/hadoop/yarn-env.sh"
 	pdsh -w ^all_hosts echo "export HADOOP_MAPRED_PID_DIR=$HADOOP_MAPRED_PID_DIR >> $HADOOP_HOME/etc/hadoop/mapred-env.sh"
+    ### ZK  PID관리는 어떻게.....
+    
 
 	if [ -n "$YARN_NODEMANAGER_HEAPSIZE" ]
 	then 
@@ -167,6 +174,9 @@ fi
     pdsh -w big01 "echo 1 > $ZOOKEEPER_HOME/data/myid"
     pdsh -w big02 "echo 2 > $ZOOKEEPER_HOME/data/myid"
     pdsh -w big03 "echo 3 > $ZOOKEEPER_HOME/data/myid"
+    
+    
+    
    
     
 
@@ -235,6 +245,9 @@ fi
     
     echo "Copying the slaves file on each all hosts, in $HADOOP_CONF_DIR .... "
 	pdcp -w ^all_hosts  dn_hosts $HADOOP_HOME/etc/hadoop/slaves
+    pdcp -w ^all_hosts  jn_hosts $HADOOP_HOME/etc/hadoop/journalnodes
+    
+    
 
 	echo "Creating configuration, command, and script links on all hosts..."
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/etc/hadoop /etc/hadoop"
@@ -243,12 +256,7 @@ fi
     pdsh -w ^all_hosts "ln -s $ZOOKEEPER_HOME/conf/* /etc/zookeeper"
 	#pdsh -w ^all_hosts "ln -s $ZOOKEEPER_HOME/bin/* /usr/bin"
 
-
-
-	echo "Formatting the NameNode..."
-	pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'"
-    
-	echo "Copying startup scripts to all hosts..."
+    echo "Copying startup scripts to all hosts..."
 	pdcp -w ^nn_host hadoop-namenode /etc/init.d/
 	pdcp -w ^snn_host hadoop-secondarynamenode /etc/init.d/
 	pdcp -w ^dn_hosts hadoop-datanode /etc/init.d/
@@ -258,11 +266,48 @@ fi
 	pdcp -w ^yarn_proxy_host hadoop-proxyserver /etc/init.d/
     pdcp -w ^zk_hosts hadoop-zookeeper /etc/init.d/
     
-    ## 아래처럼 하기 위해서는 서비를 만들어야 한다. 
-    echo "Starting Zookeeper $ZOOKEEPER_VERSION on Journal Hosts ... ..."
-    pdsh -w ^zk_hosts "chmod 755 /etc/init.d/hadoop-zookeeper && chkconfig hadoop-zookeeper on && service hadoop-zookeeper start"
 
-	echo "Starting Hadoop $HADOOP_VERSION services on all hosts... 잠시 중지...."
+    #1. ZK Quarum Daemon 실행 
+    pdsh -w ^zk_hosts "chmod 755 /etc/init.d/hadoop-zookeeper && chkconfig hadoop-zookeeper on && service hadoop-zookeeper start"
+    
+    #2. ZK 내에 NameNode (Active & Standby) 이중화 관련 디렉토리 정리.  hdfs zkfc -formatZK
+    pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/bin/hdfs zkfc -formatZK'"
+    
+    #3. JournalNode 실행 - 저널 서버 데몬 만들고 시작해야 함. : hadoop-daemons.sh start journalnode
+    pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start journalnode'"
+    
+    #4. Active Name Node  포멧 ( 저널노드가 실행되고 있어야 함. ) : hdfs namenode -format
+    pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'"
+    
+    #5. NameNode Daemon 실행 (Active & Standby)
+    pdsh -w ^nn_host "chmod 755 /etc/init.d/hadoop-namenode && chkconfig hadoop-namenode on && service hadoop-namenode start"
+    pdsh -w ^snn_host "chmod 755 /etc/init.d/hadoop-namenode && chkconfig hadoop-namenode on && service hadoop-namenode start"
+
+    
+    #6. ZK Failover Controller Daemon 수행 - ZKFC 서버 만들고 시작.. :  
+    pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start zkfc'"
+    
+    #7. Active Name Node의 filesystem 데이터를 Stand-by Name Node로 복사. (Stand-by Name Node에서 수행.) : hdfs namenode -bootstrapStandby
+    pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -bootstrapStandby'"
+    
+    #8. Name Node의 데이터를 Journal Node에 초기화 (Stan-by Name Node에서 실행) : hdfs namenode -initializeSharedEdits
+    pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -initializeSharedEdits'"
+    
+    ## 이하   yarn 
+    #9. start resource manager : pdsh -w ^rm_host ${HADOOP_HOME}/sbin/yarn-daemon.sh --config /opt/hadoop-2.7.2/etc/hadoop start resourcemanager
+    pdsh -w ^rm_host "chmod 755 /etc/init.d/hadoop-resourcemanager && chkconfig hadoop-resourcemanager on && service hadoop-resourcemanager start"
+    #10. start nodemanagers.
+    pdsh -w ^nm_hosts "chmod 755 /etc/init.d/hadoop-nodemanager && chkconfig hadoop-nodemanager on && service hadoop-nodemanager start"
+    
+    #11. start proxy server
+    pdsh -w ^yarn_proxy_host "chmod 755 /etc/init.d/hadoop-proxyserver && chkconfig hadoop-proxyserver on && service hadoop-proxyserver start"
+    
+    # 12. start history server
+    pdsh -w ^mr_history_host "chmod 755 /etc/init.d/hadoop-historyserver && chkconfig hadoop-historyserver on && service hadoop-historyserver start"
+
+	
+    
+	#echo "Starting Hadoop $HADOOP_VERSION services on all hosts... 잠시 중지...."
     #pdsh -w ^dn_hosts "chmod 755 /etc/init.d/hadoop-datanode && chkconfig hadoop-datanode on && service hadoop-datanode start"
 	#pdsh -w ^nn_host "chmod 755 /etc/init.d/hadoop-namenode && chkconfig hadoop-namenode on && service hadoop-namenode start"
 	#pdsh -w ^snn_host "chmod 755 /etc/init.d/hadoop-namenode && chkconfig hadoop-namenode on && service hadoop-namenode start"
