@@ -74,7 +74,7 @@ install()
 {
 	echo "Copying Hadoop $HADOOP_VERSION to all hosts..."
 	pdcp -w ^all_hosts hadoop-"$HADOOP_VERSION".tar.gz /opt
-    pdcp -w ^zk_hosts zookeeper-"$ZOOKEEPER_VERSION".tar.gz /opt
+    pdcp -w ^all_hosts zookeeper-"$ZOOKEEPER_VERSION".tar.gz /opt
 if [ -z "$JAVA_HOME" ]; then
 	echo "Copying JDK 1.8.0_92 to all hosts..."
 	pdcp -w ^all_hosts jdk-8u92-linux-x64.rpm /opt
@@ -82,7 +82,7 @@ if [ -z "$JAVA_HOME" ]; then
 	echo "Installing JDK 1.8.0_92 on all hosts..."
 	pdsh -w ^all_hosts chmod a+x /opt/jdk-8u92-linux-x64.rpm
 	#pdsh -w ^all_hosts /opt/jdk-8u92-linux-x64.rpm -noregister 1>&- 2>&-
-	pdsh -w ^all_hosts rpm -ivh /opt/jdk-8u92-linux-x64.rpm 
+	pdsh -w ^all_hosts rpm -ivh /opt/jdk-8u92-linux-x64.rpm 1>&- 2>&-
 	JAVA_HOME=/usr/java/jdk1.8.0_92
 	echo "JAVA_HOME=$JAVA_HOME"
 fi
@@ -111,7 +111,7 @@ fi
 	pdsh -w ^all_hosts tar -zxf /opt/hadoop-"$HADOOP_VERSION".tar.gz -C /opt
 
     echo "Extracting Zookeeper $ZOOKEEPER_VERSION distribution on all ZK hosts..."
-	pdsh -w ^zk_hosts tar -zxf /opt/zookeeper-"$ZOOKEEPER_VERSION".tar.gz -C /opt
+	pdsh -w ^all_hosts tar -zxf /opt/zookeeper-"$ZOOKEEPER_VERSION".tar.gz -C /opt
 
 	echo "Creating system accounts and groups on all hosts..."
 	pdsh -w ^all_hosts groupadd hadoop
@@ -120,11 +120,11 @@ fi
 	pdsh -w ^all_hosts useradd -g hadoop mapred
 
 	echo "Creating HDFS data directories on NameNode host, JournalNode hosts, Secondary NameNode host, and DataNode hosts..."
-    pdsh -w ^nn_host "mkdir -p $NN_DATA_DIR && chown hdfs:hadoop $NN_DATA_DIR"
-    pdsh -w ^snn_host "mkdir -p $NN_DATA_DIR && chown hdfs:hadoop $NN_DATA_DIR"
-	pdsh -w ^dn_hosts "mkdir -p $DN_DATA_DIR && chown hdfs:hadoop $DN_DATA_DIR"
-    pdsh -w ^jn_hosts "mkdir -p $JN_EDITS_DIR && chown hdfs:hadoop $JN_EDITS_DIR"
-    pdsh -w ^zk_hosts "mkdir -p $ZOOKEEPER_DATA_DIR && chown hdfs:hadoop $ZOOKEEPER_DATA_DIR"
+    pdsh -w ^all_hosts "mkdir -p $NN_DATA_DIR && chown hdfs:hadoop $NN_DATA_DIR"
+    pdsh -w ^all_hosts "mkdir -p $NN_DATA_DIR && chown hdfs:hadoop $NN_DATA_DIR"
+	pdsh -w ^all_hosts "mkdir -p $DN_DATA_DIR && chown hdfs:hadoop $DN_DATA_DIR"
+    pdsh -w ^all_hosts "mkdir -p $JN_EDITS_DIR && chown hdfs:hadoop $JN_EDITS_DIR"
+    pdsh -w ^all_hosts "mkdir -p $ZOOKEEPER_DATA_DIR && chown hdfs:hadoop $ZOOKEEPER_DATA_DIR"
     
     
 
@@ -132,7 +132,7 @@ fi
 	pdsh -w ^all_hosts "mkdir -p $YARN_LOG_DIR && chown yarn:hadoop $YARN_LOG_DIR"
 	pdsh -w ^all_hosts "mkdir -p $HADOOP_LOG_DIR && chown hdfs:hadoop $HADOOP_LOG_DIR"
 	pdsh -w ^all_hosts "mkdir -p $HADOOP_MAPRED_LOG_DIR && chown mapred:hadoop $HADOOP_MAPRED_LOG_DIR"
-    pdsh -w ^zk_hosts "mkdir -p $ZOOKEEPER_LOG_DIR && chown hdfs:hadoop $ZOOKEEPER_LOG_DIR"
+    pdsh -w ^all_hosts "mkdir -p $ZOOKEEPER_LOG_DIR && chown hdfs:hadoop $ZOOKEEPER_LOG_DIR"
     
 
 	echo "Creating pid directories on all hosts..."
@@ -160,7 +160,7 @@ fi
 	fi
     
     echo "Editing zookeeper conf zoo.cfg - 나중에 보완할 필요...."
-    pdsh -w ^zk_hosts "echo     'dataDir=$ZOOKEEPER_HOME/data
+    pdsh -w ^all_hosts "echo     'dataDir=$ZOOKEEPER_HOME/data
     dataLogDir=$ZOOKEEPER_HOME/logs
     clientPort=2181
     initLimit=5
@@ -270,8 +270,8 @@ fi
     #1. ZK Quarum Daemon 실행 
    
     pdsh -w ^zk_hosts "su - hdfs -c '$ZOOKEEPER_HOME/bin/zkServer.sh start'"
-    pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/sbin/start-dfs.sh'"
-    pdsh -w ^nn_host "su - yarn -c '$HADOOP_HOME/sbin/start-yarn.sh'"
+    #pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/sbin/start-dfs.sh'"
+    #pdsh -w ^nn_host "su - yarn -c '$HADOOP_HOME/sbin/start-yarn.sh'"
     
 
     
