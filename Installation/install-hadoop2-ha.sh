@@ -220,7 +220,7 @@ fi
 	echo "Creating base Hadoop XML config files..."
 	create_config --file core-site.xml
     put_config --file core-site.xml --property fs.defaultFS --value "hdfs://$DFS_NAMESERVICES"
-    #put_config --file core-site.xml --property ha.zookeeper.quorum --value "$HA_ZOOKEEPER_QUORUM"
+    put_config --file core-site.xml --property ha.zookeeper.quorum --value "$HA_ZOOKEEPER_QUORUM"
     put_config --file core-site.xml --property dfs.journalnode.edits.dir --value "$JN_EDITS_DIR"
     put_config --file core-site.xml --property hadoop.http.staticuser.user --value "$HTTP_STATIC_USER"
 
@@ -239,7 +239,7 @@ fi
     put_config --file hdfs-site.xml --property dfs.client.failover.proxy.provider."$DFS_NAMESERVICES" --value "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider"
     put_config --file hdfs-site.xml --property dfs.ha.fencing.methods --value "sshfence"
     put_config --file hdfs-site.xml --property dfs.ha.fencing.ssh.private-key-files --value "/root/.ssh/id_rsa"
-    # put_config --file hdfs-site.xml --property dfs.ha.automatic-failover.enabled --value true
+    put_config --file hdfs-site.xml --property dfs.ha.automatic-failover.enabled --value true
 
 
     
