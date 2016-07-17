@@ -4,27 +4,37 @@ ZOOKEEPER_VERSION=3.4.8
 ZOOKEEPER_HOME="/opt/zookeeper-${ZOOKEEPER_VERSION}"
 ZOOKEEPER_LOG_DIR="${ZOOKEEPER_HOME}/logs"
 ZOOKEEPER_PREFIX="${ZOOKEEPER_HOME}"
+
 ZOOKEEPER_CONF_DIR="${ZOOKEEPER_HOME}/conf"
 ZOOKEEPER_DATA_DIR="${ZOOKEEPER_HOME}/data"
-JN_EDITS_DIR=/var/data/hadoop/journal/data
+
+DFS_NAMESERVICES=big-cluster
+HA_ZOOKEEPER_QUORUM=big01:2181,big02:2181,big03:2181
+
+## default /var/data/hadoop/jounal/data --- 이렇게 생성되는디....  그래서 설정을 바꾼다. 
+JN_EDITS_DIR=/var/data/hadoop/jounal/data 
+# Journal node group for NameNodes will wite/red edits
+NAMENODE_SHARED_EDITS_DIR="qjournal://big01:8485;big02:8485;big03:8485/${DFS_NAMESERVICES}-journal"
 
 
 HADOOP_VERSION=2.7.2
 HADOOP_HOME="/opt/hadoop-${HADOOP_VERSION}"
 NN_DATA_DIR=/var/data/hadoop/hdfs/nn
-SNN_DATA_DIR=/var/data/hadoop/hdfs/snn
 DN_DATA_DIR=/var/data/hadoop/hdfs/dn
 YARN_LOG_DIR=/var/log/hadoop/yarn
 HADOOP_LOG_DIR=/var/log/hadoop/hdfs
 HADOOP_MAPRED_LOG_DIR=/var/log/hadoop/mapred
+YARN_PID_DIR=/var/run/hadoop/yarn
+HADOOP_PID_DIR=/var/run/hadoop/hdfs
+HADOOP_MAPRED_PID_DIR=/var/run/hadoop/mapred
+HTTP_STATIC_USER=hdfs
+YARN_PROXY_PORT=8081
 
-
-
-#HADOOP_CONF_DIR=/etc/hadoop
 HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
 
 ## VM Memory management by warmpark add.
 YARN_NODEMANAGER_HEAPSIZE=308
+
 
 
 
@@ -36,14 +46,19 @@ JAVA_HOME=""
 
 
 echo "Stopping Hadoop 2 services..."
- 
- pdsh -w ^nn_host "su - yarn -c '$HADOOP_HOME/sbin/stop-yarn.sh'"
- pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/sbin/stop-dfs.sh'"
- pdsh -w ^rm_host "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh stop resourcemanager'"
- pdsh -w ^nm_host "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh stop nodemanager'"
- pdsh -w ^yarn_proxy_host "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh start proxyserver'"
- pdsh -w ^mr_history_host "su - mapred -c '${HADOOP_HOME}/sbin/mr-jobhistory-daemon.sh  stop historyserver'"
 
+pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh stop zkfc'"
+pdsh -w ^dn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh  stop datanode'"
+pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh stop namenode'"
+pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh stop namenode'"
+pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh stop journalnode'"
+pdsh -w ^zk_hosts "su - hdfs -c '$ZOOKEEPER_HOME/bin/zkServer.sh stop'"
+pdsh -w ^mr_history_host "su - mapred -c '${HADOOP_HOME}/sbin/mr-jobhistory-daemon.sh  stop historyserver'"
+pdsh -w ^yarn_proxy_host "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh stop proxyserver'"
+pdsh -w ^nm_hosts "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh stop nodemanager'"
+pdsh -w ^rm_host "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh stop resourcemanager'"
+
+ 
 
 #pdsh -w ^dn_hosts "service hadoop-datanode stop"
 #pdsh -w ^nn_host "service hadoop-namenode stop"
@@ -55,7 +70,7 @@ echo "Stopping Hadoop 2 services..."
 
 
 #1. Zookeeper 정지
-pdsh -w ^zk_hosts "service hadoop-zookeeper stop"
+# pdsh -w ^zk_hosts "service hadoop-zookeeper stop"
 
 echo "Removing Zookeeper services from run levels..."
 pdsh -w ^dn_hosts "chkconfig --del hadoop-zookeeper"
@@ -126,35 +141,28 @@ pdsh -w ^all_hosts "rm /usr/libexec/kms-config.*"
 
 echo "Uninstalling JDK 1.8.0_92 RPM..."
 pdsh -w ^all_hosts "rpm -ev jdk1.8.0_92"
-pdsh -w ^all_hosts "rpm -ev jdk1.8.0_92"
 
-echo "Removing NameNode data directory..."
-pdsh -w ^all_hosts "rm -Rf $NN_DATA_DIR"
-
-echo "Removing Secondary NameNode data directory..."
-pdsh -w ^all_hosts "rm -Rf $NN_DATA_DIR"
-
-echo "Removing DataNode data directories..."
-pdsh -w ^all_hosts "rm -Rf $DN_DATA_DIR"
-
-echo "Removing JournalNode data directories..."
-pdsh -w ^all_hosts "rm -Rf $JN_EDITS_DIR"
-
-echo "Removing YARN log directories..."
-pdsh -w ^all_hosts "rm -Rf $YARN_LOG_DIR"
-
-echo "Removing HDFS log directories..."
-pdsh -w ^all_hosts "rm -Rf $HADOOP_LOG_DIR"
-
-echo "Removing MapReduce log directories..."
-pdsh -w ^all_hosts "rm -Rf $HADOOP_MAPRED_LOG_DIR"
+echo "Removing directory..."
+pdsh -w ^all_hosts "rm -rf $NN_DATA_DIR"
+pdsh -w ^all_hosts "rm -rf $DN_DATA_DIR"
+pdsh -w ^all_hosts "rm -rf $JN_EDITS_DIR"
+pdsh -w ^all_hosts "rm -rf $YARN_LOG_DIR"
+pdsh -w ^all_hosts "rm -rf $HADOOP_LOG_DIR"
+pdsh -w ^all_hosts "rm -rf $HADOOP_MAPRED_LOG_DIR"
+pdsh -w ^all_hosts "rm -rf $YARN_PID_DIR"
+pdsh -w ^all_hosts "rm -rf $HADOOP_PID_DIR"
+pdsh -w ^all_hosts "rm -rf $HADOOP_MAPRED_PID_DIR"
+pdsh -w ^all_hosts "rm -rf /etc/zookeeper"
 
 
+pdsh -w ^all_hosts "rm -rf /var/data/hadoop"
+pdsh -w ^all_hosts "rm -rf /var/log/hadoop"
+pdsh -w ^all_hosts "rm -rf /var/run/hadoop"
+pdsh -w ^all_hosts "rm -rf /var/run/hadoop"
 
-echo "Removing Zookeeper home directory..."
-pdsh -w ^all_hosts "rm -Rf $ZOOKEEPER_HOME"
-pdsh -w ^all_hosts "rm -Rf /etc/zookeeper
 
+pdsh -w ^all_hosts "rm -rf $HADOOP_HOME"
+pdsh -w ^all_hosts "rm -rf $ZOOKEEPER_HOME"
 
 
 

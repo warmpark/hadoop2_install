@@ -21,7 +21,9 @@ ZOOKEEPER_DATA_DIR="${ZOOKEEPER_HOME}/data"
 
 DFS_NAMESERVICES=big-cluster
 HA_ZOOKEEPER_QUORUM=big01:2181,big02:2181,big03:2181
-JN_EDITS_DIR=/var/data/hadoop/journal/data
+
+## default /var/data/hadoop/jounal/data --- 이렇게 생성되는디....  그래서 설정을 바꾼다. 
+JN_EDITS_DIR=/var/data/hadoop/jounal/data 
 # Journal node group for NameNodes will wite/red edits
 NAMENODE_SHARED_EDITS_DIR="qjournal://big01:8485;big02:8485;big03:8485/${DFS_NAMESERVICES}-journal"
 
@@ -116,8 +118,6 @@ fi
 	pdsh -w ^all_hosts "echo export HADOOP_HOME=$HADOOP_HOME > /etc/profile.d/hadoop.sh"
 	pdsh -w ^all_hosts 'echo export HADOOP_PREFIX=$HADOOP_HOME >> /etc/profile.d/hadoop.sh'
     pdsh -w ^all_hosts 'echo export HADOOP_CONF_DIR=$HADOOP_CONF_DIR >> /etc/profile.d/hadoop.sh'
-    
-    
 	pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
     
 	pdsh -w ^zk_hosts "echo export ZOOKEEPER_HOME=$ZOOKEEPER_HOME > /etc/profile.d/zookeeper.sh"
@@ -125,6 +125,20 @@ fi
 	pdsh -w ^zk_hosts 'echo export ZOOKEEPER_LOG_DIR=$ZOOKEEPER_HOME/logs >> /etc/profile.d/zookeeper.sh'
 	pdsh -w ^zk_hosts 'echo export ZOO_LOG_DIR=$ZOOKEEPER_HOME/logs >> /etc/profile.d/zookeeper.sh'
 	pdsh -w ^zk_hosts "source /etc/profile.d/zookeeper.sh"
+    
+        
+    echo "Editing Hadoop environment scripts for log directories on all hosts..."
+	pdsh -w ^all_hosts echo "export HADOOP_LOG_DIR=$HADOOP_LOG_DIR >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh"
+	pdsh -w ^all_hosts echo "export YARN_LOG_DIR=$YARN_LOG_DIR >> $HADOOP_HOME/etc/hadoop/yarn-env.sh"
+	pdsh -w ^all_hosts echo "export HADOOP_MAPRED_LOG_DIR=$HADOOP_MAPRED_LOG_DIR >> $HADOOP_HOME/etc/hadoop/mapred-env.sh"
+
+	echo "Editing Hadoop environment scripts for pid directories on all hosts..."
+	pdsh -w ^all_hosts echo "export HADOOP_PID_DIR=$HADOOP_PID_DIR >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh"
+	pdsh -w ^all_hosts echo "export YARN_PID_DIR=$YARN_PID_DIR >> $HADOOP_HOME/etc/hadoop/yarn-env.sh"
+	pdsh -w ^all_hosts echo "export HADOOP_MAPRED_PID_DIR=$HADOOP_MAPRED_PID_DIR >> $HADOOP_HOME/etc/hadoop/mapred-env.sh"
+    ### ZK  PID관리는 어떻게.....
+    
+    
     
  	echo "Creating system accounts and groups on all hosts..."
 	pdsh -w ^all_hosts groupadd hadoop
@@ -140,46 +154,34 @@ fi
 	pdsh -w ^all_hosts tar -zxf /opt/zookeeper-"$ZOOKEEPER_VERSION".tar.gz -C /opt
 
 
-    
-    
     ## 각종 저장 장소의 기본 사용자는 hdfs... - 
-    pdsh -w ^all_hosts "mkdir -p /var/data/hadoop && chown hdfs:hadoop /var/data/hadoop"
-    pdsh -w ^all_hosts "mkdir -p /var/log/hadoopp && chown hdfs:hadoop /var/log/hadoop"
-    pdsh -w ^all_hosts "mkdir -p /var/run/hadoop && chown hdfs:hadoop /var/run/hadoop"
+    pdsh -w ^all_hosts "mkdir -p /var/data/hadoop && chown -R hdfs:hadoop /var/data/hadoop"
+    pdsh -w ^all_hosts "mkdir -p /var/log/hadoop && chown -R hdfs:hadoop /var/log/hadoop"
+    pdsh -w ^all_hosts "mkdir -p /var/run/hadoop && chown -R hdfs:hadoop /var/run/hadoop"
         
 
 	echo "Creating HDFS data directories on NameNode host, JournalNode hosts, Secondary NameNode host, and DataNode hosts..."
     #pdsh -w ^all_hosts "mkdir -p $NN_DATA_DIR && chown hdfs:hadoop $NN_DATA_DIR"
-    pdsh -w ^all_hosts "mkdir -p $NN_DATA_DIR && chown hdfs:hadoop $NN_DATA_DIR"
-	pdsh -w ^all_hosts "mkdir -p $DN_DATA_DIR && chown hdfs:hadoop $DN_DATA_DIR"
-    pdsh -w ^all_hosts "mkdir -p $JN_EDITS_DIR && chown hdfs:hadoop $JN_EDITS_DIR"
-    pdsh -w ^all_hosts "mkdir -p $ZOOKEEPER_DATA_DIR && chown hdfs:hadoop $ZOOKEEPER_DATA_DIR"
+    pdsh -w ^all_hosts "mkdir -p $NN_DATA_DIR && chown -R hdfs:hadoop $NN_DATA_DIR"
+	pdsh -w ^all_hosts "mkdir -p $DN_DATA_DIR && chown -R hdfs:hadoop $DN_DATA_DIR"
+    pdsh -w ^all_hosts "mkdir -p $JN_EDITS_DIR && chown -R hdfs:hadoop $JN_EDITS_DIR"
+    pdsh -w ^all_hosts "mkdir -p $ZOOKEEPER_DATA_DIR && chown -R hdfs:hadoop $ZOOKEEPER_DATA_DIR"
         
 
 	echo "Creating log directories on all hosts..."
-	pdsh -w ^all_hosts "mkdir -p $YARN_LOG_DIR && chown yarn:hadoop $YARN_LOG_DIR"
-	pdsh -w ^all_hosts "mkdir -p $HADOOP_LOG_DIR && chown hdfs:hadoop $HADOOP_LOG_DIR"
-	pdsh -w ^all_hosts "mkdir -p $HADOOP_MAPRED_LOG_DIR && chown mapred:hadoop $HADOOP_MAPRED_LOG_DIR"
-    pdsh -w ^all_hosts "mkdir -p $ZOOKEEPER_LOG_DIR && chown hdfs:hadoop $ZOOKEEPER_LOG_DIR"
+	pdsh -w ^all_hosts "mkdir -p $YARN_LOG_DIR && chown -R yarn:hadoop $YARN_LOG_DIR"
+	pdsh -w ^all_hosts "mkdir -p $HADOOP_LOG_DIR && chown -R hdfs:hadoop $HADOOP_LOG_DIR"
+	pdsh -w ^all_hosts "mkdir -p $HADOOP_MAPRED_LOG_DIR && chown -R mapred:hadoop $HADOOP_MAPRED_LOG_DIR"
+    pdsh -w ^all_hosts "mkdir -p $ZOOKEEPER_LOG_DIR && chown -R hdfs:hadoop $ZOOKEEPER_LOG_DIR"
     
 
 	echo "Creating pid directories on all hosts..."
-	pdsh -w ^all_hosts "mkdir -p $YARN_PID_DIR && chown yarn:hadoop $YARN_PID_DIR"
-	pdsh -w ^all_hosts "mkdir -p $HADOOP_PID_DIR && chown hdfs:hadoop $HADOOP_PID_DIR"
-	pdsh -w ^all_hosts "mkdir -p $HADOOP_MAPRED_PID_DIR && chown mapred:hadoop $HADOOP_MAPRED_PID_DIR"
+	pdsh -w ^all_hosts "mkdir -p $YARN_PID_DIR && chown -R yarn:hadoop $YARN_PID_DIR"
+	pdsh -w ^all_hosts "mkdir -p $HADOOP_PID_DIR && chown -R hdfs:hadoop $HADOOP_PID_DIR"
+	pdsh -w ^all_hosts "mkdir -p $HADOOP_MAPRED_PID_DIR && chown -R mapred:hadoop $HADOOP_MAPRED_PID_DIR"
     ##TODO JK PID는 어떻게 ? 어디에 ? 구글링해봐야...
 
-	echo "Editing Hadoop environment scripts for log directories on all hosts..."
-	pdsh -w ^all_hosts echo "export HADOOP_LOG_DIR=$HADOOP_LOG_DIR >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh"
-	pdsh -w ^all_hosts echo "export YARN_LOG_DIR=$YARN_LOG_DIR >> $HADOOP_HOME/etc/hadoop/yarn-env.sh"
-	pdsh -w ^all_hosts echo "export HADOOP_MAPRED_LOG_DIR=$HADOOP_MAPRED_LOG_DIR >> $HADOOP_HOME/etc/hadoop/mapred-env.sh"
 
-	echo "Editing Hadoop environment scripts for pid directories on all hosts..."
-	pdsh -w ^all_hosts echo "export HADOOP_PID_DIR=$HADOOP_PID_DIR >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh"
-	pdsh -w ^all_hosts echo "export YARN_PID_DIR=$YARN_PID_DIR >> $HADOOP_HOME/etc/hadoop/yarn-env.sh"
-	pdsh -w ^all_hosts echo "export HADOOP_MAPRED_PID_DIR=$HADOOP_MAPRED_PID_DIR >> $HADOOP_HOME/etc/hadoop/mapred-env.sh"
-    ### ZK  PID관리는 어떻게.....
-    
 
 	if [ -n "$YARN_NODEMANAGER_HEAPSIZE" ]
 	then 
@@ -204,6 +206,8 @@ fi
     pdsh -w big03 "echo 3 > $ZOOKEEPER_HOME/data/myid"
     
     
+    
+
     
    
     
@@ -318,7 +322,8 @@ fi
     pdsh -w ^dn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh  start datanode'"
 
     #5. NameNode Daemon 실행 (Active & Standby)  --> 네임노드는 반드시... root로 뛰워야 하나... 왜 hdfs로 안뜨는 거지.. ....
-    pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start namenode'"
+    pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start namenode'"
+    pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start namenode'"
 
     #6. ZK Failover Controller Daemon 수행 -
     #pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start zkfc'"
@@ -331,15 +336,15 @@ fi
 
     ## 이하   yarn
     #9. start resource manager : pdsh -w ^rm_host ${HADOOP_HOME}/sbin/yarn-daemon.sh --config /opt/hadoop-2.7.2/etc/hadoop start resourcemanager
-       pdsh -w ^rm_host "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh --config /opt/hadoop-2.7.2/etc/hadoop start resourcemanager'"
+    pdsh -w ^rm_host "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh start resourcemanager'"
     #10. start nodemanagers.  ( 왜 3번은 안 뜨지......)
-     pdsh -w ^nm_hosts "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh  start nodemanager'"
+    pdsh -w ^nm_hosts "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh  start nodemanager'"
 
     #11. start proxy server
     pdsh -w ^yarn_proxy_host "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh start proxyserver'"
 
     # 12. start history server
-     pdsh -w ^mr_history_host "su - mapred -c '${HADOOP_HOME}/sbin/mr-jobhistory-daemon.sh  start historyserver'"
+    pdsh -w ^mr_history_host "su - mapred -c '${HADOOP_HOME}/sbin/mr-jobhistory-daemon.sh  start historyserver'"
     
     
     #pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/sbin/start-dfs.sh'"
@@ -357,22 +362,22 @@ fi
 	#pdsh -w ^yarn_proxy_host "chmod 755 /etc/init.d/hadoop-proxyserver && chkconfig hadoop-proxyserver on && service hadoop-proxyserver start"
     
    
-	#echo "Creating MapReduce Job History directories..."
-	#su - hdfs -c "hdfs dfs -mkdir -p /mapred/history/done_intermediate"
-	#su - hdfs -c "hdfs dfs -chown -R mapred:hadoop /mapred"
-	#su - hdfs -c "hdfs dfs -chmod -R g+rwx /mapred"
+	echo "Creating MapReduce Job History directories..."
+	su - hdfs -c "hdfs dfs -mkdir -p /mapred/history/done_intermediate"
+	su - hdfs -c "hdfs dfs -chown -R mapred:hadoop /mapred"
+	su - hdfs -c "hdfs dfs -chmod -R g+rwx /mapred"
 
 	#pdsh -w ^mr_history_host "chmod 755 /etc/init.d/hadoop-historyserver && chkconfig hadoop-historyserver on && service hadoop-historyserver start"
 
 	#echo "Running YARN smoke test..."
-	#pdsh -w ^all_hosts "usermod -a -G hadoop $(whoami)"
-	#su - hdfs -c "hadoop fs -mkdir -p /user/$(whoami)"
-	#su - hdfs -c "hadoop fs -chown $(whoami):$(whoami) /user/$(whoami)"
-	#source /etc/profile.d/java.sh
-	#source /etc/profile.d/hadoop.sh
-	#source /etc/hadoop/hadoop-env.sh
-	#source /etc/hadoop/yarn-env.sh
-	#hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-$HADOOP_VERSION.jar pi -Dmapreduce.clientfactory.class.name=org.apache.hadoop.mapred.YarnClientFactory -libjars $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-$HADOOP_VERSION.jar 16 10000
+	pdsh -w ^all_hosts "usermod -a -G hadoop $(whoami)"
+	su - hdfs -c "hadoop fs -mkdir -p /user/$(whoami)"
+	su - hdfs -c "hadoop fs -chown $(whoami):$(whoami) /user/$(whoami)"
+	source /etc/profile.d/java.sh
+	source /etc/profile.d/hadoop.sh
+	source /etc/hadoop/hadoop-env.sh
+	source /etc/hadoop/yarn-env.sh
+	hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-$HADOOP_VERSION.jar pi -Dmapreduce.clientfactory.class.name=org.apache.hadoop.mapred.YarnClientFactory -libjars $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-$HADOOP_VERSION.jar 16 10000
 }
 
 interactive()
