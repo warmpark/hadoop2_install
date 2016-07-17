@@ -128,16 +128,16 @@ pdsh -w ^all_hosts "rpm -ev jdk1.8.0_92"
 pdsh -w ^all_hosts "rpm -ev jdk1.8.0_92"
 
 echo "Removing NameNode data directory..."
-pdsh -w ^nn_host "rm -Rf $NN_DATA_DIR"
+pdsh -w ^all_hosts "rm -Rf $NN_DATA_DIR"
 
 echo "Removing Secondary NameNode data directory..."
-pdsh -w ^snn_host "rm -Rf $NN_DATA_DIR"
+pdsh -w ^all_hosts "rm -Rf $NN_DATA_DIR"
 
 echo "Removing DataNode data directories..."
-pdsh -w ^dn_hosts "rm -Rf $DN_DATA_DIR"
+pdsh -w ^all_hosts "rm -Rf $DN_DATA_DIR"
 
 echo "Removing JournalNode data directories..."
-pdsh -w ^jn_hosts "rm -Rf $JN_EDITS_DIR"
+pdsh -w ^all_hosts "rm -Rf $JN_EDITS_DIR"
 
 echo "Removing YARN log directories..."
 pdsh -w ^all_hosts "rm -Rf $YARN_LOG_DIR"
@@ -151,7 +151,8 @@ pdsh -w ^all_hosts "rm -Rf $HADOOP_MAPRED_LOG_DIR"
 
 
 echo "Removing Zookeeper home directory..."
-pdsh -w ^zk_hosts "rm -Rf $ZOOKEEPER_HOME"
+pdsh -w ^all_hosts "rm -Rf $ZOOKEEPER_HOME"
+pdsh -w ^all_hosts "rm -Rf /etc/zookeeper
 
 
 

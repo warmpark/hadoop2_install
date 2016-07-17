@@ -26,6 +26,26 @@ JN_EDITS_DIR=/var/data/hadoop/journal/data
 NAMENODE_SHARED_EDITS_DIR="qjournal://big01:8485;big02:8485;big03:8485/${DFS_NAMESERVICES}-journal"
 
 
+#   HADOOP_CONF_DIR  Alternate conf dir. Default is ${HADOOP_PREFIX}/conf.
+#   HADOOP_LOG_DIR   Where log files are stored.  PWD by default.
+#   --HADOOP_MASTER    host:path where hadoop code should be rsync'd from
+#   HADOOP_PID_DIR   The pid files are stored. /tmp by default.
+#   --HADOOP_IDENT_STRING   A string representing this instance of hadoop. $USER by default
+#   --HADOOP_NICENESS The scheduling priority for daemons. Defaults to 0.
+
+#   YARN_CONF_DIR  Alternate conf dir. Default is ${HADOOP_YARN_HOME}/conf.
+#   YARN_LOG_DIR   Where log files are stored.  PWD by default.
+#   --YARN_MASTER    host:path where hadoop code should be rsync'd from
+#   YARN_PID_DIR   The pid files are stored. /tmp by default.
+#   --YARN_IDENT_STRING   A string representing this instance of hadoop. $USER by default
+#   --YARN_NICENESS The scheduling priority for daemons. Defaults to 0.
+
+#   HADOOP_JHS_LOGGER  Hadoop JobSummary logger.
+#   HADOOP_CONF_DIR  Alternate conf dir. Default is ${HADOOP_MAPRED_HOME}/conf.
+#   HADOOP_MAPRED_PID_DIR   The pid files are stored. /tmp by default.
+#   --HADOOP_MAPRED_NICENESS The scheduling priority for daemons. Defaults to 0.
+
+
 
 HADOOP_VERSION=2.7.2
 HADOOP_HOME="/opt/hadoop-${HADOOP_VERSION}"
@@ -106,6 +126,11 @@ fi
 	pdsh -w ^zk_hosts 'echo export ZOO_LOG_DIR=$ZOOKEEPER_HOME/logs >> /etc/profile.d/zookeeper.sh'
 	pdsh -w ^zk_hosts "source /etc/profile.d/zookeeper.sh"
     
+ 	echo "Creating system accounts and groups on all hosts..."
+	pdsh -w ^all_hosts groupadd hadoop
+	pdsh -w ^all_hosts useradd -g hadoop yarn
+	pdsh -w ^all_hosts useradd -g hadoop hdfs
+	pdsh -w ^all_hosts useradd -g hadoop mapred
     
 	
     echo "Extracting Hadoop $HADOOP_VERSION distribution on all hosts..."
@@ -114,20 +139,22 @@ fi
     echo "Extracting Zookeeper $ZOOKEEPER_VERSION distribution on all ZK hosts..."
 	pdsh -w ^all_hosts tar -zxf /opt/zookeeper-"$ZOOKEEPER_VERSION".tar.gz -C /opt
 
-	echo "Creating system accounts and groups on all hosts..."
-	pdsh -w ^all_hosts groupadd hadoop
-	pdsh -w ^all_hosts useradd -g hadoop yarn
-	pdsh -w ^all_hosts useradd -g hadoop hdfs
-	pdsh -w ^all_hosts useradd -g hadoop mapred
+
+    
+    
+    ## 각종 저장 장소의 기본 사용자는 hdfs... - 
+    pdsh -w ^all_hosts "mkdir -p /var/data/hadoop && chown hdfs:hadoop /var/data/hadoop"
+    pdsh -w ^all_hosts "mkdir -p /var/log/hadoopp && chown hdfs:hadoop /var/log/hadoop"
+    pdsh -w ^all_hosts "mkdir -p /var/run/hadoop && chown hdfs:hadoop /var/run/hadoop"
+        
 
 	echo "Creating HDFS data directories on NameNode host, JournalNode hosts, Secondary NameNode host, and DataNode hosts..."
-    pdsh -w ^all_hosts "mkdir -p $NN_DATA_DIR && chown hdfs:hadoop $NN_DATA_DIR"
+    #pdsh -w ^all_hosts "mkdir -p $NN_DATA_DIR && chown hdfs:hadoop $NN_DATA_DIR"
     pdsh -w ^all_hosts "mkdir -p $NN_DATA_DIR && chown hdfs:hadoop $NN_DATA_DIR"
 	pdsh -w ^all_hosts "mkdir -p $DN_DATA_DIR && chown hdfs:hadoop $DN_DATA_DIR"
     pdsh -w ^all_hosts "mkdir -p $JN_EDITS_DIR && chown hdfs:hadoop $JN_EDITS_DIR"
     pdsh -w ^all_hosts "mkdir -p $ZOOKEEPER_DATA_DIR && chown hdfs:hadoop $ZOOKEEPER_DATA_DIR"
-    
-    
+        
 
 	echo "Creating log directories on all hosts..."
 	pdsh -w ^all_hosts "mkdir -p $YARN_LOG_DIR && chown yarn:hadoop $YARN_LOG_DIR"
@@ -260,20 +287,17 @@ fi
 	#pdsh -w ^all_hosts "ln -s $ZOOKEEPER_HOME/bin/* /usr/bin"
 
     echo "Copying startup scripts to all hosts..."
-	pdcp -w ^all_hosts hadoop-namenode /etc/init.d/
-	pdcp -w ^all_hosts hadoop-secondarynamenode /etc/init.d/
-	pdcp -w ^all_hosts hadoop-datanode /etc/init.d/
-	pdcp -w ^all_hosts hadoop-resourcemanager /etc/init.d/
-	pdcp -w ^all_hosts hadoop-nodemanager /etc/init.d/
-	pdcp -w ^all_hosts hadoop-historyserver /etc/init.d/
-	pdcp -w ^all_hosts hadoop-proxyserver /etc/init.d/
-    pdcp -w ^all_hosts hadoop-zookeeper /etc/init.d/
+	#pdcp -w ^all_hosts hadoop-namenode /etc/init.d/
+	#pdcp -w ^all_hosts hadoop-secondarynamenode /etc/init.d/
+	#pdcp -w ^all_hosts hadoop-datanode /etc/init.d/
+	#pdcp -w ^all_hosts hadoop-resourcemanager /etc/init.d/
+	#pdcp -w ^all_hosts hadoop-nodemanager /etc/init.d/
+	#pdcp -w ^all_hosts hadoop-historyserver /etc/init.d/
+	#pdcp -w ^all_hosts hadoop-proxyserver /etc/init.d/
+    #pdcp -w ^all_hosts hadoop-zookeeper /etc/init.d/
     
 
-    ## 데몬  PID을 위해 찾는 곳. ... - 
-    pdsh -w ^all_hosts mkdir -p /var/run/hadoop
-    pdsh -w ^all_hosts chmod 775 -R /var/run/hadoop
-    pdsh -w ^all_hosts chown -R hdfs:hadoop /var/run/hadoop
+
     
   
     #1. ZK Quarum Daemon 실행
@@ -287,7 +311,7 @@ fi
     pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start journalnode'"
 
     #4. Active Name Node  포멧 ( 저널노드가 실행되고 있어야 함. ) : hdfs namenode -format
-    su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'
+    #su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'
     #pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'"
 
     #5. DataNode Daemon 실행 ( --config /opt/hadoop-2.7.2/etc/hadoop)
@@ -300,10 +324,10 @@ fi
     #pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start zkfc'"
 
     #7. Active Name Node의 filesystem 데이터를 Stand-by Name Node로 복사. (Stand-by Name Node에서 수행.) : hdfs namenode -bootstrapStandby
-    pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -bootstrapStandby'"
+    #pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -bootstrapStandby'"
 
     #8. Name Node의 데이터를 Journal Node에 초기화 (Stand-by Name Node에서 실행) : hdfs namenode -initializeSharedEdits
-    pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -initializeSharedEdits'"
+    #pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -initializeSharedEdits'"
 
     ## 이하   yarn
     #9. start resource manager : pdsh -w ^rm_host ${HADOOP_HOME}/sbin/yarn-daemon.sh --config /opt/hadoop-2.7.2/etc/hadoop start resourcemanager
