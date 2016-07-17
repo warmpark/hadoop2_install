@@ -115,29 +115,7 @@ fi
 	pdsh -w ^all_hosts "echo export JAVA_HOME=$JAVA_HOME > /etc/profile.d/java.sh"
 	pdsh -w ^all_hosts "source /etc/profile.d/java.sh"
     
-	pdsh -w ^all_hosts "echo export HADOOP_HOME=$HADOOP_HOME > /etc/profile.d/hadoop.sh"
-	pdsh -w ^all_hosts 'echo export HADOOP_PREFIX=$HADOOP_HOME >> /etc/profile.d/hadoop.sh'
-    pdsh -w ^all_hosts 'echo export HADOOP_CONF_DIR=$HADOOP_CONF_DIR >> /etc/profile.d/hadoop.sh'
-	pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
-    
-	pdsh -w ^zk_hosts "echo export ZOOKEEPER_HOME=$ZOOKEEPER_HOME > /etc/profile.d/zookeeper.sh"
-	pdsh -w ^zk_hosts 'echo export ZOOKEEPER_PREFIX=$ZOOKEEPER_HOME >> /etc/profile.d/zookeeper.sh'
-	pdsh -w ^zk_hosts 'echo export ZOOKEEPER_LOG_DIR=$ZOOKEEPER_HOME/logs >> /etc/profile.d/zookeeper.sh'
-	pdsh -w ^zk_hosts 'echo export ZOO_LOG_DIR=$ZOOKEEPER_HOME/logs >> /etc/profile.d/zookeeper.sh'
-	pdsh -w ^zk_hosts "source /etc/profile.d/zookeeper.sh"
-    
-        
-    echo "Editing Hadoop environment scripts for log directories on all hosts..."
-	pdsh -w ^all_hosts echo "export HADOOP_LOG_DIR=$HADOOP_LOG_DIR >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh"
-	pdsh -w ^all_hosts echo "export YARN_LOG_DIR=$YARN_LOG_DIR >> $HADOOP_HOME/etc/hadoop/yarn-env.sh"
-	pdsh -w ^all_hosts echo "export HADOOP_MAPRED_LOG_DIR=$HADOOP_MAPRED_LOG_DIR >> $HADOOP_HOME/etc/hadoop/mapred-env.sh"
 
-	echo "Editing Hadoop environment scripts for pid directories on all hosts..."
-	pdsh -w ^all_hosts echo "export HADOOP_PID_DIR=$HADOOP_PID_DIR >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh"
-	pdsh -w ^all_hosts echo "export YARN_PID_DIR=$YARN_PID_DIR >> $HADOOP_HOME/etc/hadoop/yarn-env.sh"
-	pdsh -w ^all_hosts echo "export HADOOP_MAPRED_PID_DIR=$HADOOP_MAPRED_PID_DIR >> $HADOOP_HOME/etc/hadoop/mapred-env.sh"
-    ### ZK  PID관리는 어떻게.....
-    
     
     
  	echo "Creating system accounts and groups on all hosts..."
@@ -152,6 +130,33 @@ fi
 
     echo "Extracting Zookeeper $ZOOKEEPER_VERSION distribution on all ZK hosts..."
 	pdsh -w ^all_hosts tar -zxf /opt/zookeeper-"$ZOOKEEPER_VERSION".tar.gz -C /opt
+
+
+
+	pdsh -w ^all_hosts "echo export HADOOP_HOME=$HADOOP_HOME > /etc/profile.d/hadoop.sh"
+	pdsh -w ^all_hosts "echo export HADOOP_PREFIX=$HADOOP_HOME >> /etc/profile.d/hadoop.sh"
+    pdsh -w ^all_hosts "echo export HADOOP_CONF_DIR=$HADOOP_CONF_DIR >> /etc/profile.d/hadoop.sh"
+	pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
+    
+	pdsh -w ^zk_hosts "echo export ZOOKEEPER_HOME=$ZOOKEEPER_HOME > /etc/profile.d/zookeeper.sh"
+	pdsh -w ^zk_hosts "echo export ZOOKEEPER_PREFIX=$ZOOKEEPER_HOME >> /etc/profile.d/zookeeper.sh"
+	pdsh -w ^zk_hosts "echo export ZOOKEEPER_LOG_DIR=$ZOOKEEPER_HOME/logs >> /etc/profile.d/zookeeper.sh"
+	pdsh -w ^zk_hosts "echo export ZOO_LOG_DIR=$ZOOKEEPER_HOME/logs >> /etc/profile.d/zookeeper.sh"
+	pdsh -w ^zk_hosts "source /etc/profile.d/zookeeper.sh"
+    
+        
+    echo "Editing Hadoop environment scripts for log directories on all hosts..."
+	pdsh -w ^all_hosts echo "export HADOOP_LOG_DIR=$HADOOP_LOG_DIR >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh"
+	pdsh -w ^all_hosts echo "export YARN_LOG_DIR=$YARN_LOG_DIR >> $HADOOP_HOME/etc/hadoop/yarn-env.sh"
+	pdsh -w ^all_hosts echo "export HADOOP_MAPRED_LOG_DIR=$HADOOP_MAPRED_LOG_DIR >> $HADOOP_HOME/etc/hadoop/mapred-env.sh"
+
+	echo "Editing Hadoop environment scripts for pid directories on all hosts..."
+	pdsh -w ^all_hosts echo "export HADOOP_PID_DIR=$HADOOP_PID_DIR >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh"
+	pdsh -w ^all_hosts echo "export YARN_PID_DIR=$YARN_PID_DIR >> $HADOOP_HOME/etc/hadoop/yarn-env.sh"
+	pdsh -w ^all_hosts echo "export HADOOP_MAPRED_PID_DIR=$HADOOP_MAPRED_PID_DIR >> $HADOOP_HOME/etc/hadoop/mapred-env.sh"
+    ### ZK  PID관리는 어떻게.....
+    
+
 
 
     ## 각종 저장 장소의 기본 사용자는 hdfs... - 
@@ -305,18 +310,18 @@ fi
     
   
     #1. ZK Quarum Daemon 실행
-    #pdsh -w ^zk_hosts "su - hdfs -c '$ZOOKEEPER_HOME/bin/zkServer.sh start'"
+    pdsh -w ^zk_hosts "su - hdfs -c '$ZOOKEEPER_HOME/bin/zkServer.sh start'"
 
     #2. ZK 내에 NameNode (Active & Standby) 이중화 관련 디렉토리 정리. - 반드시 ZK 가 실행 중이어야 함.
     #su - hdfs -c '$HADOOP_HOME/bin/hdfs zkfc -formatZK'
-    #pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/bin/hdfs zkfc -formatZK'"
+    pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/bin/hdfs zkfc -formatZK'"
 
     #3. JournalNode 실행 . : hadoop-daemons.sh start journalnode
     pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start journalnode'"
 
     #4. Active Name Node  포멧 ( 저널노드가 실행되고 있어야 함. ) : hdfs namenode -format
     #su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'
-    #pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'"
+    pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'"
 
     #5. DataNode Daemon 실행 ( --config /opt/hadoop-2.7.2/etc/hadoop)
     pdsh -w ^dn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh  start datanode'"
@@ -326,13 +331,13 @@ fi
     pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start namenode'"
 
     #6. ZK Failover Controller Daemon 수행 -
-    #pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start zkfc'"
+    pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start zkfc'"
 
     #7. Active Name Node의 filesystem 데이터를 Stand-by Name Node로 복사. (Stand-by Name Node에서 수행.) : hdfs namenode -bootstrapStandby
-    #pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -bootstrapStandby'"
+    pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -bootstrapStandby'"
 
     #8. Name Node의 데이터를 Journal Node에 초기화 (Stand-by Name Node에서 실행) : hdfs namenode -initializeSharedEdits
-    #pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -initializeSharedEdits'"
+    pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -initializeSharedEdits'"
 
     ## 이하   yarn
     #9. start resource manager : pdsh -w ^rm_host ${HADOOP_HOME}/sbin/yarn-daemon.sh --config /opt/hadoop-2.7.2/etc/hadoop start resourcemanager
