@@ -309,46 +309,46 @@ fi
 
     
   
-    #1. ZK Quarum Daemon 실행
+    echo "#1. ZK Quarum Daemon 실행"
     pdsh -w ^zk_hosts "su - hdfs -c '$ZOOKEEPER_HOME/bin/zkServer.sh start'"
 
-    #2. ZK 내에 NameNode (Active & Standby) 이중화 관련 디렉토리 정리. - 반드시 ZK 가 실행 중이어야 함.
+    echo "#2. ZK 내에 NameNode (Active & Standby) 이중화 관련 디렉토리 정리. - 반드시 ZK 가 실행 중이어야 함. "
     #su - hdfs -c '$HADOOP_HOME/bin/hdfs zkfc -formatZK'
     pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/bin/hdfs zkfc -formatZK'"
 
-    #3. JournalNode 실행 . : hadoop-daemons.sh start journalnode
+    echo "#3. JournalNode 실행 . : hadoop-daemons.sh start journalnode "
     pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start journalnode'"
 
-    #4. Active Name Node  포멧 ( 저널노드가 실행되고 있어야 함. ) : hdfs namenode -format
+    echo "#4. Active Name Node  포멧 ( 저널노드가 실행되고 있어야 함. ) : hdfs namenode -format "
     #su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'
     pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'"
 
-    #5. DataNode Daemon 실행 ( --config /opt/hadoop-2.7.2/etc/hadoop)
+    echo "#5. DataNode Daemon 실행 ( --config /opt/hadoop-2.7.2/etc/hadoop) "
     pdsh -w ^dn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh  start datanode'"
 
-    #5. NameNode Daemon 실행 (Active & Standby)  --> 네임노드는 반드시... root로 뛰워야 하나... 왜 hdfs로 안뜨는 거지.. ....
+    echo "#5. NameNode Daemon 실행 (Active & Standby)  --> 네임노드는 반드시... root로 뛰워야 하나... 왜 hdfs로 안뜨는 거지.. ...."
     pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start namenode'"
     pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start namenode'"
 
-    #6. ZK Failover Controller Daemon 수행 -
+    echo "#6. ZK Failover Controller Daemon 수행 -"
     pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start zkfc'"
 
-    #7. Active Name Node의 filesystem 데이터를 Stand-by Name Node로 복사. (Stand-by Name Node에서 수행.) : hdfs namenode -bootstrapStandby
+    echo "#echo 7. Active Name Node의 filesystem 데이터를 Stand-by Name Node로 복사. (Stand-by Name Node에서 수행.) : hdfs namenode -bootstrapStandby "
     pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -bootstrapStandby'"
 
-    #8. Name Node의 데이터를 Journal Node에 초기화 (Stand-by Name Node에서 실행) : hdfs namenode -initializeSharedEdits
+    echo "#8. Name Node의 데이터를 Journal Node에 초기화 (Stand-by Name Node에서 실행) : hdfs namenode -initializeSharedEdits"
     pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -initializeSharedEdits'"
 
-    ## 이하   yarn
-    #9. start resource manager : pdsh -w ^rm_host ${HADOOP_HOME}/sbin/yarn-daemon.sh --config /opt/hadoop-2.7.2/etc/hadoop start resourcemanager
+    echo "## 이하   yarn "
+    echo "#9. start resource manager : pdsh -w ^rm_host ${HADOOP_HOME}/sbin/yarn-daemon.sh --config /opt/hadoop-2.7.2/etc/hadoop start resourcemanager "
     pdsh -w ^rm_host "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh start resourcemanager'"
-    #10. start nodemanagers.  ( 왜 3번은 안 뜨지......)
+    echo "#10. start nodemanagers.  ( 왜 3번은 안 뜨지......) "
     pdsh -w ^nm_hosts "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh  start nodemanager'"
 
-    #11. start proxy server
+    echo "#11. start proxy server "
     pdsh -w ^yarn_proxy_host "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh start proxyserver'"
 
-    # 12. start history server
+    echo "# 12. start history server "
     pdsh -w ^mr_history_host "su - mapred -c '${HADOOP_HOME}/sbin/mr-jobhistory-daemon.sh  start historyserver'"
     
     
