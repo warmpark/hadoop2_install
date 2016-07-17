@@ -183,7 +183,7 @@ fi
 	echo "Creating base Hadoop XML config files..."
 	create_config --file core-site.xml
     put_config --file core-site.xml --property fs.defaultFS --value "hdfs://$DFS_NAMESERVICES"
-    put_config --file core-site.xml --property ha.zookeeper.quorum --value "$HA_ZOOKEEPER_QUORUM"
+    #put_config --file core-site.xml --property ha.zookeeper.quorum --value "$HA_ZOOKEEPER_QUORUM"
     put_config --file core-site.xml --property dfs.journalnode.edits.dir --value "$JN_EDITS_DIR"
     put_config --file core-site.xml --property hadoop.http.staticuser.user --value "$HTTP_STATIC_USER"
 
@@ -196,7 +196,7 @@ fi
     put_config --file hdfs-site.xml --property dfs.namenode.http-address."$DFS_NAMESERVICES".nn1 --value "$nn:50070"
     put_config --file hdfs-site.xml --property dfs.namenode.http-address."$DFS_NAMESERVICES".nn2 --value "$snn:50070"
     put_config --file hdfs-site.xml --property dfs.namenode.shared.edits.dir --value "$NAMENODE_SHARED_EDITS_DIR"
-    put_config --file hdfs-site.xml --property dfs.ha.automatic-failover.enabled --value true
+    # put_config --file hdfs-site.xml --property dfs.ha.automatic-failover.enabled --value true
     put_config --file hdfs-site.xml --property dfs.client.failover.proxy.provider."$DFS_NAMESERVICES" --value "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider"
     put_config --file hdfs-site.xml --property dfs.ha.fencing.methods --value "sshfence"
     put_config --file hdfs-site.xml --property dfs.ha.fencing.ssh.private-key-files --value "/root/.ssh/id_rsa"
@@ -267,28 +267,34 @@ fi
     pdcp -w ^all_hosts hadoop-zookeeper /etc/init.d/
     
 
+    ## 데몬  PID을 위해 찾는 곳. ... - 
+    pdsh -w ^all_hosts mkdir -p /var/run/hadoop
+    pdsh -w ^all_hosts chmod 775 -R /var/run/hadoop
+    pdsh -w ^all_hosts chown -R hdfs:hadoop /var/run/hadoop
+    
+  
     #1. ZK Quarum Daemon 실행
-    pdsh -w ^zk_hosts "su - hdfs -c '$ZOOKEEPER_HOME/bin/zkServer.sh start'"
+    #pdsh -w ^zk_hosts "su - hdfs -c '$ZOOKEEPER_HOME/bin/zkServer.sh start'"
 
     #2. ZK 내에 NameNode (Active & Standby) 이중화 관련 디렉토리 정리. - 반드시 ZK 가 실행 중이어야 함.
-    # su - hdfs -c '$HADOOP_HOME/bin/hdfs zkfc -formatZK'
+    #su - hdfs -c '$HADOOP_HOME/bin/hdfs zkfc -formatZK'
     #pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/bin/hdfs zkfc -formatZK'"
 
     #3. JournalNode 실행 . : hadoop-daemons.sh start journalnode
     pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start journalnode'"
 
     #4. Active Name Node  포멧 ( 저널노드가 실행되고 있어야 함. ) : hdfs namenode -format
-    #su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'
-    pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'"
+    su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'
+    #pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'"
 
-    #5. DataNode Daemon 실행 ( --config 옵션이 필요한가... 왜 big03은 안뜨지......--config /opt/hadoop-2.7.2/etc/hadoop)
+    #5. DataNode Daemon 실행 ( --config /opt/hadoop-2.7.2/etc/hadoop)
     pdsh -w ^dn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh  start datanode'"
 
     #5. NameNode Daemon 실행 (Active & Standby)  --> 네임노드는 반드시... root로 뛰워야 하나... 왜 hdfs로 안뜨는 거지.. ....
     pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start namenode'"
 
     #6. ZK Failover Controller Daemon 수행 -
-    pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start zkfc'"
+    #pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start zkfc'"
 
     #7. Active Name Node의 filesystem 데이터를 Stand-by Name Node로 복사. (Stand-by Name Node에서 수행.) : hdfs namenode -bootstrapStandby
     pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -bootstrapStandby'"
