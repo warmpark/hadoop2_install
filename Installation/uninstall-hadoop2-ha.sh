@@ -37,21 +37,22 @@ JAVA_HOME=""
 
 echo "Stopping Hadoop 2 services..."
  
- pdsh -w ^all_hosts "su - yarn -c '$HADOOP_HOME/sbin/stop-yarn.sh'"
- pdsh -w ^all_hosts "su - hdfs -c '$HADOOP_HOME/sbin/stop-dfs.sh'"
+ pdsh -w ^nn_host "su - yarn -c '$HADOOP_HOME/sbin/stop-yarn.sh'"
+ pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/sbin/stop-dfs.sh'"
  pdsh -w ^rm_host "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh stop resourcemanager'"
  pdsh -w ^nm_host "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh stop nodemanager'"
  pdsh -w ^yarn_proxy_host "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh start proxyserver'"
  pdsh -w ^mr_history_host "su - mapred -c '${HADOOP_HOME}/sbin/mr-jobhistory-daemon.sh  stop historyserver'"
 
 
-pdsh -w ^dn_hosts "service hadoop-datanode stop"
-pdsh -w ^nn_host "service hadoop-namenode stop"
-pdsh -w ^snn_host "service hadoop-namenode stop"
-pdsh -w ^mr_history_host "service hadoop-historyserver stop"
-pdsh -w ^yarn_proxy_host "service hadoop-proxyserver stop"
-pdsh -w ^nm_hosts "service hadoop-nodemanager stop"
-pdsh -w ^rm_host "service hadoop-resourcemanager stop"
+#pdsh -w ^dn_hosts "service hadoop-datanode stop"
+#pdsh -w ^nn_host "service hadoop-namenode stop"
+#pdsh -w ^snn_host "service hadoop-namenode stop"
+#pdsh -w ^mr_history_host "service hadoop-historyserver stop"
+#pdsh -w ^yarn_proxy_host "service hadoop-proxyserver stop"
+#pdsh -w ^nm_hosts "service hadoop-nodemanager stop"
+#pdsh -w ^rm_host "service hadoop-resourcemanager stop"
+
 
 #1. Zookeeper 정지
 pdsh -w ^zk_hosts "service hadoop-zookeeper stop"
