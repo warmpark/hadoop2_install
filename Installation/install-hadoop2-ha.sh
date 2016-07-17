@@ -22,7 +22,8 @@ ZOOKEEPER_DATA_DIR="${ZOOKEEPER_HOME}/data"
 DFS_NAMESERVICES=big-cluster
 HA_ZOOKEEPER_QUORUM=big01:2181,big02:2181,big03:2181
 JN_EDITS_DIR=/var/data/hadoop/journal/data
-NAMENODE_SHARED_EDITS_DIR="qjournal://big01:8485;big02:8485;big03:8485/${DFS_NAMESERVICES}"
+# Journal node group for NameNodes will wite/red edits
+NAMENODE_SHARED_EDITS_DIR="qjournal://big01:8485;big02:8485;big03:8485/${DFS_NAMESERVICES}-journal"
 
 
 
@@ -195,14 +196,16 @@ fi
     put_config --file hdfs-site.xml --property dfs.namenode.rpc-address."$DFS_NAMESERVICES".nn2 --value "$snn:8020"
     put_config --file hdfs-site.xml --property dfs.namenode.http-address."$DFS_NAMESERVICES".nn1 --value "$nn:50070"
     put_config --file hdfs-site.xml --property dfs.namenode.http-address."$DFS_NAMESERVICES".nn2 --value "$snn:50070"
+    put_config --file hdfs-site.xml --property dfs.namenode.name.dir --value "$NN_DATA_DIR"
+    put_config --file hdfs-site.xml --property dfs.datanode.data.dir --value "$DN_DATA_DIR"
+    
     put_config --file hdfs-site.xml --property dfs.namenode.shared.edits.dir --value "$NAMENODE_SHARED_EDITS_DIR"
-    # put_config --file hdfs-site.xml --property dfs.ha.automatic-failover.enabled --value true
     put_config --file hdfs-site.xml --property dfs.client.failover.proxy.provider."$DFS_NAMESERVICES" --value "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider"
     put_config --file hdfs-site.xml --property dfs.ha.fencing.methods --value "sshfence"
     put_config --file hdfs-site.xml --property dfs.ha.fencing.ssh.private-key-files --value "/root/.ssh/id_rsa"
+    # put_config --file hdfs-site.xml --property dfs.ha.automatic-failover.enabled --value true
 
-    put_config --file hdfs-site.xml --property dfs.namenode.name.dir --value "$NN_DATA_DIR"
-    put_config --file hdfs-site.xml --property dfs.datanode.data.dir --value "$DN_DATA_DIR"
+
     
 
     create_config --file yarn-site.xml
@@ -299,7 +302,7 @@ fi
     #7. Active Name Node의 filesystem 데이터를 Stand-by Name Node로 복사. (Stand-by Name Node에서 수행.) : hdfs namenode -bootstrapStandby
     pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -bootstrapStandby'"
 
-    #8. Name Node의 데이터를 Journal Node에 초기화 (Stan-by Name Node에서 실행) : hdfs namenode -initializeSharedEdits
+    #8. Name Node의 데이터를 Journal Node에 초기화 (Stand-by Name Node에서 실행) : hdfs namenode -initializeSharedEdits
     pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -initializeSharedEdits'"
 
     ## 이하   yarn
