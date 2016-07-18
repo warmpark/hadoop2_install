@@ -130,7 +130,7 @@ pdsh -w ^all_hosts "rm /usr/bin/mapred*"
 pdsh -w ^all_hosts "rm /usr/bin/rcc*"
 pdsh -w ^all_hosts "rm /usr/bin/test-container-executor"
 pdsh -w ^all_hosts "rm /usr/bin/yarn*"
-pdsh -w ^zk_hosts "rm /usr/bin/zk*"
+#pdsh -w ^zk_hosts "rm /usr/bin/zk*"
 
 echo "Removing Hadoop 2 script links..."
 pdsh -w ^all_hosts "rm /usr/libexec/hadoop-config.*"
