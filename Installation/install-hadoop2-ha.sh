@@ -246,7 +246,7 @@ fi
     put_config --file hdfs-site.xml --property dfs.ha.fencing.methods --value "sshfence"
     put_config --file hdfs-site.xml --property dfs.ha.fencing.ssh.private-key-files --value "/root/.ssh/id_rsa"
     
-    ZKFailoverController (ZKFC) is a new component which is a ZooKee
+    #ZKFailoverController (ZKFC) is a new component which is a ZooKee
     put_config --file hdfs-site.xml --property dfs.ha.automatic-failover.enabled --value true
 
 
