@@ -159,7 +159,7 @@ fi
 
 
 
-    ## 각종 저장 장소의 기본 사용자는 hdfs... - 
+    ## 각종 저장 장소의 기본 사용자는 hdfs... 
     pdsh -w ^all_hosts "mkdir -p /var/data/hadoop && chown -R hdfs:hadoop /var/data/hadoop"
     pdsh -w ^all_hosts "mkdir -p /var/log/hadoop && chown -R hdfs:hadoop /var/log/hadoop"
     pdsh -w ^all_hosts "mkdir -p /var/run/hadoop && chown -R hdfs:hadoop /var/run/hadoop"
@@ -185,7 +185,9 @@ fi
 	pdsh -w ^all_hosts "mkdir -p $HADOOP_PID_DIR && chown -R hdfs:hadoop $HADOOP_PID_DIR"
 	pdsh -w ^all_hosts "mkdir -p $HADOOP_MAPRED_PID_DIR && chown -R mapred:hadoop $HADOOP_MAPRED_PID_DIR"
     ##TODO JK PID는 어떻게 ? 어디에 ? 구글링해봐야...
+    
 
+    
 
 
 	if [ -n "$YARN_NODEMANAGER_HEAPSIZE" ]
@@ -318,70 +320,65 @@ fi
     echo "#1. ZK Quarum Daemon 실행"
     pdsh -w ^zk_hosts "su - hdfs -c '$ZOOKEEPER_HOME/bin/zkServer.sh start'"
 
-    echo "#2. ZK 내에 NameNode (Active & Standby) 이중화 관련 디렉토리 정리. - 반드시 ZK 가 실행 중이어야 함. "
+    echo "#2. ZK 내에 NameNode (Active 후보에서만 실행) 이중화 관련 ZK 정보 초기화. - 반드시 ZK 가 실행 중이어야 함"
     #su - hdfs -c '$HADOOP_HOME/bin/hdfs zkfc -formatZK'
-    pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/bin/hdfs zkfc -formatZK'"
+    pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs zkfc -formatZK'"
 
     echo "#3. JournalNode 실행  - ZK Node와 동일하게 설치해야 하나?  : hadoop-daemons.sh start journalnode "
     pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start journalnode'"
 
-    echo "#4. Active Name Node  포멧 ( 저널노드가 실행되고 있어야 함. ) : hdfs namenode -format "
+    echo "#4. Active Name Node  포멧 ( 저널노드가 실행되고 있어야 함. - Active만 해 주면 됨: 김형준) : hdfs namenode -format "
     #su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'
     pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'"
-    pdsh -w ^nns_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'"
+    #pdsh -w ^nns_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -format'"
 
     echo "#5. DataNode Daemon 실행 ( --config /opt/hadoop-2.7.2/etc/hadoop) "
     pdsh -w ^dn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh  start datanode'"
 
-    echo "#5. NameNode Daemon 실행 (Active & Standby)  "
+    echo "#5. NameNode Daemon 실행 (Active)"
     pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start namenode'"
-    pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start namenode'"
+    #pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start namenode'"
+    
 
     echo "#6. ZK Failover Controller Daemon 수행 - 각 Name Node 마다. 수행 해 주어야 하며, Name Node와 ZKFC의 실행 순서는 중요하지 않음. "
     pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start zkfc'"
     pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start zkfc'"
 
     echo "#echo 7. Active Name Node의 filesystem 데이터를 Stand-by Name Node로 복사. (Stand-by Name Node에서 수행.) : hdfs namenode -bootstrapStandby "
-    #pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -bootstrapStandby'"
+    pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -bootstrapStandby'"
+    
+    
+    echo "#5. NameNode Daemon 실행 (Stand-by)"
+    #pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start namenode'"
+    pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start namenode'"
+    
 
     echo "#8. Name Node의 데이터를 Journal Node에 초기화 (Stand-by Name Node에서 실행) : hdfs namenode -initializeSharedEdits"
-    ## 이부분은 나중에 수행 된 후 어떤 녀석이 Active인지 확인하고 해 주면 OK. ...
+    ## 이부분은 나중에 수행 된 후 어떤 녀석이 Active인지 확인하고 해 주면 OK. ...  : 사용할 필요가 없을 듯..  초기 설치시.....에는 
     #pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -initializeSharedEdits'"
 
     echo "## 이하   yarn "
     echo "#9. start resource manager : pdsh -w ^rm_host ${HADOOP_HOME}/sbin/yarn-daemon.sh --config /opt/hadoop-2.7.2/etc/hadoop start resourcemanager "
-    pdsh -w ^rm_host "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh start resourcemanager'"
-    echo "#10. start nodemanagers.  ( 왜 3번은 안 뜨지......) "
-    pdsh -w ^nm_hosts "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh  start nodemanager'"
+    pdsh -w ^rm_host "su - yarn -c '$HADOOP_HOME/sbin/yarn-daemon.sh start resourcemanager'"
+    echo "#10. start nodemanagers. "
+    pdsh -w ^nm_hosts "su - yarn -c '$HADOOP_HOME/sbin/yarn-daemon.sh  start nodemanager'"
 
     echo "#11. start proxy server "
-    pdsh -w ^yarn_proxy_host "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh start proxyserver'"
+    pdsh -w ^yarn_proxy_host "su - yarn -c '$HADOOP_HOME/sbin/yarn-daemon.sh start proxyserver'"
 
+           
+	echo "Creating MapReduce Job History directories... mr-jobhistory-daemon.sh  start historyserver 수행하기 위해 필수..."
+	su - hdfs -c "hdfs dfs -mkdir -p /mapred/history/done_intermediate"
+	su - hdfs -c "hdfs dfs -chown -R mapred:hadoop /mapred"
+	su - hdfs -c "hdfs dfs -chmod -R g+rwx /mapred"
+    
     echo "# 12. start history server "
-    pdsh -w ^mr_history_host "su - mapred -c '${HADOOP_HOME}/sbin/mr-jobhistory-daemon.sh  start historyserver'"
+    pdsh -w ^mr_history_host "su - mapred -c '$HADOOP_HOME/sbin/mr-jobhistory-daemon.sh  start historyserver'"
     
     
     #pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/sbin/start-dfs.sh'"
     #pdsh -w ^nn_host "su - yarn -c '$HADOOP_HOME/sbin/start-yarn.sh'"
     
-
-    
-	#echo "Starting Hadoop $HADOOP_VERSION services on all hosts... 잠시 중지...."
-    #pdsh -w ^dn_hosts "chmod 755 /etc/init.d/hadoop-datanode && chkconfig hadoop-datanode on && service hadoop-datanode start"
-	#pdsh -w ^nn_host "chmod 755 /etc/init.d/hadoop-namenode && chkconfig hadoop-namenode on && service hadoop-namenode start"
-	#pdsh -w ^snn_host "chmod 755 /etc/init.d/hadoop-namenode && chkconfig hadoop-namenode on && service hadoop-namenode start"
-	#pdsh -w ^dn_hosts "chmod 755 /etc/init.d/hadoop-datanode && chkconfig hadoop-datanode on && service hadoop-datanode start"
-	#pdsh -w ^rm_host "chmod 755 /etc/init.d/hadoop-resourcemanager && chkconfig hadoop-resourcemanager on && service hadoop-resourcemanager start"
-	#pdsh -w ^nm_hosts "chmod 755 /etc/init.d/hadoop-nodemanager && chkconfig hadoop-nodemanager on && service hadoop-nodemanager start"
-	#pdsh -w ^yarn_proxy_host "chmod 755 /etc/init.d/hadoop-proxyserver && chkconfig hadoop-proxyserver on && service hadoop-proxyserver start"
-    
-   
-	echo "Creating MapReduce Job History directories..."
-	su - hdfs -c "hdfs dfs -mkdir -p /mapred/history/done_intermediate"
-	su - hdfs -c "hdfs dfs -chown -R mapred:hadoop /mapred"
-	su - hdfs -c "hdfs dfs -chmod -R g+rwx /mapred"
-
-	#pdsh -w ^mr_history_host "chmod 755 /etc/init.d/hadoop-historyserver && chkconfig hadoop-historyserver on && service hadoop-historyserver start"
 
 	#echo "Running YARN smoke test..."
 	pdsh -w ^all_hosts "usermod -a -G hadoop $(whoami)"

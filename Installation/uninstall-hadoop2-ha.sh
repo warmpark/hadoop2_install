@@ -58,6 +58,7 @@ pdsh -w ^yarn_proxy_host "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh stop 
 pdsh -w ^nm_hosts "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh stop nodemanager'"
 pdsh -w ^rm_host "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh stop resourcemanager'"
 
+
  
 
 #pdsh -w ^dn_hosts "service hadoop-datanode stop"
@@ -143,6 +144,7 @@ echo "Uninstalling JDK 1.8.0_92 RPM..."
 pdsh -w ^all_hosts "rpm -ev jdk1.8.0_92"
 
 echo "Removing directory..."
+### 구조 삭제시 시작
 pdsh -w ^all_hosts "rm -rf $NN_DATA_DIR"
 pdsh -w ^all_hosts "rm -rf $DN_DATA_DIR"
 pdsh -w ^all_hosts "rm -rf $JN_EDITS_DIR"
@@ -152,8 +154,12 @@ pdsh -w ^all_hosts "rm -rf $HADOOP_MAPRED_LOG_DIR"
 pdsh -w ^all_hosts "rm -rf $YARN_PID_DIR"
 pdsh -w ^all_hosts "rm -rf $HADOOP_PID_DIR"
 pdsh -w ^all_hosts "rm -rf $HADOOP_MAPRED_PID_DIR"
+pdsh -w ^all_hosts "rm -rf $ZOOKEEPER_LOG_DIR"
+#DK Data 초기화. 
+pdsh -w ^all_hosts "rm -rf $ZOOKEEPER_DATA_DIR/version*"
 pdsh -w ^all_hosts "rm -rf /etc/zookeeper"
 
+### 구조 삭제시 끝.
 
 pdsh -w ^all_hosts "rm -rf /var/data/hadoop"
 pdsh -w ^all_hosts "rm -rf /var/log/hadoop"
