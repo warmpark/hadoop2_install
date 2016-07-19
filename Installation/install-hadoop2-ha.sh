@@ -23,6 +23,11 @@ DFS_NAMESERVICES=big-cluster
 HA_ZOOKEEPER_QUORUM=big01:2181,big02:2181,big03:2181
 
 ## default /var/data/hadoop/jounal/data --- 이렇게 생성되는디....  그래서 설정을 바꾼다. 
+## HBase는 클라이언트에게 ZK 접근을 허락하고, Hadop은 클라이언트에게 ZK접근을 허락하지 않는다. 
+# 따라서 크러스터 밖에서 원격으로 Hadoop을 사용하려면, 관련 설정정보 (XML)이 클라이언트 쪽에 배포되어야 한다. 
+# 이런 이슈는 보안의 이슈과 관련되며, ZK에 대한 접근권한 관리를 한든지, 클러스터 노드들에 대한 Proxy를 구성하는지 등에 대한 안이 있어야 한다. 
+# 금융권에서는 이러한 이슈가 더욱 중요한다. 
+
 JN_EDITS_DIR=/var/data/hadoop/jounal/data 
 # Journal node group for NameNodes will wite/red edits
 NAMENODE_SHARED_EDITS_DIR="qjournal://big01:8485;big02:8485;big03:8485/${DFS_NAMESERVICES}-journal"
