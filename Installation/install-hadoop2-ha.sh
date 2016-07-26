@@ -130,16 +130,23 @@ fi
     ##### useradd -g hadoop -p $(openssl passwd -1 hdfs) hdfs
     ##### echo hdfs | passwd hdfs --stdin
  	echo "Creating system accounts and groups on all hosts..."
+	#pdsh -w ^all_hosts groupadd hadoop
+    #pdsh -w ^all_hosts 'useradd -g hadoop -p $(openssl passwd -1 hdfs) hdfs'
+    #pdsh -w ^all_hosts 'useradd -g hadoop -p $(openssl passwd -1 yarn) yarn'
+	#pdsh -w ^all_hosts 'useradd -g hadoop -p $(openssl passwd -1 mapred) mapred'
+    
+    echo "Creating system accounts and groups on all hosts..."
 	pdsh -w ^all_hosts groupadd hadoop
-    pdsh -w ^all_hosts 'useradd -g hadoop -p $(openssl passwd -1 hdfs) hdfs'
-    pdsh -w ^all_hosts 'useradd -g hadoop -p $(openssl passwd -1 yarn) yarn'
-	pdsh -w ^all_hosts 'useradd -g hadoop -p $(openssl passwd -1 mapred) mapred'
+    pdsh -w ^all_hosts 'useradd -g hadoop hdfs'
+    pdsh -w ^all_hosts 'useradd -g hadoop yarn'
+	pdsh -w ^all_hosts 'useradd -g hadoop mapred'
+   
     
     
     
     #아래 명령에 의해 개인키와 공개키 생성 : 각 NameNode에서 개별 수행 해 주어야 함.  -N 옵션에 공백 주는 방법(-N '\'\'')이 있으며.
-    pdsh -w ^nn_host "su - hdfs -c 'ssh-keygen -t rsa -N '\'\'' -o -f /home/hdfs/.ssh/id_rsa'"
-    pdsh -w ^snn_host "su - hdfs -c 'ssh-keygen -t rsa -N '\'\'' -o -f /home/hdfs/.ssh/id_rsa'"
+    #pdsh -w ^nn_host "su - hdfs -c 'ssh-keygen -t rsa -N '\'\'' -o -f /home/hdfs/.ssh/id_rsa'"
+    #pdsh -w ^snn_host "su - hdfs -c 'ssh-keygen -t rsa -N '\'\'' -o -f /home/hdfs/.ssh/id_rsa'"
     
     #각 네임서버에서 접속하고자 하는 네임서버에 모든 복사해 주어야 한다. - pdsh 사용 불가. su 사용이 안되는지 체크해 봐야 하고, 현재는 해당 계정으로 들어가서 실행해 주어야 함.
     ## 설치 후 반드시 해 주어야 하는 작업. 
