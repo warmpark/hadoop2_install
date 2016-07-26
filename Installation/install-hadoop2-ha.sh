@@ -269,7 +269,8 @@ fi
     ## JounalNode를 사용하는 경우 fencing은 내부적으로 처리하는 것으로 판단 : https://hadoopabcd.wordpress.com/2015/02/19/hdfs-cluster-high-availability/
     ## 그런데 아래 설정을 지우면 에러가 나는 것은 왜지???
     put_config --file hdfs-site.xml --property dfs.ha.fencing.methods --value "sshfence"
-    put_config --file hdfs-site.xml --property dfs.ha.fencing.ssh.private-key-files --value "/home/hdfs/.ssh/id_rsa"
+    ### 무엇이 맞나요? /root/.ssh/id_rsa or /home/hdfs/.ssh/id_rsa
+    put_config --file hdfs-site.xml --property dfs.ha.fencing.ssh.private-key-files --value "/root/.ssh/id_rsa"
     
     #ZKFailoverController (ZKFC) is a new component which is a ZooKeeper
     put_config --file hdfs-site.xml --property dfs.ha.automatic-failover.enabled --value true
