@@ -121,40 +121,15 @@ fi
 	pdsh -w ^all_hosts "source /etc/profile.d/java.sh"
     
 
-    echo "Remove system accounts and groups on all hosts..."
-    pdsh -w ^all_hosts "userdel -rf hdfs"
-    pdsh -w ^all_hosts "userdel -rf mapred"
-    pdsh -w ^all_hosts "userdel -rf yarn"
-    pdsh -w ^all_hosts "groupdel hadoop"
-
-    ##### useradd -g hadoop -p $(openssl passwd -1 hdfs) hdfs
-    ##### echo hdfs | passwd hdfs --stdin
+    
+    
  	echo "Creating system accounts and groups on all hosts..."
-	#pdsh -w ^all_hosts groupadd hadoop
-    #pdsh -w ^all_hosts 'useradd -g hadoop -p $(openssl passwd -1 hdfs) hdfs'
-    #pdsh -w ^all_hosts 'useradd -g hadoop -p $(openssl passwd -1 yarn) yarn'
-	#pdsh -w ^all_hosts 'useradd -g hadoop -p $(openssl passwd -1 mapred) mapred'
-    
-    echo "Creating system accounts and groups on all hosts..."
 	pdsh -w ^all_hosts groupadd hadoop
-    pdsh -w ^all_hosts 'useradd -g hadoop hdfs'
-    pdsh -w ^all_hosts 'useradd -g hadoop yarn'
-	pdsh -w ^all_hosts 'useradd -g hadoop mapred'
-   
+	pdsh -w ^all_hosts useradd -g hadoop yarn
+	pdsh -w ^all_hosts useradd -g hadoop hdfs
+	pdsh -w ^all_hosts useradd -g hadoop mapred
     
-    
-    
-    #아래 명령에 의해 개인키와 공개키 생성 : 각 NameNode에서 개별 수행 해 주어야 함.  -N 옵션에 공백 주는 방법(-N '\'\'')이 있으며.
-    #pdsh -w ^nn_host "su - hdfs -c 'ssh-keygen -t rsa -N '\'\'' -o -f /home/hdfs/.ssh/id_rsa'"
-    #pdsh -w ^snn_host "su - hdfs -c 'ssh-keygen -t rsa -N '\'\'' -o -f /home/hdfs/.ssh/id_rsa'"
-    
-    #각 네임서버에서 접속하고자 하는 네임서버에 모든 복사해 주어야 한다. - pdsh 사용 불가. su 사용이 안되는지 체크해 봐야 하고, 현재는 해당 계정으로 들어가서 실행해 주어야 함.
-    ## 설치 후 반드시 해 주어야 하는 작업. 
-    # big01에서 # ssh-copy-id -i /home/hdfs/.ssh/id_rsa.pub hdfs@big02
-    # big02에서 # ssh-copy-id -i /home/hdfs/.ssh/id_rsa.pub hdfs@big01
-    
-    
-    
+	
     echo "Extracting Hadoop $HADOOP_VERSION distribution on all hosts..."
 	pdsh -w ^all_hosts tar -zxf /opt/hadoop-"$HADOOP_VERSION".tar.gz -C /opt
 
@@ -276,7 +251,6 @@ fi
     ## JounalNode를 사용하는 경우 fencing은 내부적으로 처리하는 것으로 판단 : https://hadoopabcd.wordpress.com/2015/02/19/hdfs-cluster-high-availability/
     ## 그런데 아래 설정을 지우면 에러가 나는 것은 왜지???
     put_config --file hdfs-site.xml --property dfs.ha.fencing.methods --value "sshfence"
-    ### 무엇이 맞나요? /root/.ssh/id_rsa or /home/hdfs/.ssh/id_rsa
     put_config --file hdfs-site.xml --property dfs.ha.fencing.ssh.private-key-files --value "/root/.ssh/id_rsa"
     
     #ZKFailoverController (ZKFC) is a new component which is a ZooKeeper
@@ -535,4 +509,3 @@ do
       ;;
   esac
 done
-
