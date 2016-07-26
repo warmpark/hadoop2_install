@@ -248,8 +248,11 @@ fi
     put_config --file hdfs-site.xml --property dfs.client.failover.proxy.provider."$DFS_NAMESERVICES" --value "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider"
     
     ## fencting 설정과 ... dfs.ha.fencing.ssh.private-key-files 의 정확한 의미를 파악해야 함.....
-    put_config --file hdfs-site.xml --property dfs.ha.fencing.methods --value "sshfence"
-    put_config --file hdfs-site.xml --property dfs.ha.fencing.ssh.private-key-files --value "/root/.ssh/id_rsa"
+    ## JounalNode를 사용하는 경우 fencing은 내부적으로 처리하는 것으로 판단 : https://hadoopabcd.wordpress.com/2015/02/19/hdfs-cluster-high-availability/
+    ## 공유스토리지를 사용할 때 설정 필요한 것으로....
+    ## 아래 설정은 주석처리 
+    # put_config --file hdfs-site.xml --property dfs.ha.fencing.methods --value "sshfence"
+    # put_config --file hdfs-site.xml --property dfs.ha.fencing.ssh.private-key-files --value "/root/.ssh/id_rsa"
     
     #ZKFailoverController (ZKFC) is a new component which is a ZooKee
     put_config --file hdfs-site.xml --property dfs.ha.automatic-failover.enabled --value true
