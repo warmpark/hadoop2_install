@@ -173,13 +173,13 @@ pdsh -w ^all_hosts "rm -rf $ZOOKEEPER_HOME"
 
 
 echo "Removing hdfs system account..."
-pdsh -w ^all_hosts "userdel -r hdfs"
+pdsh -w ^all_hosts "userdel -rf hdfs"
 
 echo "Removing mapred system account..."
-pdsh -w ^all_hosts "userdel -r mapred"
+pdsh -w ^all_hosts "userdel -rf mapred"
 
 echo "Removing yarn system account..."
-pdsh -w ^all_hosts "userdel -r yarn"
+pdsh -w ^all_hosts "userdel -rf yarn"
 
 echo "Removing hadoop system group..."
 pdsh -w ^all_hosts "groupdel hadoop"
