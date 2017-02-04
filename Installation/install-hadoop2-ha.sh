@@ -11,7 +11,11 @@
 # zookeeper-3.4.8.tar.gz
 #http://apache.mirror.cdnetworks.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz
 
-ZOOKEEPER_VERSION=3.4.8
+ZOOKEEPER_VERSION=3.4.9
+ZOOKEEPER_DOWNLOAD_URI="http://mirror.navercorp.com/apache/zookeeper/zookeeper-${ZOOKEEPER_VERSION}/zookeeper-${ZOOKEEPER_VERSION}.tar.gz"
+JDK_VERSION=1.8.0_121
+JDK_RPM_NAME=jdk-8u121-linux-x64.rpm
+JDK_DOWNLOAD_URI="http://download.oracle.com/otn-pub/java/jdk/8u121-b13/e9e7ea248e2c4826b92b3f075a80e441/${JDK_RPM_NAME}"
 ZOOKEEPER_HOME="/opt/zookeeper-${ZOOKEEPER_VERSION}"
 ZOOKEEPER_LOG_DIR="${ZOOKEEPER_HOME}/logs"
 ZOOKEEPER_PREFIX="${ZOOKEEPER_HOME}"
@@ -54,7 +58,9 @@ NAMENODE_SHARED_EDITS_DIR="qjournal://big01:8485;big02:8485;big03:8485/${DFS_NAM
 
 
 
-HADOOP_VERSION=2.7.2
+# HADOOP_VERSION=2.7.2
+HADOOP_VERSION=2.7.3
+HADOOP_DOWNLOAD_URI="http://apache.tt.co.kr/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz"
 HADOOP_HOME="/opt/hadoop-${HADOOP_VERSION}"
 NN_DATA_DIR=/var/data/hadoop/hdfs/nn
 DN_DATA_DIR=/var/data/hadoop/hdfs/dn
@@ -67,8 +73,8 @@ HADOOP_MAPRED_PID_DIR=/var/run/hadoop/mapred
 HTTP_STATIC_USER=hdfs
 YARN_PROXY_PORT=8081
 # If using local OpenJDK, it must be installed on all nodes.
-# If using jdk-8u92-linux-x64.rpm, then
-# set JAVA_HOME="" and place jdk-8u92-linux-x64.rpm in this directory
+# If using ${JDK_RPM_NAME}, then
+# set JAVA_HOME="" and place ${JDK_RPM_NAME} in this directory
 #JAVA_HOME=/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64/
 #JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.101-2.6.6.1.el7_2.x86_64/jre/
 JAVA_HOME=""
@@ -100,18 +106,25 @@ zk_hosts="zk_hosts"
 
 install()
 {
-	echo "Copying Hadoop $HADOOP_VERSION to all hosts..."
+	## HADOOP DOWNLOAD
+    wget ${HADOOP_DOWNLOAD_URI} 
+    ## ZKOOPER DOWNLOAD
+    
+    echo "Copying Hadoop $HADOOP_VERSION to all hosts..."
 	pdcp -w ^all_hosts hadoop-"$HADOOP_VERSION".tar.gz /opt
     pdcp -w ^all_hosts zookeeper-"$ZOOKEEPER_VERSION".tar.gz /opt
 if [ -z "$JAVA_HOME" ]; then
-	echo "Copying JDK 1.8.0_92 to all hosts..."
-	pdcp -w ^all_hosts jdk-8u92-linux-x64.rpm /opt
+	echo "Copying JDK ${JDK_VERSION} to all hosts..."
+    ## JDK DOWNLOAD
+    wget --no-cookies --no-check-certificate --header "Cookie:gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" ${JDK_DOWNLOAD_URI}
+    
+	pdcp -w ^all_hosts ${JDK_RPM_NAME} /opt
 
-	echo "Installing JDK 1.8.0_92 on all hosts..."
-	pdsh -w ^all_hosts chmod a+x /opt/jdk-8u92-linux-x64.rpm
-	#pdsh -w ^all_hosts /opt/jdk-8u92-linux-x64.rpm -noregister 1>&- 2>&-
-	pdsh -w ^all_hosts rpm -ivh /opt/jdk-8u92-linux-x64.rpm 1>&- 2>&-
-	JAVA_HOME=/usr/java/jdk1.8.0_92
+	echo "Installing JDK ${JDK_VERSION} on all hosts..."
+	pdsh -w ^all_hosts chmod a+x /opt/${JDK_RPM_NAME}
+	#pdsh -w ^all_hosts /opt/${JDK_RPM_NAME} -noregister 1>&- 2>&-
+	pdsh -w ^all_hosts rpm -ivh /opt/${JDK_RPM_NAME} 1>&- 2>&-
+	JAVA_HOME=/usr/java/jdk${JDK_VERSION}
 	echo "JAVA_HOME=$JAVA_HOME"
 fi
 	echo "Setting JAVA_HOME and HADOOP_HOME environment variables on all hosts..."
@@ -247,7 +260,7 @@ fi
     put_config --file hdfs-site.xml --property dfs.namenode.shared.edits.dir --value "$NAMENODE_SHARED_EDITS_DIR"
     put_config --file hdfs-site.xml --property dfs.client.failover.proxy.provider."$DFS_NAMESERVICES" --value "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider"
     
-    ## fencting 설정과 ... dfs.ha.fencing.ssh.private-key-files 의 정확한 의미를 파악해야 함.....
+    ## fencing 설정과 ... dfs.ha.fencing.ssh.private-key-files 의 정확한 의미를 파악해야 함.....
     ## JounalNode를 사용하는 경우 fencing은 내부적으로 처리하는 것으로 판단 : https://hadoopabcd.wordpress.com/2015/02/19/hdfs-cluster-high-availability/
     ## 그런데 아래 설정을 지우면 에러가 나는 것은 왜지???
     put_config --file hdfs-site.xml --property dfs.ha.fencing.methods --value "sshfence"

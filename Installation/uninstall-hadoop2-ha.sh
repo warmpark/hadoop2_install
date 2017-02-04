@@ -1,6 +1,9 @@
 #!/bin/bash
 
-ZOOKEEPER_VERSION=3.4.8
+JDK_VERSION=1.8.0_121
+JDK_RPM_NAME=jdk-8u121-linux-x64.rpm
+
+ZOOKEEPER_VERSION=3.4.9
 ZOOKEEPER_HOME="/opt/zookeeper-${ZOOKEEPER_VERSION}"
 ZOOKEEPER_LOG_DIR="${ZOOKEEPER_HOME}/logs"
 ZOOKEEPER_PREFIX="${ZOOKEEPER_HOME}"
@@ -17,7 +20,7 @@ JN_EDITS_DIR=/var/data/hadoop/jounal/data
 NAMENODE_SHARED_EDITS_DIR="qjournal://big01:8485;big02:8485;big03:8485/${DFS_NAMESERVICES}-journal"
 
 
-HADOOP_VERSION=2.7.2
+HADOOP_VERSION=2.7.3
 HADOOP_HOME="/opt/hadoop-${HADOOP_VERSION}"
 NN_DATA_DIR=/var/data/hadoop/hdfs/nn
 DN_DATA_DIR=/var/data/hadoop/hdfs/dn
@@ -102,10 +105,10 @@ echo "Removing Hadoop 2 distribution tarball..."
 pdsh -w ^all_hosts "rm -f /opt/hadoop-2*.tar.gz"
 
 if [ -z "$JAVA_HOME" ]; then
-  echo "Removing JDK 1.8.0_92 distribution..."
+  echo "Removing JDK ${JDK_VERSION} distribution..."
   pdsh -w ^all_hosts "rm -f /opt/jdk*"
 
-  echo "Removing JDK 1.8.0_92 artifacts..."
+  echo "Removing JDK ${JDK_VERSION} artifacts..."
   pdsh -w ^all_hosts "rm -f sun-java*"
   pdsh -w ^all_hosts "rm -f jdk*"
 fi
@@ -140,8 +143,8 @@ pdsh -w ^all_hosts "rm /usr/libexec/mapred-config.*"
 pdsh -w ^all_hosts "rm /usr/libexec/yarn-config.*"
 pdsh -w ^all_hosts "rm /usr/libexec/kms-config.*"
 
-echo "Uninstalling JDK 1.8.0_92 RPM..."
-pdsh -w ^all_hosts "rpm -ev jdk1.8.0_92"
+echo "Uninstalling JDK ${JDK_VERSION} RPM..."
+pdsh -w ^all_hosts "rpm -ev ${JDK_VERSION}"
 
 echo "Removing directory..."
 ### 구조 삭제시 시작
