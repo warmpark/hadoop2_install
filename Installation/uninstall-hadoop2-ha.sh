@@ -102,7 +102,7 @@ echo "Removing Hadoop 2 startup scripts..."
 pdsh -w ^all_hosts "rm -f /etc/init.d/hadoop-*"
 
 echo "Removing Hadoop 2 distribution tarball..."
-pdsh -w ^all_hosts "rm -f /opt/hadoop-2*.tar.gz"
+pdsh -w ^all_hosts "rm -f /opt/hadoop-${HADOOP_VERSION}.tar.gz"
 
 if [ -z "$JAVA_HOME" ]; then
   echo "Removing JDK ${JDK_VERSION} distribution..."
@@ -144,7 +144,7 @@ pdsh -w ^all_hosts "rm /usr/libexec/yarn-config.*"
 pdsh -w ^all_hosts "rm /usr/libexec/kms-config.*"
 
 echo "Uninstalling JDK ${JDK_VERSION} RPM..."
-pdsh -w ^all_hosts "rpm -ev ${JDK_VERSION}"
+pdsh -w ^all_hosts "rpm -ev jdk${JDK_VERSION}"
 
 echo "Removing directory..."
 ### 구조 삭제시 시작
