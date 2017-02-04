@@ -144,7 +144,7 @@ install()
     hbasefile=./hbase-${HBASE_VERSION}-bin.tar.gz
     if [ ! -e "$hbasefile" ]; then
         echo "File does not exist"
-        wget ${HBASE_DOWNLOAD_UR}
+        wget ${HBASE_DOWNLOAD_URI}
     else 
         echo "File exists"
     fi
