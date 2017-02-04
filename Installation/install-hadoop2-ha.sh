@@ -11,14 +11,13 @@
 # zookeeper-3.4.8.tar.gz
 #http://apache.mirror.cdnetworks.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz
 
-ZOOKEEPER_VERSION=3.4.9
-ZOOKEEPER_DOWNLOAD_URI="http://mirror.navercorp.com/apache/zookeeper/zookeeper-${ZOOKEEPER_VERSION}/zookeeper-${ZOOKEEPER_VERSION}.tar.gz"
-JDK_VERSION=1.8.0_121
+DK_VERSION=1.8.0_121
 JDK_RPM_NAME=jdk-8u121-linux-x64.rpm
 JDK_DOWNLOAD_URI="http://download.oracle.com/otn-pub/java/jdk/8u121-b13/e9e7ea248e2c4826b92b3f075a80e441/${JDK_RPM_NAME}"
 
 
-
+ZOOKEEPER_VERSION=3.4.9
+ZOOKEEPER_DOWNLOAD_URI="http://mirror.navercorp.com/apache/zookeeper/zookeeper-${ZOOKEEPER_VERSION}/zookeeper-${ZOOKEEPER_VERSION}.tar.gz"
 ZOOKEEPER_HOME="/opt/zookeeper-${ZOOKEEPER_VERSION}"
 ZOOKEEPER_LOG_DIR="${ZOOKEEPER_HOME}/logs"
 ZOOKEEPER_PREFIX="${ZOOKEEPER_HOME}"
@@ -90,6 +89,19 @@ YARN_NODEMANAGER_HEAPSIZE=308
 
 
 
+#### HBASE 
+HBASE_VERSION=1.2.4
+HBASE_DOWNLOAD_URI="http://apache.tt.co.kr/hbase/${HBASE_VERSION}/hbase-${HBASE_VERSION}-bin.tar.gz
+HBASE_HOME="/opt/hbase-${HBASE_VERSION}"
+HBASE_LOG_DIR="${HBASE_HOME}/logs"
+HBASE_PREFIX="${HBASE_HOME}"
+HBASECONF_DIR="${HBASE_HOME}/conf"
+HBASE_DATA_DIR="${HBASE_HOME}/data"
+HBASE_MANAGES_ZK=false
+
+
+
+
 # Take care of bad options in the command
 if [ $? -ne 0 ];
 then
@@ -112,36 +124,47 @@ install()
 	## HADOOP DOWNLOAD
     hdfile=./hadoop-${HADOOP_VERSION}.tar.gz
     if [ ! -e "$hdfile" ]; then
-        echo "File does not exist"
+        echo "Hadoop File does not exist"
         wget ${HADOOP_DOWNLOAD_URI} 
     else 
-        echo "File exists"
+        echo "Hadoop File exists"
     fi
     
     ## ZKOOPER DOWNLOAD
     zkfile=./zookeeper-${ZOOKEEPER_VERSION}.tar.gz
     if [ ! -e "$zkfile" ]; then
-        echo "File does not exist"
+        echo "Zookeeper File does not exist"
         wget ${ZOOKEEPER_DOWNLOAD_URI}
+    else 
+        echo "Zookeeper File exists"
+    fi
+
+
+    ## HBASE DOWNLOAD
+    hbasefile=./hbase-${HBASE_VERSION}-bin.tar.gz
+    if [ ! -e "$hbasefile" ]; then
+        echo "File does not exist"
+        wget ${HBASE_DOWNLOAD_UR}
     else 
         echo "File exists"
     fi
-
    
     
     echo "Copying Hadoop $HADOOP_VERSION to all hosts..."
 	pdcp -w ^all_hosts hadoop-"$HADOOP_VERSION".tar.gz /opt
     pdcp -w ^all_hosts zookeeper-"$ZOOKEEPER_VERSION".tar.gz /opt
+    pdcp -w ^all_hosts hbase-${HBASE_VERSION}-bin.tar.gz /opt
+    
 if [ -z "$JAVA_HOME" ]; then
 	echo "Download & Copying JDK ${JDK_VERSION} to all hosts..."
     ## JDK DOWNLOAD
         
     ## ZKOOPER DOWNLOAD
     if [ ! -e "$JDK_RPM_NAME" ]; then
-        echo "File does not exist"
+        echo "JDK PRM File does not exist"
         wget --no-cookies --no-check-certificate --header "Cookie:gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" ${JDK_DOWNLOAD_URI}
     else 
-        echo "File exists"
+        echo "JDK PRM File exists"
     fi
 	pdcp -w ^all_hosts ${JDK_RPM_NAME} /opt
 
@@ -173,7 +196,10 @@ fi
 	pdsh -w ^all_hosts tar -zxf /opt/hadoop-"$HADOOP_VERSION".tar.gz -C /opt
 
     echo "Extracting Zookeeper $ZOOKEEPER_VERSION distribution on all ZK hosts..."
-	pdsh -w ^all_hosts tar -zxf /opt/zookeeper-"$ZOOKEEPER_VERSION".tar.gz -C /opt
+	pdsh -w ^zk_hosts tar -zxf /opt/zookeeper-"$ZOOKEEPER_VERSION".tar.gz -C /opt
+
+    echo "Extracting HBASE $HBASE_VERSION distribution on all hosts..."
+	pdsh -w ^all_hosts tar -zxf /opt/hbase-${HBASE_VERSION}-bin.tar.gz -C /opt
 
 
 
@@ -184,9 +210,15 @@ fi
     
 	pdsh -w ^zk_hosts "echo export ZOOKEEPER_HOME=$ZOOKEEPER_HOME > /etc/profile.d/zookeeper.sh"
 	pdsh -w ^zk_hosts "echo export ZOOKEEPER_PREFIX=$ZOOKEEPER_HOME >> /etc/profile.d/zookeeper.sh"
-	pdsh -w ^zk_hosts "echo export ZOOKEEPER_LOG_DIR=$ZOOKEEPER_HOME/logs >> /etc/profile.d/zookeeper.sh"
-	pdsh -w ^zk_hosts "echo export ZOO_LOG_DIR=$ZOOKEEPER_HOME/logs >> /etc/profile.d/zookeeper.sh"
+	pdsh -w ^zk_hosts "echo export ZOOKEEPER_LOG_DIR=$ZOOKEEPER_LOG_DIR >> /etc/profile.d/zookeeper.sh"
+	pdsh -w ^zk_hosts "echo export ZOO_LOG_DIR=$ZOOKEEPER_LOG_DIR >> /etc/profile.d/zookeeper.sh"
 	pdsh -w ^zk_hosts "source /etc/profile.d/zookeeper.sh"
+    
+    
+    pdsh -w ^zk_hosts "echo export HBASE_HOME=$HBASE_HOME > /etc/profile.d/hbase.sh"
+	pdsh -w ^zk_hosts "echo export HBASE_PREFIX=$HBASE_HOME >> /etc/profile.d/hbase.sh"
+	pdsh -w ^zk_hosts "echo export HBASE_LOG_DIR=$HBASE_LOG_DIR >> /etc/profile.d/hbase.sh"
+	pdsh -w ^zk_hosts "source /etc/profile.d/hbase.sh"
     
         
     echo "Editing Hadoop environment scripts for log directories on all hosts..."
@@ -199,8 +231,10 @@ fi
 	pdsh -w ^all_hosts echo "export YARN_PID_DIR=$YARN_PID_DIR >> $HADOOP_HOME/etc/hadoop/yarn-env.sh"
 	pdsh -w ^all_hosts echo "export HADOOP_MAPRED_PID_DIR=$HADOOP_MAPRED_PID_DIR >> $HADOOP_HOME/etc/hadoop/mapred-env.sh"
     ### ZK  PID관리는 어떻게.....
+    ### HBASE  PID관리는 어떻게.....
     
-
+    
+   ### -------여기까지 HBASE 설정 작업... 완료
 
 
     ## 각종 저장 장소의 기본 사용자는 hdfs... 
