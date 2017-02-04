@@ -91,7 +91,7 @@ YARN_NODEMANAGER_HEAPSIZE=308
 
 #### HBASE 
 HBASE_VERSION=1.2.4
-HBASE_DOWNLOAD_URI="http://apache.tt.co.kr/hbase/${HBASE_VERSION}/hbase-${HBASE_VERSION}-bin.tar.gz
+HBASE_DOWNLOAD_URI="http://apache.tt.co.kr/hbase/${HBASE_VERSION}/hbase-${HBASE_VERSION}-bin.tar.gz"
 HBASE_HOME="/opt/hbase-${HBASE_VERSION}"
 HBASE_LOG_DIR="${HBASE_HOME}/logs"
 HBASE_PREFIX="${HBASE_HOME}"
