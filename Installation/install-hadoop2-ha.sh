@@ -119,7 +119,7 @@ install()
 	pdcp -w ^all_hosts hadoop-"$HADOOP_VERSION".tar.gz /opt
     pdcp -w ^all_hosts zookeeper-"$ZOOKEEPER_VERSION".tar.gz /opt
 if [ -z "$JAVA_HOME" ]; then
-	echo "Copying JDK ${JDK_VERSION} to all hosts..."
+	echo "Download & Copying JDK ${JDK_VERSION} to all hosts..."
     ## JDK DOWNLOAD
     wget --no-cookies --no-check-certificate --header "Cookie:gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" ${JDK_DOWNLOAD_URI}
     
@@ -135,7 +135,8 @@ fi
 	echo "Setting JAVA_HOME and HADOOP_HOME environment variables on all hosts..."
 	
 	echo "JAVA_HOME=$JAVA_HOME > /etc/profile.d/java.sh"
-	pdsh -w ^all_hosts "echo export JAVA_HOME=$JAVA_HOME > /etc/profile.d/java.sh"
+	pdsh -w ^all_hosts "echo export JAVA_HOME=$JAVA_HOME >> /etc/profile.d/java.sh"
+    pdsh -w ^all_hosts "echo export PATH=$JAVA_HOME/bin:$PATH >> /etc/profile.d/java.sh"
 	pdsh -w ^all_hosts "source /etc/profile.d/java.sh"
     
 
