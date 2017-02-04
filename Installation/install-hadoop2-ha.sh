@@ -16,6 +16,9 @@ ZOOKEEPER_DOWNLOAD_URI="http://mirror.navercorp.com/apache/zookeeper/zookeeper-$
 JDK_VERSION=1.8.0_121
 JDK_RPM_NAME=jdk-8u121-linux-x64.rpm
 JDK_DOWNLOAD_URI="http://download.oracle.com/otn-pub/java/jdk/8u121-b13/e9e7ea248e2c4826b92b3f075a80e441/${JDK_RPM_NAME}"
+
+
+
 ZOOKEEPER_HOME="/opt/zookeeper-${ZOOKEEPER_VERSION}"
 ZOOKEEPER_LOG_DIR="${ZOOKEEPER_HOME}/logs"
 ZOOKEEPER_PREFIX="${ZOOKEEPER_HOME}"
@@ -108,7 +111,9 @@ install()
 {
 	## HADOOP DOWNLOAD
     wget ${HADOOP_DOWNLOAD_URI} 
+    
     ## ZKOOPER DOWNLOAD
+    wget ${ZOOKEEPER_DOWNLOAD_URI}
     
     echo "Copying Hadoop $HADOOP_VERSION to all hosts..."
 	pdcp -w ^all_hosts hadoop-"$HADOOP_VERSION".tar.gz /opt
