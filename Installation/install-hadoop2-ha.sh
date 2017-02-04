@@ -110,10 +110,24 @@ zk_hosts="zk_hosts"
 install()
 {
 	## HADOOP DOWNLOAD
-    wget ${HADOOP_DOWNLOAD_URI} 
+    hdfile=./hadoop-${HADOOP_VERSION}.tar.gz
+    if [ ! -e "$hdfile" ]; then
+        echo "File does not exist"
+        wget ${HADOOP_DOWNLOAD_URI} 
+    else 
+        echo "File exists"
+    fi
     
     ## ZKOOPER DOWNLOAD
-    wget ${ZOOKEEPER_DOWNLOAD_URI}
+    zkfile=./zookeeper-${ZOOKEEPER_VERSION}.tar.gz
+    if [ ! -e "$zkfile" ]; then
+        echo "File does not exist"
+        wget ${ZOOKEEPER_DOWNLOAD_URI}
+    else 
+        echo "File exists"
+    fi
+
+   
     
     echo "Copying Hadoop $HADOOP_VERSION to all hosts..."
 	pdcp -w ^all_hosts hadoop-"$HADOOP_VERSION".tar.gz /opt
@@ -121,8 +135,14 @@ install()
 if [ -z "$JAVA_HOME" ]; then
 	echo "Download & Copying JDK ${JDK_VERSION} to all hosts..."
     ## JDK DOWNLOAD
-    wget --no-cookies --no-check-certificate --header "Cookie:gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" ${JDK_DOWNLOAD_URI}
-    
+        
+    ## ZKOOPER DOWNLOAD
+    if [ ! -e "$JDK_RPM_NAME" ]; then
+        echo "File does not exist"
+        wget --no-cookies --no-check-certificate --header "Cookie:gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" ${JDK_DOWNLOAD_URI}
+    else 
+        echo "File exists"
+    fi
 	pdcp -w ^all_hosts ${JDK_RPM_NAME} /opt
 
 	echo "Installing JDK ${JDK_VERSION} on all hosts..."
