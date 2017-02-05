@@ -224,7 +224,7 @@ fi
 	pdsh -w ^all_hosts "echo export HBASE_PREFIX=$HBASE_HOME >> /etc/profile.d/hbase.sh"
 	pdsh -w ^all_hosts "echo export HBASE_LOG_DIR=$HBASE_LOG_DIR >> /etc/profile.d/hbase.sh"
     pdsh -w ^all_hosts "echo export PATH=$HBASE_HOME/bin:$PATH >> /etc/profile.d/hbase.sh"
-    pdsh -w ^all_hosts "echo export CLASSPATH=$CLASSPATH:$HBASE_LOG_DIR >> /etc/profile.d/hbase.sh"
+    pdsh -w ^all_hosts "echo export CLASSPATH=$CLASSPATH:$HBASE_CONF_DIR >> /etc/profile.d/hbase.sh"
 	pdsh -w ^zk_hosts "source /etc/profile.d/hbase.sh"
     
         
