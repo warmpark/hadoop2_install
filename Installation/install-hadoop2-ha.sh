@@ -286,20 +286,20 @@ fi
     
     
     echo "Editing zookeeper conf zoo.cfg - 나중에 보완할 필요...."
-    pdsh -w ^all_hosts "echo     'dataDir=$ZOOKEEPER_HOME/data
+    pdsh -w ^all_hosts "echo     'dataDir=$ZOOKEEPER_DATA_DIR
     dataLogDir=$ZOOKEEPER_HOME/logs
     clientPort=2181
     initLimit=5
     syncLimit=2
     server.1=big01:2888:3888
     server.2=big02:2888:3888
-    server.3=big03:2888:3888' >  $ZOOKEEPER_HOME/conf/zoo.cfg"
+    server.3=big03:2888:3888' >  $ZOOKEEPER_CONF_DIR/zoo.cfg"
 
     
-    echo "Make zookeeper id in  $ZOOKEEPER_HOME/data/myid - 나중에 보완할 필요...."
-    pdsh -w big01 "echo 1 > $ZOOKEEPER_HOME/data/myid"
-    pdsh -w big02 "echo 2 > $ZOOKEEPER_HOME/data/myid"
-    pdsh -w big03 "echo 3 > $ZOOKEEPER_HOME/data/myid"
+    echo "Make zookeeper id in  $ZOOKEEPER_DATA_DIR/myid - 나중에 보완할 필요...."
+    pdsh -w big01 "echo 1 > $ZOOKEEPER_DATA_DIR/myid"
+    pdsh -w big02 "echo 2 > $ZOOKEEPER_DATA_DIR/myid"
+    pdsh -w big03 "echo 3 > $ZOOKEEPER_DATA_DIR/myid"
     
     
     echo "Editing regionservers conf regionservers - 나중에 보완할 필요...."
@@ -401,10 +401,10 @@ fi
 	pdsh -w ^all_hosts "ln -s $HADOOP_CONF_DIR /etc/hadoop"
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/bin/* /usr/bin"
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/libexec/* /usr/libexec"
-    pdsh -w ^all_hosts "ln -s $ZOOKEEPER_HOME/conf/* /etc/zookeeper"
+    pdsh -w ^all_hosts "ln -s $ZOOKEEPER_CONF_DIR/* /etc/zookeeper"
 	pdsh -w ^all_hosts "ln -s $ZOOKEEPER_HOME/bin/* /usr/bin"
     pdsh -w ^all_hosts "ln -s $HBASE_HOME/conf/* /etc/zookeeper"
-	pdsh -w ^all_hosts "ln -s $HBASE_HOME/bin/* /usr/bin"
+	pdsh -w ^all_hosts "ln -s $HBASE_HOME/bin/*hbase* /usr/bin"
 
 
     echo "Copying startup scripts to all hosts..."
