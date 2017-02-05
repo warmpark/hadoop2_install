@@ -19,11 +19,11 @@ JDK_DOWNLOAD_URI="http://download.oracle.com/otn-pub/java/jdk/8u121-b13/e9e7ea24
 ZOOKEEPER_VERSION=3.4.9
 ZOOKEEPER_DOWNLOAD_URI="http://mirror.navercorp.com/apache/zookeeper/zookeeper-${ZOOKEEPER_VERSION}/zookeeper-${ZOOKEEPER_VERSION}.tar.gz"
 ZOOKEEPER_HOME="/opt/zookeeper-${ZOOKEEPER_VERSION}"
-ZOOKEEPER_LOG_DIR="${ZOOKEEPER_HOME}/logs"
+ZOOKEEPER_LOG_DIR="/var/log/zookeeper/yarn/logs"
 ZOOKEEPER_PREFIX="${ZOOKEEPER_HOME}"
 
 ZOOKEEPER_CONF_DIR="${ZOOKEEPER_HOME}/conf"
-ZOOKEEPER_DATA_DIR="${ZOOKEEPER_HOME}/data"
+ZOOKEEPER_DATA_DIR="/var/data/zookeeper/data"
 
 DFS_NAMESERVICES=big-cluster
 HA_ZOOKEEPER_QUORUM=big01:2181,big02:2181,big03:2181
@@ -93,11 +93,13 @@ YARN_NODEMANAGER_HEAPSIZE=308
 HBASE_VERSION=1.2.4
 HBASE_DOWNLOAD_URI="http://apache.tt.co.kr/hbase/${HBASE_VERSION}/hbase-${HBASE_VERSION}-bin.tar.gz"
 HBASE_HOME="/opt/hbase-${HBASE_VERSION}"
-HBASE_LOG_DIR="${HBASE_HOME}/logs"
+HBASE_LOG_DIR="/var/log/hbase"
 HBASE_PREFIX="${HBASE_HOME}"
-HBASECONF_DIR="${HBASE_HOME}/conf"
-HBASE_DATA_DIR="${HBASE_HOME}/data"
+HBASE_CONF_DIR="${HBASE_HOME}/conf"
+HBASE_DATA_DIR="/var/data/hbase"
 HBASE_MANAGES_ZK=false
+HBASE_PID_DIR=/var/run/hbase
+
 
 
 
@@ -190,6 +192,7 @@ fi
 	pdsh -w ^all_hosts useradd -g hadoop yarn
 	pdsh -w ^all_hosts useradd -g hadoop hdfs
 	pdsh -w ^all_hosts useradd -g hadoop mapred
+    pdsh -w ^all_hosts useradd -g hadoop hbase
     
 	
     echo "Extracting Hadoop $HADOOP_VERSION distribution on all hosts..."
@@ -218,37 +221,37 @@ fi
     pdsh -w ^zk_hosts "echo export HBASE_HOME=$HBASE_HOME > /etc/profile.d/hbase.sh"
 	pdsh -w ^zk_hosts "echo export HBASE_PREFIX=$HBASE_HOME >> /etc/profile.d/hbase.sh"
 	pdsh -w ^zk_hosts "echo export HBASE_LOG_DIR=$HBASE_LOG_DIR >> /etc/profile.d/hbase.sh"
+    pdsh -w ^all_hosts "echo export PATH=$HBASE_HOME/bin:$PATH >> /etc/profile.d/hbase.sh"
 	pdsh -w ^zk_hosts "source /etc/profile.d/hbase.sh"
     
         
     echo "Editing Hadoop environment scripts for log directories on all hosts..."
-	pdsh -w ^all_hosts echo "export HADOOP_LOG_DIR=$HADOOP_LOG_DIR >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh"
-	pdsh -w ^all_hosts echo "export YARN_LOG_DIR=$YARN_LOG_DIR >> $HADOOP_HOME/etc/hadoop/yarn-env.sh"
-	pdsh -w ^all_hosts echo "export HADOOP_MAPRED_LOG_DIR=$HADOOP_MAPRED_LOG_DIR >> $HADOOP_HOME/etc/hadoop/mapred-env.sh"
+	pdsh -w ^all_hosts echo "export HADOOP_LOG_DIR=$HADOOP_LOG_DIR >> $HADOOP_CONF_DIR/hadoop-env.sh"
+	pdsh -w ^all_hosts echo "export YARN_LOG_DIR=$YARN_LOG_DIR >> $HADOOP_CONF_DIR/yarn-env.sh"
+	pdsh -w ^all_hosts echo "export HADOOP_MAPRED_LOG_DIR=$HADOOP_MAPRED_LOG_DIR >> $HADOOP_CONF_DIR/mapred-env.sh"
 
 	echo "Editing Hadoop environment scripts for pid directories on all hosts..."
-	pdsh -w ^all_hosts echo "export HADOOP_PID_DIR=$HADOOP_PID_DIR >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh"
-	pdsh -w ^all_hosts echo "export YARN_PID_DIR=$YARN_PID_DIR >> $HADOOP_HOME/etc/hadoop/yarn-env.sh"
-	pdsh -w ^all_hosts echo "export HADOOP_MAPRED_PID_DIR=$HADOOP_MAPRED_PID_DIR >> $HADOOP_HOME/etc/hadoop/mapred-env.sh"
+	pdsh -w ^all_hosts echo "export HADOOP_PID_DIR=$HADOOP_PID_DIR >> $HADOOP_CONF_DIR/hadoop-env.sh"
+	pdsh -w ^all_hosts echo "export YARN_PID_DIR=$YARN_PID_DIR >> $HADOOP_CONF_DIR/yarn-env.sh"
+	pdsh -w ^all_hosts echo "export HADOOP_MAPRED_PID_DIR=$HADOOP_MAPRED_PID_DIR >> $HADOOP_CONF_DIR/mapred-env.sh"
+    pdsh -w ^all_hosts echo "export HBASE_PID_DIR=$HBASE_PID_DIR >> $HBASE_CONF_DIR/hbase-env.sh"
     ### ZK  PID관리는 어떻게.....
-    ### HBASE  PID관리는 어떻게.....
     
-    
-   ### -------여기까지 HBASE 설정 작업... 완료
-
-
+  
     ## 각종 저장 장소의 기본 사용자는 hdfs... 
     pdsh -w ^all_hosts "mkdir -p /var/data/hadoop && chown -R hdfs:hadoop /var/data/hadoop"
     pdsh -w ^all_hosts "mkdir -p /var/log/hadoop && chown -R hdfs:hadoop /var/log/hadoop"
     pdsh -w ^all_hosts "mkdir -p /var/run/hadoop && chown -R hdfs:hadoop /var/run/hadoop"
+    
         
-
 	echo "Creating HDFS data directories on NameNode host, JournalNode hosts, Secondary NameNode host, and DataNode hosts..."
     #pdsh -w ^all_hosts "mkdir -p $NN_DATA_DIR && chown hdfs:hadoop $NN_DATA_DIR"
     pdsh -w ^all_hosts "mkdir -p $NN_DATA_DIR && chown -R hdfs:hadoop $NN_DATA_DIR"
 	pdsh -w ^all_hosts "mkdir -p $DN_DATA_DIR && chown -R hdfs:hadoop $DN_DATA_DIR"
     pdsh -w ^all_hosts "mkdir -p $JN_EDITS_DIR && chown -R hdfs:hadoop $JN_EDITS_DIR"
     pdsh -w ^all_hosts "mkdir -p $ZOOKEEPER_DATA_DIR && chown -R hdfs:hadoop $ZOOKEEPER_DATA_DIR"
+    ## HBASE
+    pdsh -w ^all_hosts "mkdir -p ${HBASE_DATA_DIR} && chown -R hbase:hadoop ${HBASE_DATA_DIR}"
         
 
 	echo "Creating log directories on all hosts..."
@@ -256,12 +259,15 @@ fi
 	pdsh -w ^all_hosts "mkdir -p $HADOOP_LOG_DIR && chown -R hdfs:hadoop $HADOOP_LOG_DIR"
 	pdsh -w ^all_hosts "mkdir -p $HADOOP_MAPRED_LOG_DIR && chown -R mapred:hadoop $HADOOP_MAPRED_LOG_DIR"
     pdsh -w ^all_hosts "mkdir -p $ZOOKEEPER_LOG_DIR && chown -R hdfs:hadoop $ZOOKEEPER_LOG_DIR"
+    ## HBASE
+    pdsh -w ^all_hosts "mkdir -p ${HBASE_LOG_DIR} && chown -R hbase:hadoop ${HBASE_LOG_DIR}"
     
 
 	echo "Creating pid directories on all hosts..."
 	pdsh -w ^all_hosts "mkdir -p $YARN_PID_DIR && chown -R yarn:hadoop $YARN_PID_DIR"
 	pdsh -w ^all_hosts "mkdir -p $HADOOP_PID_DIR && chown -R hdfs:hadoop $HADOOP_PID_DIR"
 	pdsh -w ^all_hosts "mkdir -p $HADOOP_MAPRED_PID_DIR && chown -R mapred:hadoop $HADOOP_MAPRED_PID_DIR"
+    pdsh -w ^all_hosts "mkdir -p $HBASE_PID_DIR && chown -R hbase:hadoop $HBASE_PID_DIR"
     ##TODO JK PID는 어떻게 ? 어디에 ? 구글링해봐야...
     
 
@@ -271,8 +277,13 @@ fi
 	if [ -n "$YARN_NODEMANAGER_HEAPSIZE" ]
 	then 
 		echo "for VM Memory Management  by warmpark   Editing Hadoop yarn-env.sh environment for YARN_NODEMANAGER_HEAPSIZE on all hosts..."
-		pdsh -w ^all_hosts echo "export YARN_NODEMANAGER_HEAPSIZE=$YARN_NODEMANAGER_HEAPSIZE >> $HADOOP_HOME/etc/hadoop/yarn-env.sh"
+		pdsh -w ^all_hosts echo "export YARN_NODEMANAGER_HEAPSIZE=$YARN_NODEMANAGER_HEAPSIZE >> $HADOOP_CONF_DIR/yarn-env.sh"
 	fi
+   
+   
+   	echo "HBASE hbase-env.sh"
+    pdsh -w ^all_hosts echo "export HBASE_MANAGES_ZK=$HBASE_MANAGES_ZK >> ${HBASE_CONF_DIR}/hbase-env.sh"
+    
     
     echo "Editing zookeeper conf zoo.cfg - 나중에 보완할 필요...."
     pdsh -w ^all_hosts "echo     'dataDir=$ZOOKEEPER_HOME/data
@@ -291,12 +302,12 @@ fi
     pdsh -w big03 "echo 3 > $ZOOKEEPER_HOME/data/myid"
     
     
+    echo "Editing regionservers conf regionservers - 나중에 보완할 필요...."
+    pdsh -w ^all_hosts "echo    '   big01
+    big02
+    big03' >  ${HBASE_CONF_DIR}/regionservers"
     
-
     
-   
-    
-
 	echo "Creating base Hadoop XML config files..."
 	create_config --file core-site.xml
     put_config --file core-site.xml --property fs.defaultFS --value "hdfs://$DFS_NAMESERVICES"
@@ -328,8 +339,6 @@ fi
     
     #ZKFailoverController (ZKFC) is a new component which is a ZooKeeper
     put_config --file hdfs-site.xml --property dfs.ha.automatic-failover.enabled --value true
-
-
     
 
     create_config --file yarn-site.xml
@@ -351,7 +360,6 @@ fi
     put_config --file yarn-site.xml --property yarn.nodemanager.resource.cpu-vcores --value 2
     put_config --file yarn-site.xml --property yarn.scheduler.maximum-allocation-vcores --value 4
 
-
 	
 	create_config --file mapred-site.xml
 	put_config --file mapred-site.xml --property mapreduce.framework.name --value yarn
@@ -365,23 +373,39 @@ fi
     put_config --file mapred-site.xml --property mapreduce.map.java.opts --value "-Xmx384m" 
     put_config --file mapred-site.xml --property mapreduce.reduce.java.opts --value "-Xmx384m" 
     put_config --file mapred-site.xml --property mapreduce.task.io.sort.mb --value 128 
-	
+    
+    
+    ## HBASE -- 확인 후 변수화 해야 
+	create_config --file hbase-site.xml
+    put_config --file hbase-site.xml --property hbase.rootdir --value "hdfs://big01:8020/hbase"
+    put_config --file hbase-site.xml --property hbase.master --value "big01:6000"
+    put_config --file hbase-site.xml --property hbase.zookeeper.quorum --value "${HA_ZOOKEEPER_QUORUM}"
+    put_config --file hbase-site.xml --property hbase.zookeeper.property.dataDir --value "${ZOOKEEPER_DATA_DIR}"
+    put_config --file hbase-site.xml --property hbase.cluster.distributed --value true
+    put_config --file hbase-site.xml --property dfs.datanode.max.xcievers --value 4096
 
-	echo "Copying base Hadoop XML config files to all hosts..."
-	pdcp -w ^all_hosts core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml $HADOOP_HOME/etc/hadoop/
+
+    echo "Copying base Hadoop XML config files to all hosts..."
+	pdcp -w ^all_hosts core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml $HADOOP_CONF_DIR
+    
+    echo "Copying HBASE XML config files to all hosts..."
+	pdcp -w ^all_hosts hbase-site.xml $HBASE_HOME/etc/hadoop/
     
     echo "Copying the slaves file on each all hosts, in $HADOOP_CONF_DIR .... "
-	#pdcp -w ^all_hosts  dn_hosts $HADOOP_HOME/etc/hadoop/slaves
-    #pdcp -w ^all_hosts  jn_hosts $HADOOP_HOME/etc/hadoop/journalnodes
+	pdcp -w ^all_hosts  dn_hosts $HADOOP_CONF_DIR/slaves
+    pdcp -w ^all_hosts  jn_hosts $HADOOP_CONF_DIR/journalnodes
     
     
 
 	echo "Creating configuration, command, and script links on all hosts..."
-	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/etc/hadoop /etc/hadoop"
+	pdsh -w ^all_hosts "ln -s $HADOOP_CONF_DIR /etc/hadoop"
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/bin/* /usr/bin"
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/libexec/* /usr/libexec"
     pdsh -w ^all_hosts "ln -s $ZOOKEEPER_HOME/conf/* /etc/zookeeper"
-	#pdsh -w ^all_hosts "ln -s $ZOOKEEPER_HOME/bin/* /usr/bin"
+	pdsh -w ^all_hosts "ln -s $ZOOKEEPER_HOME/bin/* /usr/bin"
+    pdsh -w ^all_hosts "ln -s $HBASE_HOME/conf/* /etc/zookeeper"
+	pdsh -w ^all_hosts "ln -s $HBASE_HOME/bin/* /usr/bin"
+
 
     echo "Copying startup scripts to all hosts..."
 	#pdcp -w ^all_hosts hadoop-namenode /etc/init.d/
@@ -452,15 +476,20 @@ fi
 	su - hdfs -c "hdfs dfs -chown -R mapred:hadoop /mapred"
 	su - hdfs -c "hdfs dfs -chmod -R g+rwx /mapred"
     
-    echo "#13. Start History Server(su - mapred -c '$HADOOP_HOME/sbin/mr-jobhistory-daemon.sh  start historyserver') "
+    echo "#14. Start History Server(su - mapred -c '$HADOOP_HOME/sbin/mr-jobhistory-daemon.sh  start historyserver') "
     pdsh -w ^mr_history_host "su - mapred -c '$HADOOP_HOME/sbin/mr-jobhistory-daemon.sh  start historyserver'"
     
-    
+   
     #pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/sbin/start-dfs.sh'"
     #pdsh -w ^nn_host "su - yarn -c '$HADOOP_HOME/sbin/start-yarn.sh'"
     
+    
+    echo "#15. Start HBASE Server(su - hbase -c '$HBASE_HOME/bin/start-hbase.sh') "
+    pdsh -w ^nn_host "su - hbase -c '$HBASE_HOME/bin/start-hbase.sh'"
+    
+ 
 
-	echo "#14. Running YARN smoke test..."
+	echo "#16. Running YARN smoke test..."
 	pdsh -w ^all_hosts "usermod -a -G hadoop $(whoami)"
 	su - hdfs -c "hadoop fs -mkdir -p /user/$(whoami)"
 	su - hdfs -c "hadoop fs -chown $(whoami):$(whoami) /user/$(whoami)"
