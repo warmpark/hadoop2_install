@@ -306,7 +306,7 @@ fi
     
     echo "Editing regionservers conf regionservers - 나중에 보완할 필요...  HBASE는 HMaster와 ResionServer가 동시에 수행될 수 없음. ."
     pdsh -w ^all_hosts "echo    'big02
-    big03' >  $HBASE_CONF_DIR/regionservers"
+big03' >  $HBASE_CONF_DIR/regionservers"
     
     
 	echo "Creating base Hadoop XML config files..."
@@ -376,13 +376,14 @@ fi
     put_config --file mapred-site.xml --property mapreduce.task.io.sort.mb --value 128 
     
     
-    ## HBASE -- 확인 후 변수화 해야 
+    ## HBASE -- 확인 후 변수화 해야   dfs.nameservices --value "$DFS_NAMESERVICES"
 	create_config --file hbase-site.xml
-    #put_config --file hbase-site.xml --property hbase.rootdir --value "hdfs://$DFS_NAMESERVICES"
-    put_config --file hbase-site.xml --property hbase.rootdir --value "hdfs://big01:8020/hbase"
+    ## hdfs-site.xml dfs.nameservices --value "$DFS_NAMESERVICES"  from http://stackoverflow.com/questions/38769315/how-to-configure-hbase-in-a-ha-mode
+    put_config --file hbase-site.xml --property hbase.rootdir --value "hdfs://$DFS_NAMESERVICES:8020/hbase"
+    #put_config --file hbase-site.xml --property hbase.rootdir --value "hdfs://big01:8020/hbase"
     put_config --file hbase-site.xml --property hbase.master --value "big01:6000"
-    #put_config --file hbase-site.xml --property hbase.zookeeper.quorum --value "$HA_ZOOKEEPER_QUORUM"
-    put_config --file hbase-site.xml --property hbase.zookeeper.quorum --value "big01,big02,big03"
+    put_config --file hbase-site.xml --property hbase.zookeeper.quorum --value "$HA_ZOOKEEPER_QUORUM"
+    #put_config --file hbase-site.xml --property hbase.zookeeper.quorum --value "big01,big02,big03"
     put_config --file hbase-site.xml --property hbase.zookeeper.property.dataDir --value "$ZOOKEEPER_DATA_DIR"
     put_config --file hbase-site.xml --property hbase.cluster.distributed --value true
     put_config --file hbase-site.xml --property dfs.datanode.max.xcievers --value 4096
