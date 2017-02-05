@@ -92,7 +92,7 @@ pdsh -w ^all_hosts "rm -f /etc/profile.d/hbase.sh"
 # pdsh -w ^zk_hosts "service hadoop-zookeeper stop"
 
 echo "Removing Zookeeper services from run levels..."
-pdsh -w ^dn_hosts "chkconfig --del hadoop-zookeeper"
+#pdsh -w ^dn_hosts "chkconfig --del hadoop-zookeeper"
 
 echo "Removing Zookeeper distribution tarball..."
 pdsh -w ^zk_hosts "rm -r /opt/zookeeper-$ZOOKEEPER_VERSION.tar.gz"
@@ -149,7 +149,6 @@ pdsh -w ^all_hosts "rm /usr/bin/rcc*"
 pdsh -w ^all_hosts "rm /usr/bin/test-container-executor"
 pdsh -w ^all_hosts "rm /usr/bin/yarn*"
 pdsh -w ^zk_hosts "rm /usr/bin/zk*"
-pdsh -w ^all_hosts "rm /usr/bin/*README*"
 pdsh -w ^all_hosts "rm /usr/bin/*hbase*"
 
 echo "Removing Hadoop 2 script links..."
