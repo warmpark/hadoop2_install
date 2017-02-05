@@ -194,7 +194,7 @@ fi
 	pdsh -w ^all_hosts useradd -g hadoop yarn
 	pdsh -w ^all_hosts useradd -g hadoop hdfs
 	pdsh -w ^all_hosts useradd -g hadoop mapred
-    pdsh -w ^all_hosts useradd -g hadoop hbase
+    #pdsh -w ^all_hosts useradd -g hadoop hbase
     
 	
     echo "Extracting Hadoop $HADOOP_VERSION distribution on all hosts..."
@@ -254,7 +254,7 @@ fi
     pdsh -w ^all_hosts "mkdir -p $JN_EDITS_DIR && chown -R hdfs:hadoop $JN_EDITS_DIR"
     pdsh -w ^all_hosts "mkdir -p $ZOOKEEPER_DATA_DIR && chown -R hdfs:hadoop $ZOOKEEPER_DATA_DIR"
     ## HBASE
-    pdsh -w ^all_hosts "mkdir -p ${HBASE_DATA_DIR} && chown -R hbase:hadoop ${HBASE_DATA_DIR}"
+    pdsh -w ^all_hosts "mkdir -p ${HBASE_DATA_DIR} && chown -R hdfs:hadoop ${HBASE_DATA_DIR}"
         
 
 	echo "Creating log directories on all hosts..."
@@ -263,14 +263,14 @@ fi
 	pdsh -w ^all_hosts "mkdir -p $HADOOP_MAPRED_LOG_DIR && chown -R mapred:hadoop $HADOOP_MAPRED_LOG_DIR"
     pdsh -w ^all_hosts "mkdir -p $ZOOKEEPER_LOG_DIR && chown -R hdfs:hadoop $ZOOKEEPER_LOG_DIR"
     ## HBASE
-    pdsh -w ^all_hosts "mkdir -p ${HBASE_LOG_DIR} && chown -R hbase:hadoop ${HBASE_LOG_DIR}"
+    pdsh -w ^all_hosts "mkdir -p ${HBASE_LOG_DIR} && chown -R hdfs:hadoop ${HBASE_LOG_DIR}"
     
 
 	echo "Creating pid directories on all hosts..."
 	pdsh -w ^all_hosts "mkdir -p $YARN_PID_DIR && chown -R yarn:hadoop $YARN_PID_DIR"
 	pdsh -w ^all_hosts "mkdir -p $HADOOP_PID_DIR && chown -R hdfs:hadoop $HADOOP_PID_DIR"
 	pdsh -w ^all_hosts "mkdir -p $HADOOP_MAPRED_PID_DIR && chown -R mapred:hadoop $HADOOP_MAPRED_PID_DIR"
-    pdsh -w ^all_hosts "mkdir -p $HBASE_PID_DIR && chown -R hbase:hadoop $HBASE_PID_DIR"
+    pdsh -w ^all_hosts "mkdir -p $HBASE_PID_DIR && chown -R hdfs:hadoop $HBASE_PID_DIR"
     ##TODO JK PID는 어떻게 ? 어디에 ? 구글링해봐야...
     
 
@@ -488,7 +488,9 @@ fi
     
     
     echo "#15. Start HBASE Server(su - hbase -c '$HBASE_HOME/bin/start-hbase.sh') "
-    pdsh -w ^nn_host "su - hbase -c '$HBASE_HOME/bin/start-hbase.sh'"
+    pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/start-hbase.sh'"
+    
+    # pdsh -w ^nn_host "'$HBASE_HOME/bin/start-hbase.sh'"
     
  
 
