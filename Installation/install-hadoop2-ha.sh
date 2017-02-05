@@ -378,7 +378,8 @@ fi
     
     ## HBASE -- 확인 후 변수화 해야 
 	create_config --file hbase-site.xml
-    put_config --file hbase-site.xml --property hbase.rootdir --value "hdfs://$DFS_NAMESERVICES"
+    #put_config --file hbase-site.xml --property hbase.rootdir --value "hdfs://$DFS_NAMESERVICES"
+    put_config --file hbase-site.xml --property hbase.rootdir --value "hdfs://big01:8020/hbase"
     put_config --file hbase-site.xml --property hbase.master --value "big01:6000"
     #put_config --file hbase-site.xml --property hbase.zookeeper.quorum --value "$HA_ZOOKEEPER_QUORUM"
     put_config --file hbase-site.xml --property hbase.zookeeper.quorum --value "big01,big02,big03"
