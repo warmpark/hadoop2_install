@@ -305,9 +305,8 @@ fi
     
     
     echo "Editing regionservers conf regionservers - 나중에 보완할 필요...."
-    pdsh -w ^all_hosts "echo    '   big01
-    big02
-    big03' >  $HBASE_CONF_DIR/regionservers"
+    pdsh -w ^all_hosts "echo    'big02
+big03' >  $HBASE_CONF_DIR/regionservers"
     
     
 	echo "Creating base Hadoop XML config files..."
@@ -379,7 +378,7 @@ fi
     
     ## HBASE -- 확인 후 변수화 해야 
 	create_config --file hbase-site.xml
-    put_config --file hbase-site.xml --property hbase.rootdir --value "hdfs://big01:8020/hbase"
+    put_config --file hbase-site.xml --property hbase.rootdir --value "hdfs://$DFS_NAMESERVICES"
     put_config --file hbase-site.xml --property hbase.master --value "big01:6000"
     put_config --file hbase-site.xml --property hbase.zookeeper.quorum --value "${HA_ZOOKEEPER_QUORUM}"
     put_config --file hbase-site.xml --property hbase.zookeeper.property.dataDir --value "${ZOOKEEPER_DATA_DIR}"
@@ -390,8 +389,8 @@ fi
     echo "Copying base Hadoop XML config files to all hosts..."
 	pdcp -w ^all_hosts core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml $HADOOP_CONF_DIR
     
-    echo "Copying HBASE XML config files to all hosts..."
-	pdcp -w ^all_hosts hbase-site.xml $HBASE_CONF_DIR
+    echo "Copying HBASE XML and Hadoop XML config files to all hosts..."
+	pdcp -w ^all_hosts core-site.xml hdfs-site.xml hbase-site.xml $HBASE_CONF_DIR
     
     echo "Copying the slaves file on each all hosts, in $HADOOP_CONF_DIR .... "
 	pdcp -w ^all_hosts  dn_hosts $HADOOP_CONF_DIR/slaves
@@ -487,8 +486,7 @@ fi
     
     
     echo "#15. Start HBASE Server(su - hbase -c '$HBASE_HOME/bin/start-hbase.sh') "
-    ##pdsh -w ^nn_host "su - hbase -c '$HBASE_HOME/bin/start-hbase.sh'"
-    pdsh -w ^nn_host "'$HBASE_HOME/bin/start-hbase.sh'"
+    pdsh -w ^nn_host "su - hbase -c '$HBASE_HOME/bin/start-hbase.sh'"
     
  
 
