@@ -154,7 +154,7 @@ install()
     fi
    
     
-    echo "Copying Hadoop $HADOOP_VERSION to all hosts..."
+    echo "Copying hadoop-"$HADOOP_VERSION".tar.gz,  zookeeper-"$ZOOKEEPER_VERSION".tar.gz, hbase-${HBASE_VERSION}-bin.tar.gz to all hosts..."
 	pdcp -w ^all_hosts hadoop-"$HADOOP_VERSION".tar.gz /opt
     pdcp -w ^all_hosts zookeeper-"$ZOOKEEPER_VERSION".tar.gz /opt
     pdcp -w ^all_hosts hbase-${HBASE_VERSION}-bin.tar.gz /opt
@@ -168,6 +168,7 @@ if [ -z "$JAVA_HOME" ]; then
     else 
         echo "JDK PRM File exists"
     fi
+     echo "Copying  ${JDK_RPM_NAME} to all hosts..."
 	pdcp -w ^all_hosts ${JDK_RPM_NAME} /opt
 
 	echo "Installing JDK ${JDK_VERSION} on all hosts..."
@@ -195,14 +196,14 @@ fi
     #pdsh -w ^all_hosts useradd -g hadoop hbase
     
 	
-    echo "Extracting Hadoop $HADOOP_VERSION distribution on all hosts..."
-	pdsh -w ^all_hosts tar -zxf /opt/hadoop-"$HADOOP_VERSION".tar.gz -C /opt
+    echo "Extracting Hadoop hadoop-$HADOOP_VERSION.tar.gz distribution on all hosts..."
+	pdsh -w ^all_hosts "tar -zxf /opt/hadoop-$HADOOP_VERSION.tar.gz -C /opt && chown -R hdfs:hadoop $NN_DATA_DIR"
 
-    echo "Extracting Zookeeper $ZOOKEEPER_VERSION distribution on all ZK hosts..."
-	pdsh -w ^zk_hosts tar -zxf /opt/zookeeper-$ZOOKEEPER_VERSION.tar.gz -C /opt
+    echo "Extracting Zookeeper zookeeper-$ZOOKEEPER_VERSION.tar.gz distribution on all ZK hosts..."
+	pdsh -w ^zk_hosts  "tar -zxf /opt/zookeeper-$ZOOKEEPER_VERSION.tar.gz -C /opt && chown -R hdfs:hadoop $NN_DATA_DIR"
 
-    echo "Extracting HBASE $HBASE_VERSION distribution on all hosts..."
-	pdsh -w ^all_hosts tar -zxf /opt/hbase-${HBASE_VERSION}-bin.tar.gz -C /opt
+    echo "Extracting HBASE hbase-$HBASE_VERSION-bin.tar.gz distribution on all hosts..."
+	pdsh -w ^all_hosts "tar -zxf /opt/hbase-$HBASE_VERSION-bin.tar.gz -C /opt && chown -R hdfs:hadoop $NN_DATA_DIR"
 
 
 
