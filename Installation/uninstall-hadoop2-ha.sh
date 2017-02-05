@@ -196,7 +196,7 @@ pdsh -w ^all_hosts "rm -rf $HBASE_HOME"
 
 
 # echo "Removing hbase system account..."
-#pdsh -w ^all_hosts "userdel -rf hbase"
+# pdsh -w ^all_hosts "userdel -rf hbase"
 
 echo "Removing hdfs system account..."
 pdsh -w ^all_hosts "userdel -rf hdfs"
