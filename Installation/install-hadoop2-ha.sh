@@ -404,7 +404,7 @@ fi
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/bin/* /usr/bin"
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/libexec/* /usr/libexec"
     pdsh -w ^all_hosts "ln -s $ZOOKEEPER_CONF_DIR /etc/zookeeper"
-	pdsh -w ^all_hosts "ln -s $ZOOKEEPER_HOME/bin/* /usr/bin"
+	pdsh -w ^all_hosts "ln -s $ZOOKEEPER_HOME/bin/zk* /usr/bin"
     pdsh -w ^all_hosts "ln -s $HBASE_HOME/conf /etc/hbase"
 	pdsh -w ^all_hosts "ln -s $HBASE_HOME/bin/*hbase* /usr/bin"
 
@@ -487,7 +487,8 @@ fi
     
     
     echo "#15. Start HBASE Server(su - hbase -c '$HBASE_HOME/bin/start-hbase.sh') "
-    pdsh -w ^nn_host "su - hbase -c '$HBASE_HOME/bin/start-hbase.sh'"
+    ##pdsh -w ^nn_host "su - hbase -c '$HBASE_HOME/bin/start-hbase.sh'"
+    pdsh -w ^nn_host "'$HBASE_HOME/bin/start-hbase.sh'"
     
  
 
