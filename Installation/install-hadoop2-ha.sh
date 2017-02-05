@@ -162,8 +162,6 @@ install()
 if [ -z "$JAVA_HOME" ]; then
 	echo "Download & Copying JDK ${JDK_VERSION} to all hosts..."
     ## JDK DOWNLOAD
-        
-    ## ZKOOPER DOWNLOAD
     if [ ! -e "$JDK_RPM_NAME" ]; then
         echo "JDK PRM File does not exist"
         wget --no-cookies --no-check-certificate --header "Cookie:gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" ${JDK_DOWNLOAD_URI}
@@ -201,7 +199,7 @@ fi
 	pdsh -w ^all_hosts tar -zxf /opt/hadoop-"$HADOOP_VERSION".tar.gz -C /opt
 
     echo "Extracting Zookeeper $ZOOKEEPER_VERSION distribution on all ZK hosts..."
-	pdsh -w ^zk_hosts tar -zxf /opt/zookeeper-"$ZOOKEEPER_VERSION".tar.gz -C /opt
+	pdsh -w ^zk_hosts tar -zxf /opt/zookeeper-$ZOOKEEPER_VERSION.tar.gz -C /opt
 
     echo "Extracting HBASE $HBASE_VERSION distribution on all hosts..."
 	pdsh -w ^all_hosts tar -zxf /opt/hbase-${HBASE_VERSION}-bin.tar.gz -C /opt
