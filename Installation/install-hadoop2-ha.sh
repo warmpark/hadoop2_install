@@ -19,11 +19,11 @@ JDK_DOWNLOAD_URI="http://download.oracle.com/otn-pub/java/jdk/8u121-b13/e9e7ea24
 ZOOKEEPER_VERSION=3.4.9
 ZOOKEEPER_DOWNLOAD_URI="http://mirror.navercorp.com/apache/zookeeper/zookeeper-${ZOOKEEPER_VERSION}/zookeeper-${ZOOKEEPER_VERSION}.tar.gz"
 ZOOKEEPER_HOME="/opt/zookeeper-${ZOOKEEPER_VERSION}"
-ZOOKEEPER_LOG_DIR="/var/log/zookeeper/yarn/logs"
+ZOOKEEPER_LOG_DIR="/var/log/zookeeper"
 ZOOKEEPER_PREFIX="${ZOOKEEPER_HOME}"
 
 ZOOKEEPER_CONF_DIR="${ZOOKEEPER_HOME}/conf"
-ZOOKEEPER_DATA_DIR="/var/data/zookeeper/data"
+ZOOKEEPER_DATA_DIR="/var/data/zookeeper"
 
 DFS_NAMESERVICES=big-cluster
 HA_ZOOKEEPER_QUORUM=big01:2181,big02:2181,big03:2181
@@ -401,9 +401,9 @@ fi
 	pdsh -w ^all_hosts "ln -s $HADOOP_CONF_DIR /etc/hadoop"
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/bin/* /usr/bin"
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/libexec/* /usr/libexec"
-    pdsh -w ^all_hosts "ln -s $ZOOKEEPER_CONF_DIR/* /etc/zookeeper"
+    pdsh -w ^all_hosts "ln -s $ZOOKEEPER_CONF_DIR /etc/zookeeper"
 	pdsh -w ^all_hosts "ln -s $ZOOKEEPER_HOME/bin/* /usr/bin"
-    pdsh -w ^all_hosts "ln -s $HBASE_HOME/conf/* /etc/zookeeper"
+    pdsh -w ^all_hosts "ln -s $HBASE_HOME/conf /etc/hbase"
 	pdsh -w ^all_hosts "ln -s $HBASE_HOME/bin/*hbase* /usr/bin"
 
 
