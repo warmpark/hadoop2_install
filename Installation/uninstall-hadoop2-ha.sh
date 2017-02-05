@@ -14,7 +14,7 @@ ZOOKEEPER_DATA_DIR="/var/data/zookeeper"
 
 
 ## default /var/data/hadoop/jounal/data --- 이렇게 생성되는디....  그래서 설정을 바꾼다. 
-JN_EDITS_DIR=/var/data/hadoop/jounal/data 
+JN_EDITS_DIR=/var/data/hadoop/jounal
 
 
 HADOOP_VERSION=2.7.3
@@ -161,10 +161,10 @@ echo "Uninstalling JDK ${JDK_VERSION} RPM..."
 pdsh -w ^all_hosts "rpm -ev jdk${JDK_VERSION}"
 
 echo "Removing directory..."
-### 구조 삭제시 시작
 pdsh -w ^all_hosts "rm -rf $NN_DATA_DIR"
 pdsh -w ^all_hosts "rm -rf $DN_DATA_DIR"
 pdsh -w ^all_hosts "rm -rf $JN_EDITS_DIR"
+pdsh -w ^all_hosts "rm -rf $ZOOKEEPER_DATA_DIR"
 pdsh -w ^all_hosts "rm -rf $HBASE_DATA_DIR"
 
 pdsh -w ^all_hosts "rm -rf $YARN_LOG_DIR"
@@ -178,14 +178,9 @@ pdsh -w ^all_hosts "rm -rf $HADOOP_PID_DIR"
 pdsh -w ^all_hosts "rm -rf $HADOOP_MAPRED_PID_DIR"
 pdsh -w ^all_hosts "rm -rf $HBASE_PID_DIR"
 
-
-#DK Data 초기화. 
-pdsh -w ^all_hosts "rm -rf $ZOOKEEPER_DATA_DIR"
 pdsh -w ^all_hosts "rm -rf $ZOOKEEPER_CONF_DIR"
 pdsh -w ^all_hosts "rm -rf $HADOOP_CONF_DIR"
 pdsh -w ^all_hosts "rm -rf $HBASE_CONF_DIR"
-
-### 구조 삭제시 끝.
 
 pdsh -w ^all_hosts "rm -rf /var/data/hadoop"
 pdsh -w ^all_hosts "rm -rf /var/log/hadoop"

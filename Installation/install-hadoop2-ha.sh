@@ -34,7 +34,9 @@ HA_ZOOKEEPER_QUORUM=big01:2181,big02:2181,big03:2181
 # 이런 이슈는 보안의 이슈과 관련되며, ZK에 대한 접근권한 관리를 한든지, 클러스터 노드들에 대한 Proxy를 구성하는지 등에 대한 안이 있어야 한다. 
 # 금융권에서는 이러한 이슈가 더욱 중요한다. 
 
-JN_EDITS_DIR=/var/data/hadoop/jounal/data 
+## default /var/data/hadoop/jounal/data --- 이렇게 생성되는디....  그래서 설정을 바꾼다. 
+JN_EDITS_DIR=/var/data/hadoop/jounal
+
 # Journal node group for NameNodes will wite/red edits
 NAMENODE_SHARED_EDITS_DIR="qjournal://big01:8485;big02:8485;big03:8485/${DFS_NAMESERVICES}-journal"
 
@@ -287,7 +289,7 @@ fi
     
     echo "Editing zookeeper conf zoo.cfg - 나중에 보완할 필요...."
     pdsh -w ^all_hosts "echo     'dataDir=$ZOOKEEPER_DATA_DIR
-    dataLogDir=$ZOOKEEPER_HOME/logs
+    dataLogDir=$ZOOKEEPER_LOG_DIR
     clientPort=2181
     initLimit=5
     syncLimit=2
