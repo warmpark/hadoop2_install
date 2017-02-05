@@ -102,14 +102,14 @@ pdsh -w ^zk_hosts "rm -f /etc/profile.d/zookeeper.sh"
 
 
 
-echo "Removing Hadoop 2 services from run levels..."
-pdsh -w ^dn_hosts "chkconfig --del hadoop-datanode"
-pdsh -w ^nn_host "chkconfig --del hadoop-namenode"
-pdsh -w ^snn_host "chkconfig --del hadoop-namenode"
-pdsh -w ^mr_history_host "chkconfig --del hadoop-historyserver"
-pdsh -w ^yarn_proxy_host "chkconfig --del hadoop-proxyserver"
-pdsh -w ^nm_hosts "chkconfig --del hadoop-nodemanager"
-pdsh -w ^rm_host "chkconfig --del hadoop-resourcemanager"
+#echo "Removing Hadoop 2 services from run levels..."
+#pdsh -w ^dn_hosts "chkconfig --del hadoop-datanode"
+#pdsh -w ^nn_host "chkconfig --del hadoop-namenode"
+#pdsh -w ^snn_host "chkconfig --del hadoop-namenode"
+#pdsh -w ^mr_history_host "chkconfig --del hadoop-historyserver"
+#pdsh -w ^yarn_proxy_host "chkconfig --del hadoop-proxyserver"
+#pdsh -w ^nm_hosts "chkconfig --del hadoop-nodemanager"
+#pdsh -w ^rm_host "chkconfig --del hadoop-resourcemanager"
 
 
 echo "Removing Hadoop 2 startup scripts..."
