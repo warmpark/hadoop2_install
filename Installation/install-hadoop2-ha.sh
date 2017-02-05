@@ -282,7 +282,7 @@ fi
    
    
    	echo "HBASE hbase-env.sh"
-    pdsh -w ^all_hosts echo "export HBASE_MANAGES_ZK=$HBASE_MANAGES_ZK >> ${HBASE_CONF_DIR}/hbase-env.sh"
+    pdsh -w ^all_hosts echo "export HBASE_MANAGES_ZK=$HBASE_MANAGES_ZK >> $HBASE_CONF_DIR/hbase-env.sh"
     
     
     echo "Editing zookeeper conf zoo.cfg - 나중에 보완할 필요...."
@@ -305,7 +305,7 @@ fi
     echo "Editing regionservers conf regionservers - 나중에 보완할 필요...."
     pdsh -w ^all_hosts "echo    '   big01
     big02
-    big03' >  ${HBASE_CONF_DIR}/regionservers"
+    big03' >  $HBASE_CONF_DIR/regionservers"
     
     
 	echo "Creating base Hadoop XML config files..."
@@ -389,7 +389,7 @@ fi
 	pdcp -w ^all_hosts core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml $HADOOP_CONF_DIR
     
     echo "Copying HBASE XML config files to all hosts..."
-	pdcp -w ^all_hosts hbase-site.xml $HBASE_HOME/etc/hadoop/
+	pdcp -w ^all_hosts hbase-site.xml $HBASE_CONF_DIR
     
     echo "Copying the slaves file on each all hosts, in $HADOOP_CONF_DIR .... "
 	pdcp -w ^all_hosts  dn_hosts $HADOOP_CONF_DIR/slaves
