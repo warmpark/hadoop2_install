@@ -57,7 +57,7 @@ JAVA_HOME=""
 
 echo "Stopping Hadoop 2 services..."
 
-pdsh -w ^nn_host "su - hbase -c '$HBASE_HOME/bin/stop-hbase.sh'"
+pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/stop-hbase.sh'"
 pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh stop zkfc'"
 pdsh -w ^dn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh  stop datanode'"
 pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh stop namenode'"
@@ -82,7 +82,15 @@ pdsh -w ^rm_host "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh stop resource
 
 
 echo "Removing hbase distribution tarball..."
-pdsh -w ^all_hosts "rm -r /opt/hbase-${HBASE_VERSION}-bin.tar.gz"
+pdsh -w ^all_hosts "rm -r /opt/hbase-$HBASE_VERSION-bin.tar.gz"
+echo "Removing Zookeeper distribution tarball..."
+pdsh -w ^zk_hosts "rm -r /opt/zookeeper-$ZOOKEEPER_VERSION.tar.gz"
+echo "Removing Hadoop 2 distribution tarball..."
+pdsh -w ^all_hosts "rm -r /opt/hadoop-$HADOOP_VERSION.tar.gz"
+echo "Removing JDK distribution RPM file ..."
+pdsh -w ^all_hosts "rm -r /opt/$JDK_RPM_NAME"
+
+
 
 echo "Removing hbase bash environment setting..."
 pdsh -w ^all_hosts "rm -f /etc/profile.d/hbase.sh"
@@ -94,8 +102,6 @@ pdsh -w ^all_hosts "rm -f /etc/profile.d/hbase.sh"
 echo "Removing Zookeeper services from run levels..."
 #pdsh -w ^dn_hosts "chkconfig --del hadoop-zookeeper"
 
-echo "Removing Zookeeper distribution tarball..."
-pdsh -w ^zk_hosts "rm -r /opt/zookeeper-$ZOOKEEPER_VERSION.tar.gz"
 
 echo "Removing Zookeeper bash environment setting..."
 pdsh -w ^zk_hosts "rm -f /etc/profile.d/zookeeper.sh"
@@ -115,8 +121,6 @@ pdsh -w ^zk_hosts "rm -f /etc/profile.d/zookeeper.sh"
 echo "Removing Hadoop 2 startup scripts..."
 pdsh -w ^all_hosts "rm -f /etc/init.d/hadoop-*"
 
-echo "Removing Hadoop 2 distribution tarball..."
-pdsh -w ^all_hosts "rm -f /opt/hadoop-${HADOOP_VERSION}.tar.gz"
 
 if [ -z "$JAVA_HOME" ]; then
   echo "Removing JDK ${JDK_VERSION} distribution..."
