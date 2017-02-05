@@ -191,7 +191,7 @@ fi
  	echo "Creating system accounts and groups on all hosts..."
 	pdsh -w ^all_hosts groupadd hadoop
 	pdsh -w ^all_hosts useradd -g hadoop yarn
-	pdsh -w ^all_hosts useradd -g hadoop hdfs
+	#pdsh -w ^all_hosts useradd -g hadoop hdfs
 	pdsh -w ^all_hosts useradd -g hadoop mapred
     #pdsh -w ^all_hosts useradd -g hadoop hbase
     

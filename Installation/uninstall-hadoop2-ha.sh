@@ -203,14 +203,14 @@ pdsh -w ^all_hosts "rm -rf $HBASE_HOME"
 # pdsh -w ^all_hosts "userdel -rf hbase"
 
 echo "Removing hdfs system account..."
-pdsh -w ^all_hosts "userdel -rf hdfs"
+#pdsh -w ^all_hosts "userdel -rf hdfs"
 
 echo "Removing mapred system account..."
-pdsh -w ^all_hosts "userdel -rf mapred"
+#pdsh -w ^all_hosts "userdel -rf mapred"
 
 echo "Removing yarn system account..."
-pdsh -w ^all_hosts "userdel -rf yarn"
+#pdsh -w ^all_hosts "userdel -rf yarn"
 
 echo "Removing hadoop system group..."
-pdsh -w ^all_hosts "groupdel hadoop"
+#pdsh -w ^all_hosts "groupdel hadoop"
 
