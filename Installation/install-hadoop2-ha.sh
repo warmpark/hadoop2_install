@@ -197,13 +197,13 @@ fi
     
 	
     echo "Extracting Hadoop hadoop-$HADOOP_VERSION.tar.gz distribution on all hosts..."
-	pdsh -w ^all_hosts "tar -zxf /opt/hadoop-$HADOOP_VERSION.tar.gz -C /opt && chown -R hdfs:hadoop $NN_DATA_DIR"
+	pdsh -w ^all_hosts "tar -zxf /opt/hadoop-$HADOOP_VERSION.tar.gz -C /opt && chown -R hdfs:hadoop /opt/hadoop-$HADOOP_VERSION"
 
     echo "Extracting Zookeeper zookeeper-$ZOOKEEPER_VERSION.tar.gz distribution on all ZK hosts..."
-	pdsh -w ^zk_hosts  "tar -zxf /opt/zookeeper-$ZOOKEEPER_VERSION.tar.gz -C /opt && chown -R hdfs:hadoop $NN_DATA_DIR"
+	pdsh -w ^zk_hosts  "tar -zxf /opt/zookeeper-$ZOOKEEPER_VERSION.tar.gz -C /opt && chown -R hdfs:hadoop /opt/zookeeper-$ZOOKEEPER_VERSION"
 
     echo "Extracting HBASE hbase-$HBASE_VERSION-bin.tar.gz distribution on all hosts..."
-	pdsh -w ^all_hosts "tar -zxf /opt/hbase-$HBASE_VERSION-bin.tar.gz -C /opt && chown -R hdfs:hadoop $NN_DATA_DIR"
+	pdsh -w ^all_hosts "tar -zxf /opt/hbase-$HBASE_VERSION-bin.tar.gz -C /opt && chown -R hdfs:hadoop /opt/hbase-$HBASE_VERSION"
 
 
 
@@ -213,7 +213,7 @@ fi
 	pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
     
 	pdsh -w ^zk_hosts "echo export ZOOKEEPER_HOME=$ZOOKEEPER_HOME > /etc/profile.d/zookeeper.sh"
-	pdsh -w ^zk_hosts "echo export ZOOKEEPER_PREFIX=$ZOOKEEPER_HOME >> /etc/profile.d/zookeeper.sh"
+	#pdsh -w ^zk_hosts "echo export ZOOKEEPER_PREFIX=$ZOOKEEPER_HOME >> /etc/profile.d/zookeeper.sh"
 	pdsh -w ^zk_hosts "echo export ZOOKEEPER_LOG_DIR=$ZOOKEEPER_LOG_DIR >> /etc/profile.d/zookeeper.sh"
 	pdsh -w ^zk_hosts "echo export ZOO_LOG_DIR=$ZOOKEEPER_LOG_DIR >> /etc/profile.d/zookeeper.sh"
 	pdsh -w ^zk_hosts "source /etc/profile.d/zookeeper.sh"
@@ -304,9 +304,8 @@ fi
     pdsh -w big03 "echo 3 > $ZOOKEEPER_DATA_DIR/myid"
     
     
-    echo "Editing regionservers conf regionservers - 나중에 보완할 필요...."
-    pdsh -w ^all_hosts "echo    'big01
-    big02
+    echo "Editing regionservers conf regionservers - 나중에 보완할 필요...  HBASE는 HMaster와 ResionServer가 동시에 수행될 수 없음. ."
+    pdsh -w ^all_hosts "echo    'big02
     big03' >  $HBASE_CONF_DIR/regionservers"
     
     
@@ -381,8 +380,9 @@ fi
 	create_config --file hbase-site.xml
     put_config --file hbase-site.xml --property hbase.rootdir --value "hdfs://$DFS_NAMESERVICES"
     put_config --file hbase-site.xml --property hbase.master --value "big01:6000"
-    put_config --file hbase-site.xml --property hbase.zookeeper.quorum --value "${HA_ZOOKEEPER_QUORUM}"
-    put_config --file hbase-site.xml --property hbase.zookeeper.property.dataDir --value "${ZOOKEEPER_DATA_DIR}"
+    #put_config --file hbase-site.xml --property hbase.zookeeper.quorum --value "$HA_ZOOKEEPER_QUORUM"
+    put_config --file hbase-site.xml --property hbase.zookeeper.quorum --value "big01,big02,big03"
+    put_config --file hbase-site.xml --property hbase.zookeeper.property.dataDir --value "$ZOOKEEPER_DATA_DIR"
     put_config --file hbase-site.xml --property hbase.cluster.distributed --value true
     put_config --file hbase-site.xml --property dfs.datanode.max.xcievers --value 4096
 
@@ -391,7 +391,7 @@ fi
 	pdcp -w ^all_hosts core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml $HADOOP_CONF_DIR
     
     echo "Copying HBASE XML and Hadoop XML config files to all hosts..."
-	pdcp -w ^all_hosts core-site.xml hdfs-site.xml hbase-site.xml $HBASE_CONF_DIR
+	pdcp -w ^all_hosts core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml hbase-site.xml $HBASE_CONF_DIR
     
     echo "Copying the slaves file on each all hosts, in $HADOOP_CONF_DIR .... "
 	pdcp -w ^all_hosts  dn_hosts $HADOOP_CONF_DIR/slaves
