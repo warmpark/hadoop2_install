@@ -306,8 +306,9 @@ fi
     
     
     echo "Editing regionservers conf regionservers - 나중에 보완할 필요...."
-    pdsh -w ^all_hosts "echo    'big02
-big03' >  $HBASE_CONF_DIR/regionservers"
+    pdsh -w ^all_hosts "echo    'big01
+    big02
+    big03' >  $HBASE_CONF_DIR/regionservers"
     
     
 	echo "Creating base Hadoop XML config files..."
