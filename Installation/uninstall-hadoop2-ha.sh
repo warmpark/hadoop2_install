@@ -135,8 +135,10 @@ echo "Removing Java bash environment setting..."
 pdsh -w ^all_hosts "rm -f /etc/profile.d/java.sh"
 
 
-echo "Removing /etc/hadoop link..."
+echo "Removing /etc/hadoop, zookeeper, hbase link..."
 pdsh -w ^all_hosts "rm /etc/hadoop"
+pdsh -w ^all_hosts "rm /etc/zookeeper"
+pdsh -w ^all_hosts "rm /etc/hbase"
 
 echo "Removing Hadoop 2 command links..."
 pdsh -w ^all_hosts "rm /usr/bin/container-executor"
@@ -147,6 +149,7 @@ pdsh -w ^all_hosts "rm /usr/bin/rcc*"
 pdsh -w ^all_hosts "rm /usr/bin/test-container-executor"
 pdsh -w ^all_hosts "rm /usr/bin/yarn*"
 pdsh -w ^zk_hosts "rm /usr/bin/zk*"
+pdsh -w ^all_hosts "rm /usr/bin/*README*"
 pdsh -w ^all_hosts "rm /usr/bin/*hbase*"
 
 echo "Removing Hadoop 2 script links..."
