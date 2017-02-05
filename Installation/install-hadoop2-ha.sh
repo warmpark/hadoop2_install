@@ -11,7 +11,7 @@
 # zookeeper-3.4.8.tar.gz
 #http://apache.mirror.cdnetworks.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz
 
-DK_VERSION=1.8.0_121
+JDK_VERSION=1.8.0_121
 JDK_RPM_NAME=jdk-8u121-linux-x64.rpm
 JDK_DOWNLOAD_URI="http://download.oracle.com/otn-pub/java/jdk/8u121-b13/e9e7ea248e2c4826b92b3f075a80e441/${JDK_RPM_NAME}"
 
