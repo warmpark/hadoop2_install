@@ -121,15 +121,15 @@ pdsh -w ^zk_hosts "rm -f /etc/profile.d/zookeeper.sh"
 echo "Removing Hadoop 2 startup scripts..."
 pdsh -w ^all_hosts "rm -f /etc/init.d/hadoop-*"
 
+#JDK삭제 하지 않기 위해 주석 처리함 삭제시 주석 해제
+# if [ -z "$JAVA_HOME" ]; then
+#  echo "Removing JDK ${JDK_VERSION} distribution..."
+#  pdsh -w ^all_hosts "rm -f /opt/jdk*"
 
-if [ -z "$JAVA_HOME" ]; then
-  echo "Removing JDK ${JDK_VERSION} distribution..."
-  pdsh -w ^all_hosts "rm -f /opt/jdk*"
-
-  echo "Removing JDK ${JDK_VERSION} artifacts..."
-  pdsh -w ^all_hosts "rm -f sun-java*"
-  pdsh -w ^all_hosts "rm -f jdk*"
-fi
+#  echo "Removing JDK ${JDK_VERSION} artifacts..."
+#  pdsh -w ^all_hosts "rm -f sun-java*"
+#  pdsh -w ^all_hosts "rm -f jdk*"
+#fi
 
 
 echo "Removing Hadoop 2 bash environment setting..."
@@ -163,8 +163,9 @@ pdsh -w ^all_hosts "rm /usr/libexec/mapred-config.*"
 pdsh -w ^all_hosts "rm /usr/libexec/yarn-config.*"
 pdsh -w ^all_hosts "rm /usr/libexec/kms-config.*"
 
-echo "Uninstalling JDK ${JDK_VERSION} RPM..."
-pdsh -w ^all_hosts "rpm -ev jdk${JDK_VERSION}"
+#JDK rpm 삭제 하지 않기 위해 주석 처리함 삭제시 주석 해제
+#echo "Uninstalling JDK ${JDK_VERSION} RPM..."
+#pdsh -w ^all_hosts "rpm -ev jdk${JDK_VERSION}"
 
 echo "Removing directory..."
 pdsh -w ^all_hosts "rm -rf $NN_DATA_DIR"

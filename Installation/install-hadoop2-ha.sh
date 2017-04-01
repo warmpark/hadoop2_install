@@ -491,9 +491,7 @@ big03' >  $HBASE_CONF_DIR/regionservers"
     echo "#15. Start HBASE Server(su - hbase -c '$HBASE_HOME/bin/start-hbase.sh') "
     pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/start-hbase.sh'"
     
-    # pdsh -w ^nn_host "'$HBASE_HOME/bin/start-hbase.sh'"
-    
- 
+
 
 	echo "#16. Running YARN smoke test..."
 	pdsh -w ^all_hosts "usermod -a -G hadoop $(whoami)"
