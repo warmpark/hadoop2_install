@@ -161,11 +161,11 @@ install()
     pdcp -w ^all_hosts hbase-${HBASE_VERSION}-bin.tar.gz /opt
     
 if [ -z "$JAVA_HOME" ]; then
-	echo "Download & Copying JDK ${JDK_VERSION} to all hosts..."
-    ## JDK DOWNLOAD
+	echo "Download & Copying JDK ${JDK_VERSION} to all hosts...${JDK_DOWNLOAD_URI}"
+  ## JDK DOWNLOAD
     if [ ! -e "$JDK_RPM_NAME" ]; then
         echo "JDK PRM File does not exist"
-        wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" ${JDK_DOWNLOAD_URI}
+        wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "${JDK_DOWNLOAD_URI}"
   else 
         echo "JDK PRM File exists"
     fi
