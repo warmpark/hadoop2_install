@@ -13,7 +13,7 @@
 
 JDK_VERSION=1.8.0_131
 JDK_RPM_NAME=jdk-8u131-linux-x64.rpm
-JDK_DOWNLOAD_URI="http://download.oracle.com/otn-pub/java/jdk/8u131-b11/e9e7ea248e2c4826b92b3f075a80e441/${JDK_RPM_NAME}"
+JDK_DOWNLOAD_URI="http://http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/${JDK_RPM_NAME}"
 ## wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm"
 
 
@@ -165,8 +165,8 @@ if [ -z "$JAVA_HOME" ]; then
     ## JDK DOWNLOAD
     if [ ! -e "$JDK_RPM_NAME" ]; then
         echo "JDK PRM File does not exist"
-        wget --no-cookies --no-check-certificate --header "Cookie:gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" ${JDK_DOWNLOAD_URI}
-    else 
+        wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" ${JDK_DOWNLOAD_URI}
+  else 
         echo "JDK PRM File exists"
     fi
      echo "Copying  ${JDK_RPM_NAME} to all hosts..."
