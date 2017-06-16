@@ -122,15 +122,15 @@ echo "Removing Hadoop 2 startup scripts..."
 pdsh -w ^all_hosts "rm -f /etc/init.d/hadoop-*"
 
 #JDK삭제 하지 않기 위해 주석 처리함 삭제시 주석 해제
-# if [ -z "$JAVA_HOME" ]; then
-#  echo "Removing JDK ${JDK_VERSION} distribution..."
-#  pdsh -w ^all_hosts "rm -f /opt/jdk*"
+ if [ -z "$JAVA_HOME" ]; then
+  echo "Removing JDK ${JDK_VERSION} distribution..."
+  pdsh -w ^all_hosts "rm -f /opt/jdk*"
 
-#  echo "Removing JDK ${JDK_VERSION} artifacts..."
-#  pdsh -w ^all_hosts "rm -f sun-java*"
-#  pdsh -w ^all_hosts "rm -f jdk*"
-#fi
-
+  echo "Removing JDK ${JDK_VERSION} artifacts..."
+  pdsh -w ^all_hosts "rm -f sun-java*"
+  pdsh -w ^all_hosts "rm -f jdk*"
+fi
+#JDK삭제 하지 않기 위해 주석 처리함 삭제시 주석 해제
 
 echo "Removing Hadoop 2 bash environment setting..."
 pdsh -w ^all_hosts "rm -f /etc/profile.d/hadoop.sh"
@@ -164,8 +164,10 @@ pdsh -w ^all_hosts "rm /usr/libexec/yarn-config.*"
 pdsh -w ^all_hosts "rm /usr/libexec/kms-config.*"
 
 #JDK rpm 삭제 하지 않기 위해 주석 처리함 삭제시 주석 해제
-#echo "Uninstalling JDK ${JDK_VERSION} RPM..."
-#pdsh -w ^all_hosts "rpm -ev jdk${JDK_VERSION}"
+echo "Uninstalling JDK ${JDK_VERSION} RPM..."
+pdsh -w ^all_hosts "rpm -ev jdk${JDK_VERSION}"
+#JDK rpm 삭제 하지 않기 위해 주석 처리함 삭제시 주석 해제
+
 
 echo "Removing directory..."
 pdsh -w ^all_hosts "rm -rf $NN_DATA_DIR"
@@ -200,18 +202,18 @@ pdsh -w ^all_hosts "rm -rf $HBASE_HOME"
 
 
 
-# echo "Removing hbase system account..."
-# pdsh -w ^all_hosts "userdel -rf hbase"
+echo "Removing hbase system account..."
+pdsh -w ^all_hosts "userdel -rf hbase"
 
 echo "Removing hdfs system account..."
-#pdsh -w ^all_hosts "userdel -rf hdfs"
+pdsh -w ^all_hosts "userdel -rf hdfs"
 
 echo "Removing mapred system account..."
-#pdsh -w ^all_hosts "userdel -rf mapred"
+pdsh -w ^all_hosts "userdel -rf mapred"
 
 echo "Removing yarn system account..."
-#pdsh -w ^all_hosts "userdel -rf yarn"
+pdsh -w ^all_hosts "userdel -rf yarn"
 
 echo "Removing hadoop system group..."
-#pdsh -w ^all_hosts "groupdel hadoop"
+pdsh -w ^all_hosts "groupdel hadoop"
 
