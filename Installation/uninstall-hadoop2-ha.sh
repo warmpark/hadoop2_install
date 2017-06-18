@@ -107,7 +107,7 @@ pdsh -w ^all_hosts "rm -f /etc/profile.d/hbase.sh"
 #1. Zookeeper 정지
 # pdsh -w ^zk_hosts "service hadoop-zookeeper stop"
 
-echo "Removing Zookeeper services from run levels..."
+# echo "Removing Zookeeper services from run levels..."
 #pdsh -w ^dn_hosts "chkconfig --del hadoop-zookeeper"
 
 
