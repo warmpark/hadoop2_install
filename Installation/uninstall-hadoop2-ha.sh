@@ -49,17 +49,14 @@ HBASE_MANAGES_ZK=false
 HBASE_PID_DIR=/var/run/hbase
 
 
-
-
-# If using jdk-8u92-linux-x64.rpm, then
-# set JAVA_HOME=""
-# JAVA_HOME= /usr/lib/jvm/java-1.7.0-openjdk-1.7.0.101-2.6.6.1.el7_2.x86_64/jre/
-JAVA_HOME=""
+pdsh -w ^all_hosts "source /etc/profile.d/java.sh"
+pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
+pdsh -w ^zk_hosts "source /etc/profile.d/zookeeper.sh"
+pdsh -w ^all_hosts "source /etc/profile.d/hbase.sh"
 
 
 
 echo "Stopping Hadoop 2 services..."
-
 #pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/stop-hbase.sh'"
 pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh stop master'"
 pdsh -w ^hbase_regionservers "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh stop regionserver'"
@@ -104,30 +101,17 @@ echo "Removing hbase bash environment setting..."
 pdsh -w ^all_hosts "rm -f /etc/profile.d/hbase.sh"
 
 
-#1. Zookeeper 정지
-# pdsh -w ^zk_hosts "service hadoop-zookeeper stop"
-
-# echo "Removing Zookeeper services from run levels..."
-#pdsh -w ^dn_hosts "chkconfig --del hadoop-zookeeper"
-
 
 echo "Removing Zookeeper bash environment setting..."
 pdsh -w ^zk_hosts "rm -f /etc/profile.d/zookeeper.sh"
 
 
-
-#echo "Removing Hadoop 2 services from run levels..."
-#pdsh -w ^dn_hosts "chkconfig --del hadoop-datanode"
-#pdsh -w ^nn_host "chkconfig --del hadoop-namenode"
-#pdsh -w ^snn_host "chkconfig --del hadoop-namenode"
-#pdsh -w ^mr_history_host "chkconfig --del hadoop-historyserver"
-#pdsh -w ^yarn_proxy_host "chkconfig --del hadoop-proxyserver"
-#pdsh -w ^nm_hosts "chkconfig --del hadoop-nodemanager"
-#pdsh -w ^rm_host "chkconfig --del hadoop-resourcemanager"
-
+# JAVA_HOME = "" 이면 자바삭제.
+JAVA_HOME=""
 
 echo "Removing Hadoop 2 startup scripts..."
 pdsh -w ^all_hosts "rm -f /etc/init.d/hadoop-*"
+
 
 #JDK삭제 하지 않기 위해 주석 처리함 삭제시 주석 해제
  if [ -z "$JAVA_HOME" ]; then
