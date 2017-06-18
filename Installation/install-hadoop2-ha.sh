@@ -200,6 +200,11 @@ fi
 	pdsh -w ^all_hosts useradd -g hadoop hdfs
 	pdsh -w ^all_hosts useradd -g hadoop mapred
     pdsh -w ^all_hosts useradd -g hadoop hbase
+	
+	
+	
+	
+	
     
 	
     echo "Extracting Hadoop hadoop-$HADOOP_VERSION.tar.gz distribution on all hosts..."
@@ -501,7 +506,13 @@ big03' >  $HBASE_CONF_DIR/regionservers"
     
     
     echo "#15. Start HBASE Server(su - hbase -c '$HBASE_HOME/bin/start-hbase.sh') "
-    pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/start-hbase.sh'"
+	## HBASE를 hdfs계정으로 실행할 때, 아래 오류 해결 방안 찾아야... --> 일단은 root 계정으로 시작. 
+	# big01: Java HotSpot(TM) 64-Bit Server VM warning: ignoring option PermSize=128m; support was removed in 8.0
+	# big01: Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=128m; support was removed in 8.0
+	# big01: big02: Host key verification failed.
+	# big01: big03: Host key verification failed.
+    # pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/start-hbase.sh'"
+	pdsh -w ^nn_host "'$HBASE_HOME/bin/start-hbase.sh'"
     
 
 
