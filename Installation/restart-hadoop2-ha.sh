@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 JDK_VERSION=1.8.0_131
 JDK_RPM_NAME=jdk-8u131-linux-x64.rpm
 JDK_DOWNLOAD_URI="http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/${JDK_RPM_NAME}"
@@ -140,10 +139,10 @@ echo "#12. Start proxy server(su - yarn -c '$HADOOP_HOME/sbin/yarn-daemon.sh sta
 pdsh -w ^yarn_proxy_host "su - yarn -c '$HADOOP_HOME/sbin/yarn-daemon.sh start proxyserver'"
 
 	   
-echo "#13.Creating MapReduce Job History directories... mr-jobhistory-daemon.sh  start historyserver 수행하기 위해 필수..."
-su - hdfs -c "hdfs dfs -mkdir -p /mapred/history/done_intermediate"
-su - hdfs -c "hdfs dfs -chown -R mapred:hadoop /mapred"
-su - hdfs -c "hdfs dfs -chmod -R g+rwx /mapred"
+#echo "#13.Creating MapReduce Job History directories... mr-jobhistory-daemon.sh  start historyserver 수행하기 위해 필수..."
+#su - hdfs -c "hdfs dfs -mkdir -p /mapred/history/done_intermediate"
+#su - hdfs -c "hdfs dfs -chown -R mapred:hadoop /mapred"
+#su - hdfs -c "hdfs dfs -chmod -R g+rwx /mapred"
 
 echo "#14. Start History Server(su - mapred -c '$HADOOP_HOME/sbin/mr-jobhistory-daemon.sh  start historyserver') "
 pdsh -w ^mr_history_host "su - mapred -c '$HADOOP_HOME/sbin/mr-jobhistory-daemon.sh  start historyserver'"
@@ -153,9 +152,9 @@ pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh start master'"
 pdsh -w ^hbase_regionservers "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh start regionserver'"
 
 echo "#16. Running YARN smoke test..."
-pdsh -w ^all_hosts "usermod -a -G hadoop $(whoami)"
-su - hdfs -c "hadoop fs -mkdir -p /user/$(whoami)"
-su - hdfs -c "hadoop fs -chown $(whoami):$(whoami) /user/$(whoami)"
+#pdsh -w ^all_hosts "usermod -a -G hadoop $(whoami)"
+#su - hdfs -c "hadoop fs -mkdir -p /user/$(whoami)"
+#su - hdfs -c "hadoop fs -chown $(whoami):$(whoami) /user/$(whoami)"
 hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-$HADOOP_VERSION.jar pi -Dmapreduce.clientfactory.class.name=org.apache.hadoop.mapred.YarnClientFactory -libjars $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-$HADOOP_VERSION.jar 16 10000
 
 
