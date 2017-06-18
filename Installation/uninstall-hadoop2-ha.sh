@@ -61,7 +61,11 @@ JAVA_HOME=""
 echo "Stopping Hadoop 2 services..."
 
 #pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/stop-hbase.sh'"
-pdsh -w ^nn_host "'$HBASE_HOME/bin/stop-hbase.sh'"
+pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/stop-hbase.sh'"
+pdsh -w ^hbase_regionservers "su - hdfs -c '$HBASE_HOME/bin/stop-hbase.sh'"
+  
+
+
 pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh stop zkfc'"
 pdsh -w ^dn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh  stop datanode'"
 pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh stop namenode'"
