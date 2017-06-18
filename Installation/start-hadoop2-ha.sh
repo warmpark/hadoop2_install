@@ -81,18 +81,9 @@ YARN_PROXY_PORT=8081
 HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
 
 
-# If using local OpenJDK, it must be installed on all nodes.
-# If using ${JDK_RPM_NAME}, then
-# set JAVA_HOME="" and place ${JDK_RPM_NAME} in this directory
-#JAVA_HOME=/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64/
-#JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.101-2.6.6.1.el7_2.x86_64/jre/
-JAVA_HOME=""
-source ./hadoop-xml-conf.sh
-CMD_OPTIONS=$(getopt -n "$0"  -o hif --long "help,interactive,file"  -- "$@")
-
-
 ## VM Memory management by warmpark add.
 YARN_NODEMANAGER_HEAPSIZE=308
+
 
 
 #### HBASE 
