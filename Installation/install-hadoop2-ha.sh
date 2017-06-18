@@ -220,12 +220,14 @@ fi
 	pdsh -w ^zk_hosts "echo export ZOOKEEPER_HOME=$ZOOKEEPER_HOME > /etc/profile.d/zookeeper.sh"
 	#pdsh -w ^zk_hosts "echo export ZOOKEEPER_PREFIX=$ZOOKEEPER_HOME >> /etc/profile.d/zookeeper.sh"
 	pdsh -w ^zk_hosts "echo export ZOOKEEPER_LOG_DIR=$ZOOKEEPER_LOG_DIR >> /etc/profile.d/zookeeper.sh"
+	pdsh -w ^zk_hosts "echo export ZOOKEEPER_CONF_DIR=$ZOOKEEPER_CONF_DIR >> /etc/profile.d/zookeeper.sh"
 	pdsh -w ^zk_hosts "echo export ZOO_LOG_DIR=$ZOOKEEPER_LOG_DIR >> /etc/profile.d/zookeeper.sh"
 	pdsh -w ^zk_hosts "source /etc/profile.d/zookeeper.sh"
     
     
     pdsh -w ^all_hosts "echo export HBASE_HOME=$HBASE_HOME > /etc/profile.d/hbase.sh"
 	pdsh -w ^all_hosts "echo export HBASE_PREFIX=$HBASE_HOME >> /etc/profile.d/hbase.sh"
+	pdsh -w ^all_hosts "echo export HBASE_CONF_DIR=$HBASE_CONF_DIR >> /etc/profile.d/hbase.sh"
 	pdsh -w ^all_hosts "echo export HBASE_LOG_DIR=$HBASE_LOG_DIR >> /etc/profile.d/hbase.sh"
     pdsh -w ^all_hosts "echo export PATH=$HBASE_HOME/bin:$PATH >> /etc/profile.d/hbase.sh"
     pdsh -w ^all_hosts "echo export CLASSPATH=$CLASSPATH:$HBASE_CONF_DIR >> /etc/profile.d/hbase.sh"
@@ -418,7 +420,7 @@ big03' >  $HBASE_CONF_DIR/regionservers"
 	pdsh -w ^all_hosts "ln -s $HADOOP_HOME/libexec/* /usr/libexec"
     pdsh -w ^all_hosts "ln -s $ZOOKEEPER_CONF_DIR /etc/zookeeper"
 	pdsh -w ^all_hosts "ln -s $ZOOKEEPER_HOME/bin/zk* /usr/bin"
-    pdsh -w ^all_hosts "ln -s $HBASE_HOME/conf /etc/hbase"
+    pdsh -w ^all_hosts "ln -s $HBASE_CONF_DIR /etc/hbase"
 	pdsh -w ^all_hosts "ln -s $HBASE_HOME/bin/*hbase* /usr/bin"
 
 
