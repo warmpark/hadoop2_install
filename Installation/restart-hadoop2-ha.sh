@@ -62,6 +62,11 @@ HBASE_MANAGES_ZK=false
 HBASE_PID_DIR=/var/run/hbase
 
 
+pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
+pdsh -w ^zk_hosts "source /etc/profile.d/zookeeper.sh"
+pdsh -w ^all_hosts "source /etc/profile.d/hbase.sh"
+
+
 pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh stop master'"
 pdsh -w ^hbase_regionservers "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh stop regionserver'"
 pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh stop zkfc'"
