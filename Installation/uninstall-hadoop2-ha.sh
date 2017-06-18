@@ -1,7 +1,7 @@
 #!/bin/bash
 
 JDK_VERSION=1.8.0_131
-JDK_RPM_NAME=jdk-8u121-linux-x64.rpm
+JDK_RPM_NAME=jdk-8u131-linux-x64.rpm
 
 #ZOOKEEPER_VERSION=3.4.9
 ZOOKEEPER_VERSION=3.4.6 
