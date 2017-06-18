@@ -6,7 +6,7 @@
   </property>
   <property>
     <name>dfs.journalnode.edits.dir</name>
-    <value>/var/data/hadoop/jounal/data</value>
+    <value>/var/data/hadoop/jounal</value>
   </property>
   <property>
     <name>hadoop.http.staticuser.user</name>
