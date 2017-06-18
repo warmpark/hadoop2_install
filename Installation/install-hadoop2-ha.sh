@@ -191,8 +191,6 @@ fi
     pdsh -w ^all_hosts "echo export PATH=$JAVA_HOME/bin:$PATH >> /etc/profile.d/java.sh"
 	pdsh -w ^all_hosts "source /etc/profile.d/java.sh"
     
-
-    
     
  	echo "Creating system accounts and groups on all hosts..."
 	pdsh -w ^all_hosts groupadd hadoop
@@ -202,10 +200,6 @@ fi
     pdsh -w ^all_hosts useradd -g hadoop hbase
 	
 	
-	
-	
-	
-    
 	
     echo "Extracting Hadoop hadoop-$HADOOP_VERSION.tar.gz distribution on all hosts..."
 	pdsh -w ^all_hosts "tar -zxf /opt/hadoop-$HADOOP_VERSION.tar.gz -C /opt && chown -R hdfs:hadoop /opt/hadoop-$HADOOP_VERSION"
@@ -512,8 +506,8 @@ big03' >  $HBASE_CONF_DIR/regionservers"
 	# big01: big02: Host key verification failed.
 	# big01: big03: Host key verification failed.
     # pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/start-hbase.sh'"
-	pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/start-hbase.sh'"
-	pdsh -w ^hbase_regionservers "su - hdfs -c '$HBASE_HOME/bin/start-hbase.sh'"
+	pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh start master'"
+	pdsh -w ^hbase_regionservers "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh start regionserver'"
     
 
 
