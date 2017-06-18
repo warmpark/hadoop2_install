@@ -251,9 +251,9 @@ fi
 	pdsh -w ^all_hosts echo "export HADOOP_PID_DIR=$HADOOP_PID_DIR >> $HADOOP_CONF_DIR/hadoop-env.sh"
 	pdsh -w ^all_hosts echo "export YARN_PID_DIR=$YARN_PID_DIR >> $HADOOP_CONF_DIR/yarn-env.sh"
 	pdsh -w ^all_hosts echo "export HADOOP_MAPRED_PID_DIR=$HADOOP_MAPRED_PID_DIR >> $HADOOP_CONF_DIR/mapred-env.sh"
-    pdsh -w ^all_hosts echo "export HBASE_PID_DIR=$HBASE_PID_DIR >> $HBASE_CONF_DIR/hbase-env.sh"
+    pdsh -w ^all_hosts echo "export HBASE_PID_DIR=$ >> $HBASE_CONF_DIR/hbase-env.sh"
     ### ZK  PID관리는 어떻게.....
-    
+    HBASE_PID_DIR
 	## 설정파일 다시 로드 
 	pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
 	pdsh -w ^zk_hosts "source /etc/profile.d/zookeeper.sh"
