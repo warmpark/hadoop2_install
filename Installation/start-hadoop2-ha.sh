@@ -1,4 +1,15 @@
 #!/bin/bash
+# Install Hadoop 2 using pdsh/pdcp where possible.
+# 
+# Command can be interactive or file-based.  This script sets up
+# a Hadoop 2 cluster with basic configuration.  Modify data, log, and pid
+# directories as desired.  Further configure your cluster with ./conf-hadoop2.sh
+# after running this installation script.
+#
+
+# Basic environment variables.  Edit as necessary
+# zookeeper-3.4.8.tar.gz
+#http://apache.mirror.cdnetworks.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz
 
 JDK_VERSION=1.8.0_131
 JDK_RPM_NAME=jdk-8u131-linux-x64.rpm
@@ -19,12 +30,38 @@ ZOOKEEPER_DATA_DIR="/var/data/zookeeper"
 DFS_NAMESERVICES=big-cluster
 HA_ZOOKEEPER_QUORUM=big01:2181,big02:2181,big03:2181
 
+## default /var/data/hadoop/jounal/data --- 이렇게 생성되는디....  그래서 설정을 바꾼다. 
+## HBase는 클라이언트에게 ZK 접근을 허락하고, Hadop은 클라이언트에게 ZK접근을 허락하지 않는다. 
+# 따라서 크러스터 밖에서 원격으로 Hadoop을 사용하려면, 관련 설정정보 (XML)이 클라이언트 쪽에 배포되어야 한다. 
+# 이런 이슈는 보안의 이슈과 관련되며, ZK에 대한 접근권한 관리를 한든지, 클러스터 노드들에 대한 Proxy를 구성하는지 등에 대한 안이 있어야 한다. 
+# 금융권에서는 이러한 이슈가 더욱 중요한다. 
 
 ## default /var/data/hadoop/jounal/data --- 이렇게 생성되는디....  그래서 설정을 바꾼다. 
 JN_EDITS_DIR=/var/data/hadoop/jounal
 
 # Journal node group for NameNodes will wite/red edits
 NAMENODE_SHARED_EDITS_DIR="qjournal://big01:8485;big02:8485;big03:8485/${DFS_NAMESERVICES}-journal"
+
+
+#   HADOOP_CONF_DIR  Alternate conf dir. Default is ${HADOOP_PREFIX}/conf.
+#   HADOOP_LOG_DIR   Where log files are stored.  PWD by default.
+#   --HADOOP_MASTER    host:path where hadoop code should be rsync'd from
+#   HADOOP_PID_DIR   The pid files are stored. /tmp by default.
+#   --HADOOP_IDENT_STRING   A string representing this instance of hadoop. $USER by default
+#   --HADOOP_NICENESS The scheduling priority for daemons. Defaults to 0.
+
+#   YARN_CONF_DIR  Alternate conf dir. Default is ${HADOOP_YARN_HOME}/conf.
+#   YARN_LOG_DIR   Where log files are stored.  PWD by default.
+#   --YARN_MASTER    host:path where hadoop code should be rsync'd from
+#   YARN_PID_DIR   The pid files are stored. /tmp by default.
+#   --YARN_IDENT_STRING   A string representing this instance of hadoop. $USER by default
+#   --YARN_NICENESS The scheduling priority for daemons. Defaults to 0.
+
+#   HADOOP_JHS_LOGGER  Hadoop JobSummary logger.
+#   HADOOP_CONF_DIR  Alternate conf dir. Default is ${HADOOP_MAPRED_HOME}/conf.
+#   HADOOP_MAPRED_PID_DIR   The pid files are stored. /tmp by default.
+#   --HADOOP_MAPRED_NICENESS The scheduling priority for daemons. Defaults to 0.
+
 
 
 #HADOOP_VERSION=2.7.2
@@ -41,11 +78,21 @@ HADOOP_PID_DIR=/var/run/hadoop/hdfs
 HADOOP_MAPRED_PID_DIR=/var/run/hadoop/mapred
 HTTP_STATIC_USER=hdfs
 YARN_PROXY_PORT=8081
+HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+
+
+# If using local OpenJDK, it must be installed on all nodes.
+# If using ${JDK_RPM_NAME}, then
+# set JAVA_HOME="" and place ${JDK_RPM_NAME} in this directory
+#JAVA_HOME=/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64/
+#JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.101-2.6.6.1.el7_2.x86_64/jre/
+JAVA_HOME=""
+source ./hadoop-xml-conf.sh
+CMD_OPTIONS=$(getopt -n "$0"  -o hif --long "help,interactive,file"  -- "$@")
 
 
 ## VM Memory management by warmpark add.
 YARN_NODEMANAGER_HEAPSIZE=308
-
 
 
 #### HBASE 
@@ -60,6 +107,7 @@ HBASE_CONF_DIR="${HBASE_HOME}/conf"
 HBASE_DATA_DIR="/var/data/hbase"
 HBASE_MANAGES_ZK=false
 HBASE_PID_DIR=/var/run/hbase
+
 
 pdsh -w ^all_hosts "source /etc/profile.d/java.sh"
 pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"

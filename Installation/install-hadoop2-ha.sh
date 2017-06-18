@@ -78,6 +78,9 @@ HADOOP_PID_DIR=/var/run/hadoop/hdfs
 HADOOP_MAPRED_PID_DIR=/var/run/hadoop/mapred
 HTTP_STATIC_USER=hdfs
 YARN_PROXY_PORT=8081
+HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+
+
 # If using local OpenJDK, it must be installed on all nodes.
 # If using ${JDK_RPM_NAME}, then
 # set JAVA_HOME="" and place ${JDK_RPM_NAME} in this directory
@@ -86,7 +89,7 @@ YARN_PROXY_PORT=8081
 JAVA_HOME=""
 source ./hadoop-xml-conf.sh
 CMD_OPTIONS=$(getopt -n "$0"  -o hif --long "help,interactive,file"  -- "$@")
-HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+
 
 ## VM Memory management by warmpark add.
 YARN_NODEMANAGER_HEAPSIZE=308
