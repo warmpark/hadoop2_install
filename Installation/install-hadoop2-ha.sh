@@ -230,7 +230,7 @@ fi
 	pdsh -w ^all_hosts "echo export HBASE_LOG_DIR=$HBASE_LOG_DIR >> /etc/profile.d/hbase.sh"
     pdsh -w ^all_hosts "echo export PATH=$HBASE_HOME/bin:$PATH >> /etc/profile.d/hbase.sh"
     pdsh -w ^all_hosts "echo export CLASSPATH=$CLASSPATH:$HBASE_CONF_DIR >> /etc/profile.d/hbase.sh"
-	pdsh -w ^zk_hosts "source /etc/profile.d/hbase.sh"
+	pdsh -w ^all_hosts "source /etc/profile.d/hbase.sh"
     
         
     echo "Editing Hadoop environment scripts for log directories on all hosts..."
@@ -245,6 +245,12 @@ fi
     pdsh -w ^all_hosts echo "export HBASE_PID_DIR=$HBASE_PID_DIR >> $HBASE_CONF_DIR/hbase-env.sh"
     ### ZK  PID관리는 어떻게.....
     
+	## 설정파일 다시 로드 
+	pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
+	pdsh -w ^zk_hosts "source /etc/profile.d/zookeeper.sh"
+	pdsh -w ^all_hosts "source /etc/profile.d/hbase.sh"
+
+	
   
     ## 각종 저장 장소의 기본 사용자는 hdfs... 
     pdsh -w ^all_hosts "mkdir -p /var/data/hadoop && chown -R hdfs:hadoop /var/data/hadoop"
