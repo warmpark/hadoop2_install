@@ -1,16 +1,5 @@
 #!/bin/bash
-#!/bin/bash
-# Install Hadoop 2 using pdsh/pdcp where possible.
-# 
-# Command can be interactive or file-based.  This script sets up
-# a Hadoop 2 cluster with basic configuration.  Modify data, log, and pid
-# directories as desired.  Further configure your cluster with ./conf-hadoop2.sh
-# after running this installation script.
-#
 
-# Basic environment variables.  Edit as necessary
-# zookeeper-3.4.8.tar.gz
-#http://apache.mirror.cdnetworks.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz
 
 JDK_VERSION=1.8.0_131
 JDK_RPM_NAME=jdk-8u131-linux-x64.rpm
@@ -44,27 +33,6 @@ JN_EDITS_DIR=/var/data/hadoop/jounal
 NAMENODE_SHARED_EDITS_DIR="qjournal://big01:8485;big02:8485;big03:8485/${DFS_NAMESERVICES}-journal"
 
 
-#   HADOOP_CONF_DIR  Alternate conf dir. Default is ${HADOOP_PREFIX}/conf.
-#   HADOOP_LOG_DIR   Where log files are stored.  PWD by default.
-#   --HADOOP_MASTER    host:path where hadoop code should be rsync'd from
-#   HADOOP_PID_DIR   The pid files are stored. /tmp by default.
-#   --HADOOP_IDENT_STRING   A string representing this instance of hadoop. $USER by default
-#   --HADOOP_NICENESS The scheduling priority for daemons. Defaults to 0.
-
-#   YARN_CONF_DIR  Alternate conf dir. Default is ${HADOOP_YARN_HOME}/conf.
-#   YARN_LOG_DIR   Where log files are stored.  PWD by default.
-#   --YARN_MASTER    host:path where hadoop code should be rsync'd from
-#   YARN_PID_DIR   The pid files are stored. /tmp by default.
-#   --YARN_IDENT_STRING   A string representing this instance of hadoop. $USER by default
-#   --YARN_NICENESS The scheduling priority for daemons. Defaults to 0.
-
-#   HADOOP_JHS_LOGGER  Hadoop JobSummary logger.
-#   HADOOP_CONF_DIR  Alternate conf dir. Default is ${HADOOP_MAPRED_HOME}/conf.
-#   HADOOP_MAPRED_PID_DIR   The pid files are stored. /tmp by default.
-#   --HADOOP_MAPRED_NICENESS The scheduling priority for daemons. Defaults to 0.
-
-
-
 #HADOOP_VERSION=2.7.2
 HADOOP_VERSION=2.7.3
 HADOOP_DOWNLOAD_URI="http://apache.tt.co.kr/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz"
@@ -79,15 +47,7 @@ HADOOP_PID_DIR=/var/run/hadoop/hdfs
 HADOOP_MAPRED_PID_DIR=/var/run/hadoop/mapred
 HTTP_STATIC_USER=hdfs
 YARN_PROXY_PORT=8081
-# If using local OpenJDK, it must be installed on all nodes.
-# If using ${JDK_RPM_NAME}, then
-# set JAVA_HOME="" and place ${JDK_RPM_NAME} in this directory
-#JAVA_HOME=/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64/
-#JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.101-2.6.6.1.el7_2.x86_64/jre/
-JAVA_HOME=""
-source ./hadoop-xml-conf.sh
-CMD_OPTIONS=$(getopt -n "$0"  -o hif --long "help,interactive,file"  -- "$@")
-HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+
 
 ## VM Memory management by warmpark add.
 YARN_NODEMANAGER_HEAPSIZE=308
