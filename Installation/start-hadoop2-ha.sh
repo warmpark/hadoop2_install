@@ -66,7 +66,19 @@ pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
 pdsh -w ^zk_hosts "source /etc/profile.d/zookeeper.sh"
 pdsh -w ^all_hosts "source /etc/profile.d/hbase.sh"
 
- 
+export YARN_PID_DIR=$YARN_PID_DIR
+export HADOOP_PID_DIR=$HADOOP_PID_DIR
+export HADOOP_MAPRED_PID_DIR=$HADOOP_MAPRED_PID_DIR
+export HBASE_PID_DIR=$HBASE_PID_DIR
+
+
+echo "PID DIR를 항상 만들어 주어야 하는가? Creating pid directories on all hosts..."
+pdsh -w ^all_hosts "mkdir -p $YARN_PID_DIR && chown -R yarn:hadoop $YARN_PID_DIR"
+pdsh -w ^all_hosts "mkdir -p $HADOOP_PID_DIR && chown -R hdfs:hadoop $HADOOP_PID_DIR"
+pdsh -w ^all_hosts "mkdir -p $HADOOP_MAPRED_PID_DIR && chown -R mapred:hadoop $HADOOP_MAPRED_PID_DIR"
+pdsh -w ^all_hosts "mkdir -p $HBASE_PID_DIR && chown -R hdfs:hadoop $HBASE_PID_DIR"
+
+
 echo "#1. Start ZK Quarum Daemon(su - hdfs -c '$ZOOKEEPER_HOME/bin/zkServer.sh start') :모든 ZK에서:  3,5 ... 홀수개수로 "
 pdsh -w ^zk_hosts "su - hdfs -c '$ZOOKEEPER_HOME/bin/zkServer.sh start'"
 
