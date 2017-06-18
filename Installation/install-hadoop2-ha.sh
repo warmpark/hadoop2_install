@@ -17,7 +17,8 @@ JDK_DOWNLOAD_URI="http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a
 ## wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm"
 
 
-ZOOKEEPER_VERSION=3.4.9
+#ZOOKEEPER_VERSION=3.4.9
+ZOOKEEPER_VERSION=3.4.6 
 ZOOKEEPER_DOWNLOAD_URI="http://mirror.navercorp.com/apache/zookeeper/zookeeper-${ZOOKEEPER_VERSION}/zookeeper-${ZOOKEEPER_VERSION}.tar.gz"
 ZOOKEEPER_HOME="/opt/zookeeper-${ZOOKEEPER_VERSION}"
 ZOOKEEPER_LOG_DIR="/var/log/zookeeper"
@@ -93,7 +94,8 @@ YARN_NODEMANAGER_HEAPSIZE=308
 
 
 #### HBASE 
-HBASE_VERSION=1.2.6
+#HBASE_VERSION=1.2.6
+HBASE_VERSION=1.1.10
 HBASE_DOWNLOAD_URI="http://apache.tt.co.kr/hbase/${HBASE_VERSION}/hbase-${HBASE_VERSION}-bin.tar.gz"
 ##http://apache.mirror.cdnetworks.com/hbase/1.2.6/hbase-1.2.6-bin.tar.gz
 HBASE_HOME="/opt/hbase-${HBASE_VERSION}"
