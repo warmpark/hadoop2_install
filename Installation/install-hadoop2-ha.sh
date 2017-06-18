@@ -193,11 +193,15 @@ fi
     
     
  	echo "Creating system accounts and groups on all hosts..."
+	# useradd 계정명 -m -s /bin/bash
+	#→ -m 옵션을 명시해야 홈 디렉토리가 생성됨
+	#-s /bin/bash 옵션을 명시해야 쉘 환경이 설정됨
+	
 	pdsh -w ^all_hosts groupadd hadoop
-	pdsh -w ^all_hosts useradd -g hadoop yarn
-	pdsh -w ^all_hosts useradd -g hadoop hdfs
-	pdsh -w ^all_hosts useradd -g hadoop mapred
-    pdsh -w ^all_hosts useradd -g hadoop hbase
+	pdsh -w ^all_hosts useradd -g hadoop yarn -m -s /bin/bash
+	pdsh -w ^all_hosts useradd -g hadoop hdfs -m -s /bin/bash
+	pdsh -w ^all_hosts useradd -g hadoop mapred -m -s /bin/bash
+    pdsh -w ^all_hosts useradd -g hadoop hbase -m -s /bin/bash
 	
 	
 	
@@ -212,7 +216,11 @@ fi
 
 
 
+
 	pdsh -w ^all_hosts "echo export HADOOP_HOME=$HADOOP_HOME > /etc/profile.d/hadoop.sh"
+
+
+
 	pdsh -w ^all_hosts "echo export HADOOP_PREFIX=$HADOOP_HOME >> /etc/profile.d/hadoop.sh"
     pdsh -w ^all_hosts "echo export HADOOP_CONF_DIR=$HADOOP_CONF_DIR >> /etc/profile.d/hadoop.sh"
 	pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
