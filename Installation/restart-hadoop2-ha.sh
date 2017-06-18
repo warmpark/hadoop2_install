@@ -125,7 +125,7 @@ echo "#9. Start Stand-by NameNode Daemon(su - hdfs -c '$HADOOP_HOME/sbin/hadoop-
 pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh start namenode'"
 
 
-#"#. Name Node의 데이터를 Journal Node에 초기화 (Stand-by Name Node에서 실행) : hdfs namenode -initializeSharedEdits"
+##. Name Node의 데이터를 Journal Node에 초기화 (Stand-by Name Node에서 실행) : hdfs namenode -initializeSharedEdits"
 ## 이부분은 나중에 수행 된 후 어떤 녀석이 Active인지 확인하고 해 주면 OK. ...  : 사용할 필요가 없을 듯..  초기 설치시.....에는 
 #pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs namenode -initializeSharedEdits'"
 
@@ -152,6 +152,7 @@ pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh start master'"
 pdsh -w ^hbase_regionservers "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh start regionserver'"
 
 echo "#16. Running YARN smoke test..."
+#pdsh -w ^all_hosts "usermod -a -G hadoop $(whoami)"
 #pdsh -w ^all_hosts "usermod -a -G hadoop $(whoami)"
 #su - hdfs -c "hadoop fs -mkdir -p /user/$(whoami)"
 #su - hdfs -c "hadoop fs -chown $(whoami):$(whoami) /user/$(whoami)"
