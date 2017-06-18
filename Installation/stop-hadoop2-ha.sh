@@ -65,15 +65,14 @@ pdsh -w ^all_hosts "source /etc/profile.d/java.sh"
 pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
 pdsh -w ^zk_hosts "source /etc/profile.d/zookeeper.sh"
 pdsh -w ^all_hosts "source /etc/profile.d/hbase.sh"
-pdsh -w ^all_hosts "source /etc/profile.d/java.sh"
-pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
-pdsh -w ^zk_hosts "source /etc/profile.d/zookeeper.sh"
-pdsh -w ^all_hosts "source /etc/profile.d/hbase.sh"
 
-export YARN_PID_DIR=$YARN_PID_DIR
-export HADOOP_PID_DIR=$HADOOP_PID_DIR
-export HADOOP_MAPRED_PID_DIR=$HADOOP_MAPRED_PID_DIR
-export HBASE_PID_DIR=$HBASE_PID_DIR
+pdsh -w ^all_hosts "source $HADOOP_CONF_DIR/hadoop-env.sh"	
+pdsh -w ^all_hosts "source $HADOOP_CONF_DIR/yarn-env.sh"
+pdsh -w ^all_hosts "source $HADOOP_CONF_DIR/mapred-env.sh"
+pdsh -w ^all_hosts "source $HBASE_CONF_DIR/hbase-env.sh"
+
+
+
 
 pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh stop master'"
 pdsh -w ^hbase_regionservers "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh stop regionserver'"
