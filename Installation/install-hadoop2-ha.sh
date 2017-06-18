@@ -64,7 +64,7 @@ NAMENODE_SHARED_EDITS_DIR="qjournal://big01:8485;big02:8485;big03:8485/${DFS_NAM
 
 
 
-# HADOOP_VERSION=2.7.2
+#HADOOP_VERSION=2.7.2
 HADOOP_VERSION=2.7.3
 HADOOP_DOWNLOAD_URI="http://apache.tt.co.kr/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz"
 HADOOP_HOME="/opt/hadoop-${HADOOP_VERSION}"

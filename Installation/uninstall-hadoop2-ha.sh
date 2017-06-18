@@ -3,7 +3,8 @@
 JDK_VERSION=1.8.0_131
 JDK_RPM_NAME=jdk-8u121-linux-x64.rpm
 
-ZOOKEEPER_VERSION=3.4.9
+#ZOOKEEPER_VERSION=3.4.9
+ZOOKEEPER_VERSION=3.4.6 
 ZOOKEEPER_DOWNLOAD_URI="http://mirror.navercorp.com/apache/zookeeper/zookeeper-${ZOOKEEPER_VERSION}/zookeeper-${ZOOKEEPER_VERSION}.tar.gz"
 ZOOKEEPER_HOME="/opt/zookeeper-${ZOOKEEPER_VERSION}"
 ZOOKEEPER_LOG_DIR="/var/log/zookeeper"
@@ -17,6 +18,7 @@ ZOOKEEPER_DATA_DIR="/var/data/zookeeper"
 JN_EDITS_DIR=/var/data/hadoop/jounal
 
 
+#HADOOP_VERSION=2.7.2
 HADOOP_VERSION=2.7.3
 HADOOP_HOME="/opt/hadoop-${HADOOP_VERSION}"
 NN_DATA_DIR=/var/data/hadoop/hdfs/nn
@@ -36,7 +38,8 @@ HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
 YARN_NODEMANAGER_HEAPSIZE=308
 
 
-HBASE_VERSION=1.2.6
+#HBASE_VERSION=1.2.6
+HBASE_VERSION=1.1.10
 HBASE_HOME="/opt/hbase-${HBASE_VERSION}"
 HBASE_LOG_DIR="/var/log/hbase"
 HBASE_PREFIX="${HBASE_HOME}"
