@@ -61,7 +61,7 @@ HBASE_DATA_DIR="/var/data/hbase"
 HBASE_MANAGES_ZK=false
 HBASE_PID_DIR=/var/run/hbase
 
-
+pdsh -w ^all_hosts "source /etc/profile.d/java.sh"
 pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
 pdsh -w ^zk_hosts "source /etc/profile.d/zookeeper.sh"
 pdsh -w ^all_hosts "source /etc/profile.d/hbase.sh"
@@ -141,12 +141,12 @@ pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh start master'"
 pdsh -w ^hbase_regionservers "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh start regionserver'"
 
 echo "#16. Running YARN smoke test..."
-source /etc/profile.d/java.sh
-source /etc/profile.d/hadoop.sh
-source /etc/profile.d/zookeeper.sh
-source /etc/profile.d/hbase.sh
-#source /etc/hadoop/hadoop-env.sh
-#source /etc/hadoop/yarn-env.sh
+#source /etc/profile.d/java.sh
+#source /etc/profile.d/hadoop.sh
+#source /etc/profile.d/zookeeper.sh
+#source /etc/profile.d/hbase.sh
+
+
 #pdsh -w ^all_hosts "usermod -a -G hadoop $(whoami)"
 #pdsh -w ^all_hosts "usermod -a -G hadoop $(whoami)"
 #su - hdfs -c "hadoop fs -mkdir -p /user/$(whoami)"
