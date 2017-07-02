@@ -99,8 +99,32 @@ HBASE_DATA_DIR="/var/data/hbase"
 HBASE_MANAGES_ZK=false
 HBASE_PID_DIR=/var/run/hbase
 
+#### KAFKA 
+export KAFKA_VERSION=0.10.1.1
+export SCALA_VERSION=2.10
+KAFKA_DOWNLOAD_URI="http://mirror.apache-kr.org/kafka/${KAFKA_VERSION}/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz"
+##http://mirror.apache-kr.org/kafka/0.10.1.1/kafka_2.10-0.10.1.1.tgz
+KAFKA_HOME="/opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}"
+KAFKA_LOG_DIR="/var/log/kafka"
+KAFKA_PREFIX="${KAFKA_HOME}"
+KAFKA_CONF_DIR="${KAFKA_HOME}/conf"
+KAFKA_DATA_DIR="/var/data/kafka"
+KAFKA_MANAGES_ZK=false
+KAFKA_PID_DIR=/var/run/kafka
 
-
+#### STORM 
+export STORM_VERSION=1.1.0
+STORM_DOWNLOAD_URI="http://apache.mirror.cdnetworks.com/storm/apache-storm-${STORM_VERSION}/apache-storm-${STORM_VERSION}.tar.gz"
+##http://apache.mirror.cdnetworks.com/storm/apache-storm-1.1.0/apache-storm-1.1.0.tar.gz
+STORM_HOME="/opt/apache-storm-${STORM_VERSION}"
+STORM_LOG_DIR="/var/log/storm"
+STORM_PREFIX="${STORM_HOME}"
+STORM_CONF_DIR="${STORM_HOME}/conf"
+STORM_DATA_DIR="/var/data/strom"
+STORM_MANAGES_ZK=false
+STORM_PID_DIR=/var/run/storm
+# http://apache.mirror.cdnetworks.com/storm/apache-storm-1.1.0/apache-storm-1.1.0.tar.gz
+# http://mirror.navercorp.com/apache/storm/apache-storm-1.1.0/apache-storm-1.1.0.tar.gz
 
 # If using local OpenJDK, it must be installed on all nodes.
 # If using ${JDK_RPM_NAME}, then
@@ -331,7 +355,8 @@ fi
     echo "Editing regionservers conf regionservers - 나중에 보완할 필요...  HBASE는 HMaster와 ResionServer가 동시에 수행될 수 없음. ."
     pdsh -w ^all_hosts "echo    'big02
 big03' >  $HBASE_CONF_DIR/regionservers"
-    
+
+
     
 	echo "Creating base Hadoop XML config files..."
 	create_config --file core-site.xml
