@@ -186,4 +186,12 @@ echo "#16. Running YARN smoke test..."
 hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-$HADOOP_VERSION.jar pi -Dmapreduce.clientfactory.class.name=org.apache.hadoop.mapred.YarnClientFactory -libjars $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-$HADOOP_VERSION.jar 16 10000
 
 
+echo "#17. Start Storm"
+pdsh -w big01,big02,big03 /opt/apache-storm-1.1.0/bin/storm nimbus &
+pdsh -w big01,big02,big03 /opt/apache-storm-1.1.0/bin/storm supervisor &
+pdsh -w big01,big02,big03 /opt/apache-storm-1.1.0/bin/storm ui &
+
+echo "#18. Start Kafka"
+pdsh -w big01,big02,big03 "rm -rf /tmp/kafka-logs/"
+pdsh -w big01,big02,big03  "/opt/kafka_2.10-0.10.1.1/bin/kafka-server-start.sh /opt/kafka_2.10-0.10.1.1/config/server.properties &"
 
