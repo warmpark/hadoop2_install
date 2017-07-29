@@ -37,7 +37,7 @@ HA_ZOOKEEPER_QUORUM=big01:2181,big02:2181,big03:2181
 # 금융권에서는 이러한 이슈가 더욱 중요한다. 
 
 ## default /var/data/hadoop/jounal/data --- 이렇게 생성되는디....  그래서 설정을 바꾼다. 
-JN_EDITS_DIR=/var/data/hadoop/jounal
+JN_EDITS_DIR=${HADOOP_DATA_DIR}/jounal
 
 # Journal node group for NameNodes will wite/red edits
 NAMENODE_SHARED_EDITS_DIR="qjournal://big01:8485;big02:8485;big03:8485/${DFS_NAMESERVICES}-journal"
@@ -66,10 +66,11 @@ NAMENODE_SHARED_EDITS_DIR="qjournal://big01:8485;big02:8485;big03:8485/${DFS_NAM
 
 #HADOOP_VERSION=2.7.2
 HADOOP_VERSION=2.7.3
+HADOOP_DATA_DIR=/var/data/hadoop
 HADOOP_DOWNLOAD_URI="http://apache.tt.co.kr/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz"
 HADOOP_HOME="/opt/hadoop-${HADOOP_VERSION}"
-NN_DATA_DIR=/var/data/hadoop/hdfs/nn
-DN_DATA_DIR=/var/data/hadoop/hdfs/dn
+NN_DATA_DIR=${HADOOP_DATA_DIR}/hdfs/nn
+DN_DATA_DIR=${HADOOP_DATA_DIR}/hdfs/dn
 YARN_LOG_DIR=/var/log/hadoop/yarn
 HADOOP_LOG_DIR=/var/log/hadoop/hdfs
 HADOOP_MAPRED_LOG_DIR=/var/log/hadoop/mapred
@@ -98,6 +99,47 @@ HBASE_CONF_DIR="${HBASE_HOME}/conf"
 HBASE_DATA_DIR="/var/data/hbase"
 HBASE_MANAGES_ZK=false
 HBASE_PID_DIR=/var/run/hbase
+
+#### KAFKA 
+export KAFKA_VERSION=0.10.1.1
+export SCALA_VERSION=2.10
+KAFKA_DOWNLOAD_URI="http://mirror.apache-kr.org/kafka/${KAFKA_VERSION}/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz"
+##http://mirror.apache-kr.org/kafka/0.10.1.1/kafka_2.10-0.10.1.1.tgz
+KAFKA_HOME="/opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}"
+KAFKA_LOG_DIR="/var/log/kafka"
+KAFKA_PREFIX="${KAFKA_HOME}"
+KAFKA_CONF_DIR="${KAFKA_HOME}/conf"
+KAFKA_DATA_DIR="/var/data/kafka"
+KAFKA_MANAGES_ZK=false
+KAFKA_PID_DIR=/var/run/kafka
+
+#### STORM 
+export STORM_VERSION=1.1.0
+STORM_DOWNLOAD_URI="http://apache.mirror.cdnetworks.com/storm/apache-storm-${STORM_VERSION}/apache-storm-${STORM_VERSION}.tar.gz"
+##http://apache.mirror.cdnetworks.com/storm/apache-storm-1.1.0/apache-storm-1.1.0.tar.gz
+STORM_HOME="/opt/apache-storm-${STORM_VERSION}"
+STORM_LOG_DIR="/var/log/storm"
+STORM_PREFIX="${STORM_HOME}"
+STORM_CONF_DIR="${STORM_HOME}/conf"
+STORM_DATA_DIR="/var/data/strom"
+STORM_MANAGES_ZK=false
+STORM_PID_DIR=/var/run/storm
+# http://apache.mirror.cdnetworks.com/storm/apache-storm-1.1.0/apache-storm-1.1.0.tar.gz
+# http://mirror.navercorp.com/apache/storm/apache-storm-1.1.0/apache-storm-1.1.0.tar.gz
+
+#### NIFI 
+export NIFI_VERSION=1.3.0
+export NIFI_DOWNLOAD_URI="http://mirror.apache-kr.org/nifi/${NIFI_VERSION}/nifi-${NIFI_VERSION}-bin.tar.gz"
+##http://mirror.apache-kr.org/nifi/${NIFI_VERSION}/nifi-${NIFI_VERSION}-bin.tar.gz
+##http://mirror.apache-kr.org/nifi/1.3.0/nifi-1.3.0-bin.tar.gz
+NIFI_HOME="/opt/nifi-${NIFI_VERSION}"
+NIFI_LOG_DIR="/var/log/nifi"
+NIFI_PREFIX="${NIFI_HOME}"
+NIFI_CONF_DIR="${NIFI_HOME}/conf"
+NIFI_DATA_DIR="/var/data/nifi"
+NIFI_MANAGES_ZK=false
+NIFI_PID_DIR=/var/run/nifi
+
 
 
 pdsh -w ^all_hosts "source /etc/profile.d/java.sh"

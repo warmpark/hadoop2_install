@@ -273,6 +273,9 @@ fi
 	pdsh -w ^all_hosts useradd -g hadoop hdfs -m -s /bin/bash
 	pdsh -w ^all_hosts useradd -g hadoop mapred -m -s /bin/bash
     pdsh -w ^all_hosts useradd -g hadoop hbase -m -s /bin/bash
+    pdsh -w ^all_hosts useradd -g hadoop kafka -m -s /bin/bash
+    pdsh -w ^all_hosts useradd -g hadoop storm -m -s /bin/bash
+    pdsh -w ^all_hosts useradd -g hadoop nifi -m -s /bin/bash
 	
 	
 	
@@ -284,14 +287,19 @@ fi
 
     echo "Extracting HBASE hbase-$HBASE_VERSION-bin.tar.gz distribution on all hosts..."
 	pdsh -w ^all_hosts "tar -zxf /opt/hbase-$HBASE_VERSION-bin.tar.gz -C /opt && chown -R hdfs:hadoop /opt/hbase-$HBASE_VERSION"
+ 
+	echo "Extracting KAFKA kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz distribution on all hosts..."
+	pdsh -w ^all_hosts "tar -xvzf  /opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz -C /opt && chown -R hdfs:hadoop /opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}"
 
+	echo "Extracting STORM apache-storm-${STORM_VERSION}.tar.gz distribution on all hosts..."
+	pdsh -w ^all_hosts "tar -zxf apache-storm-${STORM_VERSION}.tar.gz -C /opt && chown -R hdfs:hadoop /opt/apache-storm-${STORM_VERSION}"
 
+	echo "Extracting NIFI nifi-${NIFI_VERSION}-bin.tar.gz distribution on all hosts..."
+	pdsh -w ^all_hosts "tar -zxf /opt/nifi-${NIFI_VERSION}-bin.tar.gz -C /opt && chown -R hdfs:hadoop /opt/nifi-${NIFI_VERSION}"
 
+	
 
 	pdsh -w ^all_hosts "echo export HADOOP_HOME=$HADOOP_HOME > /etc/profile.d/hadoop.sh"
-
-
-
 	pdsh -w ^all_hosts "echo export HADOOP_PREFIX=$HADOOP_HOME >> /etc/profile.d/hadoop.sh"
     pdsh -w ^all_hosts "echo export HADOOP_CONF_DIR=$HADOOP_CONF_DIR >> /etc/profile.d/hadoop.sh"
 	pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
@@ -322,9 +330,8 @@ fi
 	pdsh -w ^all_hosts echo "export HADOOP_PID_DIR=$HADOOP_PID_DIR >> $HADOOP_CONF_DIR/hadoop-env.sh"
 	pdsh -w ^all_hosts echo "export YARN_PID_DIR=$YARN_PID_DIR >> $HADOOP_CONF_DIR/yarn-env.sh"
 	pdsh -w ^all_hosts echo "export HADOOP_MAPRED_PID_DIR=$HADOOP_MAPRED_PID_DIR >> $HADOOP_CONF_DIR/mapred-env.sh"
-    pdsh -w ^all_hosts echo "export HBASE_PID_DIR=$ >> $HBASE_CONF_DIR/hbase-env.sh"
+    pdsh -w ^all_hosts echo "export HBASE_PID_DIR=$HBASE_PID_DIR >> $HBASE_CONF_DIR/hbase-env.sh"
     ### ZK  PID관리는 어떻게.....
-    HBASE_PID_DIR
 	## 설정파일 다시 로드 
 	pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
 	pdsh -w ^zk_hosts "source /etc/profile.d/zookeeper.sh"
@@ -365,9 +372,6 @@ fi
     ##TODO JK PID는 어떻게 ? 어디에 ? 구글링해봐야...
     
 
-    
-
-
 	if [ -n "$YARN_NODEMANAGER_HEAPSIZE" ]
 	then 
 		echo "for VM Memory Management  by warmpark   Editing Hadoop yarn-env.sh environment for YARN_NODEMANAGER_HEAPSIZE on all hosts..."
@@ -379,7 +383,7 @@ fi
     pdsh -w ^all_hosts echo "export HBASE_MANAGES_ZK=$HBASE_MANAGES_ZK >> $HBASE_CONF_DIR/hbase-env.sh"
     
     
-    echo "Editing zookeeper conf zoo.cfg - 나중에 보완할 필요...."
+    echo "Editing zookeeper conf zoo.cfg - TODO 나중에 보완할 필요...."
     pdsh -w ^all_hosts "echo     'dataDir=$ZOOKEEPER_DATA_DIR
     dataLogDir=$ZOOKEEPER_LOG_DIR
     clientPort=2181
@@ -390,13 +394,13 @@ fi
     server.3=big03:2888:3888' >  $ZOOKEEPER_CONF_DIR/zoo.cfg"
 
     
-    echo "Make zookeeper id in  $ZOOKEEPER_DATA_DIR/myid - 나중에 보완할 필요...."
+    echo "Make zookeeper id in  $ZOOKEEPER_DATA_DIR/myid - TODO 나중에 보완할 필요...."
     pdsh -w big01 "echo 1 > $ZOOKEEPER_DATA_DIR/myid"
     pdsh -w big02 "echo 2 > $ZOOKEEPER_DATA_DIR/myid"
     pdsh -w big03 "echo 3 > $ZOOKEEPER_DATA_DIR/myid"
     
     
-    echo "Editing regionservers conf regionservers - 나중에 보완할 필요...  HBASE는 HMaster와 ResionServer가 동시에 수행될 수 없음. ."
+    echo "Editing regionservers conf regionservers - 나중에 보완할 필요...  HBASE는 HMaster와 ResionServer가 동시에 수행될 수 없음.--> 확인필요."
     pdsh -w ^all_hosts "echo    'big02
 big03' >  $HBASE_CONF_DIR/regionservers"
 
