@@ -132,7 +132,7 @@ export NIFI_DOWNLOAD_URI="http://mirror.apache-kr.org/nifi/${NIFI_VERSION}/nifi-
 ##http://mirror.apache-kr.org/nifi/${NIFI_VERSION}/nifi-${NIFI_VERSION}-bin.tar.gz
 ##http://mirror.apache-kr.org/nifi/1.3.0/nifi-1.3.0-bin.tar.gz
 NIFI_HOME="/opt/nifi-${NIFI_VERSION}"
-NIFI_LOG_DIR="/var/log/storm"
+NIFI_LOG_DIR="/var/log/nifi"
 NIFI_PREFIX="${NIFI_HOME}"
 NIFI_CONF_DIR="${NIFI_HOME}/conf"
 NIFI_DATA_DIR="/var/data/nifi"
