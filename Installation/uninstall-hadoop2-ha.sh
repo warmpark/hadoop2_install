@@ -30,6 +30,7 @@ pdsh -w ^all_hosts "source $HADOOP_CONF_DIR/mapred-env.sh"
 pdsh -w ^all_hosts "source $HBASE_CONF_DIR/hbase-env.sh"
 
 
+pdsh -w ^all_hosts "su - hdfs -c /opt/kafka_2.10-0.10.1.1/bin/kafka-server-stop.sh"
 
 echo "Stopping Hadoop 2 services..."
 #pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/stop-hbase.sh'"
@@ -61,6 +62,7 @@ pdsh -w ^rm_host "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh stop resource
 #pdsh -w ^rm_host "service hadoop-resourcemanager stop"
 
 
+
 echo "Removing hbase distribution tarball..."
 pdsh -w ^all_hosts "rm -r /opt/hbase-$HBASE_VERSION-bin.tar.gz"
 echo "Removing Zookeeper distribution tarball..."
@@ -69,6 +71,17 @@ echo "Removing Hadoop 2 distribution tarball..."
 pdsh -w ^all_hosts "rm -r /opt/hadoop-$HADOOP_VERSION.tar.gz"
 echo "Removing JDK distribution RPM file ..."
 pdsh -w ^all_hosts "rm -r /opt/$JDK_RPM_NAME"
+
+
+echo "Removing nifi distribution tarball..."
+pdsh -w ^all_hosts "rm -r /opt/nifi-${NIFI_VERSION}-bin.tar.gz"
+
+echo "Removing storm distribution tarball..."
+pdsh -w ^all_hosts "rm -r /opt/apache-storm-${STORM_VERSION}.tar.gz"
+
+echo "Removing kafka distribution tarball..."
+pdsh -w ^all_hosts "rm -r /opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz"
+
 
 
 
