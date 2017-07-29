@@ -14,15 +14,23 @@ pdsh -w ^all_hosts "source /etc/profile.d/java.sh"
 pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
 pdsh -w ^zk_hosts  "source /etc/profile.d/zookeeper.sh"
 pdsh -w ^all_hosts "source /etc/profile.d/hbase.sh"
+pdsh -w ^all_hosts "source source /etc/profile.d/kafka.sh"
+pdsh -w ^all_hosts "source source /etc/profile.d/storm.sh"
+pdsh -w ^all_hosts "source source /etc/profile.d/nifi.sh"
+
 pdsh -w ^all_hosts "source $HADOOP_CONF_DIR/hadoop-env.sh"	
 pdsh -w ^all_hosts "source $HADOOP_CONF_DIR/yarn-env.sh"
 pdsh -w ^all_hosts "source $HADOOP_CONF_DIR/mapred-env.sh"
 pdsh -w ^all_hosts "source $HBASE_CONF_DIR/hbase-env.sh"
 
+
 source /etc/profile.d/java.sh
 source /etc/profile.d/hadoop.sh
 source /etc/profile.d/zookeeper.sh
 source /etc/profile.d/hbase.sh
+source /etc/profile.d/kafka.sh
+source /etc/profile.d/storm.sh
+source /etc/profile.d/nifi.sh
 source $HADOOP_CONF_DIR/yarn-env.sh
 source $HADOOP_CONF_DIR/mapred-env.sh
 source $HBASE_CONF_DIR/hbase-env.sh

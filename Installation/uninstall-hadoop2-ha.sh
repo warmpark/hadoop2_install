@@ -24,6 +24,10 @@ pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
 pdsh -w ^zk_hosts  "source /etc/profile.d/zookeeper.sh"
 pdsh -w ^all_hosts "source /etc/profile.d/hbase.sh"
 
+pdsh -w ^all_hosts "source /etc/profile.d/kafka.sh"
+pdsh -w ^all_hosts "source /etc/profile.d/storm.sh"
+pdsh -w ^all_hosts "source /etc/profile.d/nifi.sh"
+
 pdsh -w ^all_hosts "source $HADOOP_CONF_DIR/hadoop-env.sh"	
 pdsh -w ^all_hosts "source $HADOOP_CONF_DIR/yarn-env.sh"
 pdsh -w ^all_hosts "source $HADOOP_CONF_DIR/mapred-env.sh"
@@ -80,12 +84,6 @@ echo "Removing kafka distribution tarball..."
 pdsh -w ^all_hosts "rm -r /opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz"
 
 
-echo "Removing hbase bash environment setting..."
-pdsh -w ^all_hosts "rm -f /etc/profile.d/hbase.sh"
-
-
-echo "Removing Zookeeper bash environment setting..."
-pdsh -w ^zk_hosts "rm -f /etc/profile.d/zookeeper.sh"
 
 
 # JAVA_HOME = "" 이면 자바삭제.
@@ -106,17 +104,32 @@ pdsh -w ^all_hosts "rm -f /etc/init.d/hadoop-*"
 fi
 #JDK삭제 하지 않기 위해 주석 처리함 삭제시 주석 해제
 
-echo "Removing Hadoop 2 bash environment setting..."
-pdsh -w ^all_hosts "rm -f /etc/profile.d/hadoop.sh"
-
 echo "Removing Java bash environment setting..."
 pdsh -w ^all_hosts "rm -f /etc/profile.d/java.sh"
+echo "Removing Hadoop 2 bash environment setting..."
+pdsh -w ^all_hosts "rm -f /etc/profile.d/hadoop.sh"
+echo "Removing Zookeeper bash environment setting..."
+pdsh -w ^zk_hosts "rm -f /etc/profile.d/zookeeper.sh"
+echo "Removing hbase bash environment setting..."
+pdsh -w ^all_hosts "rm -f /etc/profile.d/hbase.sh"
+
+echo "Removing Kafka bash environment setting..."
+pdsh -w ^all_hosts "rm -f /etc/profile.d/kafka.sh"
+echo "Removing Storm bash environment setting..."
+pdsh -w ^all_hosts "rm -f /etc/profile.d/storm.sh"
+echo "Removing NiFi bash environment setting..."
+pdsh -w ^all_hosts "rm -f /etc/profile.d/nifi.sh"
 
 
 echo "Removing /etc/hadoop, zookeeper, hbase link..."
 pdsh -w ^all_hosts "rm /etc/hadoop"
 pdsh -w ^all_hosts "rm /etc/zookeeper"
 pdsh -w ^all_hosts "rm /etc/hbase"
+
+pdsh -w ^all_hosts "rm /etc/kafka"
+pdsh -w ^all_hosts "rm /etc/storm"
+pdsh -w ^all_hosts "rm /etc/nifi"
+
 
 echo "Removing Hadoop 2 command links..."
 pdsh -w ^all_hosts "rm /usr/bin/container-executor"
@@ -128,6 +141,11 @@ pdsh -w ^all_hosts "rm /usr/bin/test-container-executor"
 pdsh -w ^all_hosts "rm /usr/bin/yarn*"
 pdsh -w ^zk_hosts "rm /usr/bin/zk*"
 pdsh -w ^all_hosts "rm /usr/bin/*hbase*"
+
+pdsh -w ^all_hosts "rm /usr/bin/*kafka*"
+pdsh -w ^all_hosts "rm /usr/bin/*storm*"
+pdsh -w ^all_hosts "rm /usr/bin/*nifi*"
+
 
 echo "Removing Hadoop 2 script links..."
 pdsh -w ^all_hosts "rm /usr/libexec/hadoop-config.*"

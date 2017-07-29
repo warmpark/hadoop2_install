@@ -234,7 +234,7 @@ fi
 	pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
 	pdsh -w ^zk_hosts "source /etc/profile.d/zookeeper.sh"
 	pdsh -w ^all_hosts "source /etc/profile.d/hbase.sh"
-	pdsh -w ^all_hosts "source /etc/profile.d/hbase.sh"
+	
 	pdsh -w ^all_hosts "source /etc/profile.d/kafka.sh"
 	pdsh -w ^all_hosts "source /etc/profile.d/storm.sh"
 	pdsh -w ^all_hosts "source /etc/profile.d/nifi.sh"
@@ -304,7 +304,7 @@ fi
    	echo "HBASE hbase-env.sh"
     pdsh -w ^all_hosts echo "export HBASE_MANAGES_ZK=$HBASE_MANAGES_ZK >> $HBASE_CONF_DIR/hbase-env.sh"
     
-    
+###### ZOOKEEPER    
     echo "Editing zookeeper conf zoo.cfg - TODO 나중에 보완할 필요...."
     pdsh -w ^all_hosts "echo     'dataDir=$ZOOKEEPER_DATA_DIR
     dataLogDir=$ZOOKEEPER_LOG_DIR
@@ -329,23 +329,76 @@ big03' >  $HBASE_CONF_DIR/regionservers"
 
 
 ###### KAFKA
-   echo "Editing zookeeper conf /opt/kafka_2.10-0.10.1.1/config/zookeeper.properties - TODO 나중에 보완할 필요...."
-    pdsh -w ^all_hosts "echo     'dataDir=$ZOOKEEPER_DATA_DIR
-    dataLogDir=$ZOOKEEPER_LOG_DIR
-    clientPort=2181
-    initLimit=5
-    syncLimit=2
+  echo "Editing zookeeper conf $KAFKA_CONF_DIR/zookeeper.properties - TODO 나중에 보완할 필요...."
+	pdsh -w ^all_hosts "mv $KAFKA_CONF_DIR/zookeeper.properties $KAFKA_CONF_DIR/zookeeper.properties.org"
+  
+	pdsh -w ^all_hosts "echo     'dataDir=/var/data/zookeeper
+	dataLogDir=/var/log/zookeeper
+	clientPort=2181
+	initLimit=5
+	syncLimit=2
 	maxClientCnxns=0
-    server.1=big01:2888:3888
-    server.2=big02:2888:3888
-    server.3=big03:2888:3888' >  $KAFKA_CONF_DIR/zookeeper.properties"
+	server.1=big01:2888:3888
+	server.2=big02:2888:3888
+	server.3=big03:2888:3888' >  $KAFKA_CONF_DIR/zookeeper.properties"
+	
+	echo "Editing zookeeper conf $KAFKA_CONF_DIR/server.properties - TODO 나중에 보완할 필요...."
+	## 백업 
+	pdsh -w ^all_hosts "mv $KAFKA_CONF_DIR/server.properties $KAFKA_CONF_DIR/server.properties.org"
+	## server.properties 설정 
+    pdsh -w ^all_hosts "echo     'broker.id=0
+	delete.topic.enable=true
+	zookeeper.connect=big01:2181,big02:2181,big03:2181
+	
+	#listeners=PLAINTEXT://:9092
+	num.network.threads=3
+	num.io.threads=8
+	socket.send.buffer.bytes=102400
+	socket.receive.buffer.bytes=102400
+	socket.request.max.bytes=104857600
+	log.dirs=/tmp/kafka-logs
+	num.partitions=1
+	num.recovery.threads.per.data.dir=1
+	#log.flush.interval.messages=10000
+	#log.flush.interval.ms=1000
+	log.retention.hours=168
+	#log.retention.bytes=1073741824
+	log.segment.bytes=1073741824
+	log.retention.check.interval.ms=300000
+	zookeeper.connection.timeout.ms=6000' >  $KAFKA_CONF_DIR/server.properties"
+	## broker.id 설정 
+	pdsh -w big01 "sed -i 's/broker.id=0/broker.id=1/g' $KAFKA_CONF_DIR/server.properties"
+	pdsh -w big02 "sed -i 's/broker.id=0/broker.id=2/g' $KAFKA_CONF_DIR/server.properties"
+	pdsh -w big03 "sed -i 's/broker.id=0/broker.id=3/g' $KAFKA_CONF_DIR/server.properties"
+	
 
 ###### STORM
+  echo "Editing zookeeper conf $STORM_CONF_DIR//storm.yaml - TODO 나중에 보완할 필요...."
+	pdsh -w ^all_hosts "cp $STORM_CONF_DIR//storm.yaml $STORM_CONF_DIR//storm.yaml.org"
+  
+	pdsh -w ^all_hosts "echo     '
+	storm.zookeeper.servers:
+	- "big01"
+	- "big02"
+	- "big03"
+	#storm.local.dir: "/tmp/storm"
+	storm.local.dir: "${STORM_DATA_DIR}"
+	
+	nimbus.seeds: ["big01","big02", "big03"]
+	
+	supervisor.slots.ports:
+		- 6700
+		- 6701
+		- 6702
+		- 6703
+	
+	storm.health.check.dir: "healthchecks"
+	storm.health.check.timeout.ms: 5000' >>  $STORM_CONF_DIR/storm.yaml"
 
 ###### NIFI
 
 
-
+############
     
 	echo "Creating base Hadoop XML config files..."
 	create_config --file core-site.xml
@@ -447,6 +500,13 @@ big03' >  $HBASE_CONF_DIR/regionservers"
 	pdsh -w ^all_hosts "ln -s $ZOOKEEPER_HOME/bin/zk* /usr/bin"
     pdsh -w ^all_hosts "ln -s $HBASE_CONF_DIR /etc/hbase"
 	pdsh -w ^all_hosts "ln -s $HBASE_HOME/bin/*hbase* /usr/bin"
+	
+	 pdsh -w ^all_hosts "ln -s $KAFKA_CONF_DIR /etc/kafka"
+	pdsh -w ^all_hosts "ln -s $KAFKA_HOME/bin/*kafka* /usr/bin"
+	 pdsh -w ^all_hosts "ln -s $STORM_CONF_DIR /etc/storm"
+	pdsh -w ^all_hosts "ln -s $STORM_HOME/bin/*storm* /usr/bin"
+	 pdsh -w ^all_hosts "ln -s $NIFI_CONF_DIR /etc/nifi"
+	pdsh -w ^all_hosts "ln -s $NIFI_HOME/bin/*nifi* /usr/bin"
 
 
     echo "Copying startup scripts to all hosts..."
