@@ -34,7 +34,10 @@ pdsh -w ^all_hosts "source $HADOOP_CONF_DIR/mapred-env.sh"
 pdsh -w ^all_hosts "source $HBASE_CONF_DIR/hbase-env.sh"
 
 
-pdsh -w ^all_hosts "su - hdfs -c /opt/kafka_2.10-0.10.1.1/bin/kafka-server-stop.sh"
+pdsh -w ^all_hosts  "su - hdfs -c '${KAFKA_HOME}/bin/kafka-server-stop.sh'" 
+pdsh -w ^all_hosts  "kill -9 $(ps -ef | grep storm | awk '{print $2}')"
+
+
 
 echo "Stopping Hadoop 2 services..."
 #pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/stop-hbase.sh'"
