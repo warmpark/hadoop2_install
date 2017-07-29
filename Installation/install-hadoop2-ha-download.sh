@@ -196,7 +196,7 @@ install()
         echo "File does not exist"
         wget ${HBASE_DOWNLOAD_URI}
     else 
-        echo "File exists"
+        echo "HBASE File exists"
     fi
  
     ## KAFKA DOWNLOAD
@@ -205,7 +205,7 @@ install()
         echo "File does not exist"
         wget ${KAFKA_DOWNLOAD_URI}
     else 
-        echo "File exists"
+        echo "KAFKA File exists"
     fi
  
     ## STORM DOWNLOAD
@@ -214,7 +214,7 @@ install()
         echo "File does not exist"
         wget ${STORM_DOWNLOAD_URI}
     else 
-        echo "File exists"
+        echo "STORM File exists"
     fi
 	
     ## NIFI DOWNLOAD
@@ -223,7 +223,7 @@ install()
         echo "File does not exist"
         wget ${NIFI_DOWNLOAD_URI}
     else 
-        echo "File exists"
+        echo "NIFI File exists"
     fi
     
     echo "Copying hadoop-"$HADOOP_VERSION".tar.gz,  zookeeper-"$ZOOKEEPER_VERSION".tar.gz, hbase-${HBASE_VERSION}-bin.tar.gz to all hosts..."
