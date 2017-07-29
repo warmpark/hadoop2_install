@@ -72,22 +72,16 @@ pdsh -w ^all_hosts "rm -r /opt/hadoop-$HADOOP_VERSION.tar.gz"
 echo "Removing JDK distribution RPM file ..."
 pdsh -w ^all_hosts "rm -r /opt/$JDK_RPM_NAME"
 
-
 echo "Removing nifi distribution tarball..."
 pdsh -w ^all_hosts "rm -r /opt/nifi-${NIFI_VERSION}-bin.tar.gz"
-
 echo "Removing storm distribution tarball..."
 pdsh -w ^all_hosts "rm -r /opt/apache-storm-${STORM_VERSION}.tar.gz"
-
 echo "Removing kafka distribution tarball..."
 pdsh -w ^all_hosts "rm -r /opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz"
 
 
-
-
 echo "Removing hbase bash environment setting..."
 pdsh -w ^all_hosts "rm -f /etc/profile.d/hbase.sh"
-
 
 
 echo "Removing Zookeeper bash environment setting..."
@@ -155,21 +149,34 @@ pdsh -w ^all_hosts "rm -rf $DN_DATA_DIR"
 pdsh -w ^all_hosts "rm -rf $JN_EDITS_DIR"
 pdsh -w ^all_hosts "rm -rf $ZOOKEEPER_DATA_DIR"
 pdsh -w ^all_hosts "rm -rf $HBASE_DATA_DIR"
+pdsh -w ^all_hosts "rm -rf $KAFKA_DATA_DIR"
+pdsh -w ^all_hosts "rm -rf $STORM_DATA_DIR"
+pdsh -w ^all_hosts "rm -rf $NIFI_DATA_DIR"
 
 pdsh -w ^all_hosts "rm -rf $YARN_LOG_DIR"
 pdsh -w ^all_hosts "rm -rf $HADOOP_LOG_DIR"
 pdsh -w ^all_hosts "rm -rf $HADOOP_MAPRED_LOG_DIR"
 pdsh -w ^all_hosts "rm -rf $ZOOKEEPER_LOG_DIR"
 pdsh -w ^all_hosts "rm -rf $HBASE_LOG_DIR"
+pdsh -w ^all_hosts "rm -rf $KAFKA_LOG_DIR"
+pdsh -w ^all_hosts "rm -rf $STORM_LOG_DIR"
+pdsh -w ^all_hosts "rm -rf $NIFI_LOG_DIR"
 
 pdsh -w ^all_hosts "rm -rf $YARN_PID_DIR"
 pdsh -w ^all_hosts "rm -rf $HADOOP_PID_DIR"
 pdsh -w ^all_hosts "rm -rf $HADOOP_MAPRED_PID_DIR"
 pdsh -w ^all_hosts "rm -rf $HBASE_PID_DIR"
+pdsh -w ^all_hosts "rm -rf $KAFKA_PID_DIR"
+pdsh -w ^all_hosts "rm -rf $STORM_PID_DIR"
+pdsh -w ^all_hosts "rm -rf $NIFI_PID_DIR"
 
 pdsh -w ^all_hosts "rm -rf $ZOOKEEPER_CONF_DIR"
 pdsh -w ^all_hosts "rm -rf $HADOOP_CONF_DIR"
 pdsh -w ^all_hosts "rm -rf $HBASE_CONF_DIR"
+pdsh -w ^all_hosts "rm -rf $KAFKA_CONF_DIR"
+pdsh -w ^all_hosts "rm -rf $STORM_CONF_DIR"
+pdsh -w ^all_hosts "rm -rf $NIFI_CONF_DIR"
+
 
 pdsh -w ^all_hosts "rm -rf /var/data/hadoop"
 pdsh -w ^all_hosts "rm -rf /var/log/hadoop"
@@ -179,8 +186,18 @@ pdsh -w ^all_hosts "rm -rf /var/run/hadoop"
 pdsh -w ^all_hosts "rm -rf $HADOOP_HOME"
 pdsh -w ^all_hosts "rm -rf $ZOOKEEPER_HOME"
 pdsh -w ^all_hosts "rm -rf $HBASE_HOME"
+pdsh -w ^all_hosts "rm -rf $KAFKA_HOME"
+pdsh -w ^all_hosts "rm -rf $STORM_HOME"
+pdsh -w ^all_hosts "rm -rf $NIFI_HOME"
 
+echo "Removing nifi system account..."
+pdsh -w ^all_hosts "userdel -rf nifi"
 
+echo "Removing storm system account..."
+pdsh -w ^all_hosts "userdel -rf storm"
+
+echo "Removing kafka system account..."
+pdsh -w ^all_hosts "userdel -rf kafka"
 
 echo "Removing hbase system account..."
 pdsh -w ^all_hosts "userdel -rf hbase"
