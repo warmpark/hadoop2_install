@@ -1,11 +1,3 @@
-#!/bin/bash
-# Install Hadoop 2 using pdsh/pdcp where possible.
-# 
-# Command can be interactive or file-based.  This script sets up
-# a Hadoop 2 cluster with basic configuration.  Modify data, log, and pid
-# directories as desired.  Further configure your cluster with ./conf-hadoop2.sh
-# after running this installation script.
-#
 
 # Basic environment variables.  Edit as necessary
 # zookeeper-3.4.8.tar.gz
