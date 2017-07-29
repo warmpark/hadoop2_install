@@ -356,7 +356,7 @@ fi
 	socket.send.buffer.bytes=102400
 	socket.receive.buffer.bytes=102400
 	socket.request.max.bytes=104857600
-	log.dirs=/tmp/kafka-logs
+	log.dirs=$KAFKA_LOG_DIR
 	num.partitions=1
 	num.recovery.threads.per.data.dir=1
 	#log.flush.interval.messages=10000
@@ -615,7 +615,10 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 
 	echo "#18. Start Kafka"
 	#pdsh -w ^all_hosts "rm -rf ${KAFKA_LOG_DIR}"
-	pdsh -w ^all_hosts  "su - hdfs -c '${KAFKA_HOME}/bin/kafka-server-start.sh ${KAFKA_LOG_DIR}/config/server.properties'"
+	pdsh -w ^all_hosts  "su - hdfs -c '${KAFKA_HOME}/bin/kafka-server-start.sh ${KAFKA_CONF_DIR}/server.properties'"
+	su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --create --zookeeper big01:2181 --replication-factor 3 --partitions 20 --topic test"
+	su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --list --zookeeper big01:2181"
+	su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --describe --zookeeper big01:2181 --topic test"
 
 	
 }
