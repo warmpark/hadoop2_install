@@ -374,11 +374,10 @@ fi
 
 ###### STORM
 echo "Editing zookeeper conf $STORM_CONF_DIR//storm.yaml - TODO 나중에 보완할 필요...."
-pdsh -w ^all_hosts "cp $STORM_CONF_DIR//storm.yaml $STORM_CONF_DIR//storm.yaml.org"
+pdsh -w ^all_hosts "mv $STORM_CONF_DIR//storm.yaml $STORM_CONF_DIR//storm.yaml.org"
 
 ## "//t" 이 들어 있으면 안됨. 
-pdsh -w ^all_hosts "echo     '
-storm.zookeeper.servers:
+pdsh -w ^all_hosts "echo     'storm.zookeeper.servers:
 - "big01"
 - "big02"
 - "big03"
@@ -388,13 +387,13 @@ storm.local.dir: "${STORM_DATA_DIR}"
 nimbus.seeds: ["big01","big02", "big03"]
 
 supervisor.slots.ports:
-	- 6700
-	- 6701
-	- 6702
-	- 6703
+- 6700
+- 6701
+- 6702
+- 6703
 
 storm.health.check.dir: "healthchecks"
-storm.health.check.timeout.ms: 5000' >>  $STORM_CONF_DIR/storm.yaml"
+storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 
 ###### NIFI
 
@@ -616,7 +615,7 @@ storm.health.check.timeout.ms: 5000' >>  $STORM_CONF_DIR/storm.yaml"
 
 	echo "#18. Start Kafka"
 	#pdsh -w ^all_hosts "rm -rf ${KAFKA_LOG_DIR}"
-	pdsh -w ^all_hosts  "${KAFKA_LOG_DIR}/bin/kafka-server-start.sh ${KAFKA_LOG_DIR}/config/server.properties"
+	pdsh -w ^all_hosts  "${KAFKA_HOME_DIR}/bin/kafka-server-start.sh ${KAFKA_LOG_DIR}/config/server.properties"
 
 	
 }

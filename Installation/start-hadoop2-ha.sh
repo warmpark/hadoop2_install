@@ -111,5 +111,5 @@ pdsh -w ^all_hosts "${STORM_HOME}/bin/storm ui"
 
 echo "#18. Start Kafka"
 #pdsh -w ^all_hosts "rm -rf ${KAFKA_LOG_DIR}"
-pdsh -w ^all_hosts  "${KAFKA_LOG_DIR}/bin/kafka-server-start.sh ${KAFKA_LOG_DIR}/config/server.properties"
+pdsh -w ^all_hosts  "${KAFKA_HOME_DIR}/bin/kafka-server-start.sh ${KAFKA_LOG_DIR}/config/server.properties"
 
