@@ -226,7 +226,7 @@ install()
         echo "NIFI File exists"
     fi
     
-    echo "Copying hadoop-"$HADOOP_VERSION".tar.gz,  zookeeper-"$ZOOKEEPER_VERSION".tar.gz, hbase-${HBASE_VERSION}-bin.tar.gz to all hosts..."
+    echo "Copying hadoop-"$HADOOP_VERSION".tar.gz,  zookeeper-"$ZOOKEEPER_VERSION".tar.gz, hbase-${HBASE_VERSION}-bin.tar.gz, kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz, apache-storm-${STORM_VERSION}.tar.gz, nifi-${NIFI_VERSION}-bin.tar.gz to all hosts..."
 	pdcp -w ^all_hosts hadoop-"$HADOOP_VERSION".tar.gz /opt
     pdcp -w ^all_hosts zookeeper-"$ZOOKEEPER_VERSION".tar.gz /opt
     pdcp -w ^all_hosts hbase-${HBASE_VERSION}-bin.tar.gz /opt
