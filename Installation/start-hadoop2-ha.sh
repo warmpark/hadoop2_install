@@ -101,15 +101,14 @@ pdsh -w ^hbase_regionservers "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh star
 
 echo "#16. Running YARN smoke test..."
 #export HADOOP_VERSION=2.7.3
-hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-$HADOOP_VERSION.jar pi -Dmapreduce.clientfactory.class.name=org.apache.hadoop.mapred.YarnClientFactory -libjars $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-$HADOOP_VERSION.jar 16 10000
-
+#hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-$HADOOP_VERSION.jar pi -Dmapreduce.clientfactory.class.name=org.apache.hadoop.mapred.YarnClientFactory -libjars $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-$HADOOP_VERSION.jar 16 10000
 
 echo "#17. Start Storm"
-pdsh -w ^all_hosts "${STORM_HOME}/bin/storm nimbus"
-pdsh -w ^all_hosts "${STORM_HOME}/bin/storm supervisor"
-pdsh -w ^all_hosts "${STORM_HOME}/bin/storm ui"
+pdsh -w ^all_hosts "su - hdfs -c '${STORM_HOME}/bin/storm nimbus'"
+pdsh -w ^all_hosts "su - hdfs -c '${STORM_HOME}/bin/storm supervisor'"
+pdsh -w ^all_hosts "su - hdfs -c '${STORM_HOME}/bin/storm ui'"
 
 echo "#18. Start Kafka"
 #pdsh -w ^all_hosts "rm -rf ${KAFKA_LOG_DIR}"
-pdsh -w ^all_hosts  "${KAFKA_HOME_DIR}/bin/kafka-server-start.sh ${KAFKA_LOG_DIR}/config/server.properties"
+pdsh -w ^all_hosts  "su - hdfs -c '${KAFKA_HOME}/bin/kafka-server-start.sh ${KAFKA_LOG_DIR}/config/server.properties'"
 

@@ -377,23 +377,23 @@ echo "Editing zookeeper conf $STORM_CONF_DIR//storm.yaml - TODO 나중에 보완
 pdsh -w ^all_hosts "mv $STORM_CONF_DIR//storm.yaml $STORM_CONF_DIR//storm.yaml.org"
 
 ## "//t" 이 들어 있으면 안됨. 
-	pdsh -w ^all_hosts "echo     'storm.zookeeper.servers:
-	- "big01"
-	- "big02"
-	- "big03"
-	#storm.local.dir: "/tmp/storm"
-	storm.local.dir: "${STORM_DATA_DIR}"
+pdsh -w ^all_hosts "echo     'storm.zookeeper.servers:
+- "big01"
+- "big02"
+- "big03"
+#storm.local.dir: "/tmp/storm"
+storm.local.dir: "${STORM_DATA_DIR}"
 
-	nimbus.seeds: ["big01","big02", "big03"]
+nimbus.seeds: ["big01","big02", "big03"]
 
-	supervisor.slots.ports:
-	- 6700
-	- 6701
-	- 6702
-	- 6703
+supervisor.slots.ports:
+- 6700
+- 6701
+- 6702
+- 6703
 
-	storm.health.check.dir: "healthchecks"
-	storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
+storm.health.check.dir: "healthchecks"
+storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 
 ###### NIFI
 
@@ -501,11 +501,11 @@ pdsh -w ^all_hosts "mv $STORM_CONF_DIR//storm.yaml $STORM_CONF_DIR//storm.yaml.o
     pdsh -w ^all_hosts "ln -s $HBASE_CONF_DIR /etc/hbase"
 	pdsh -w ^all_hosts "ln -s $HBASE_HOME/bin/*hbase* /usr/bin"
 	
-	 pdsh -w ^all_hosts "ln -s $KAFKA_CONF_DIR /etc/kafka"
+	pdsh -w ^all_hosts "ln -s $KAFKA_CONF_DIR /etc/kafka"
 	pdsh -w ^all_hosts "ln -s $KAFKA_HOME/bin/*kafka* /usr/bin"
-	 pdsh -w ^all_hosts "ln -s $STORM_CONF_DIR /etc/storm"
+	pdsh -w ^all_hosts "ln -s $STORM_CONF_DIR /etc/storm"
 	pdsh -w ^all_hosts "ln -s $STORM_HOME/bin/*storm* /usr/bin"
-	 pdsh -w ^all_hosts "ln -s $NIFI_CONF_DIR /etc/nifi"
+	pdsh -w ^all_hosts "ln -s $NIFI_CONF_DIR /etc/nifi"
 	pdsh -w ^all_hosts "ln -s $NIFI_HOME/bin/*nifi* /usr/bin"
 
 
@@ -615,7 +615,7 @@ pdsh -w ^all_hosts "mv $STORM_CONF_DIR//storm.yaml $STORM_CONF_DIR//storm.yaml.o
 
 	echo "#18. Start Kafka"
 	#pdsh -w ^all_hosts "rm -rf ${KAFKA_LOG_DIR}"
-	pdsh -w ^all_hosts  "su - hdfs -c '${KAFKA_HOME_DIR}/bin/kafka-server-start.sh ${KAFKA_LOG_DIR}/config/server.properties'"
+	pdsh -w ^all_hosts  "su - hdfs -c '${KAFKA_HOME}/bin/kafka-server-start.sh ${KAFKA_LOG_DIR}/config/server.properties'"
 
 	
 }
