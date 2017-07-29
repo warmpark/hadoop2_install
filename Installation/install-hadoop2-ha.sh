@@ -126,6 +126,21 @@ STORM_PID_DIR=/var/run/storm
 # http://apache.mirror.cdnetworks.com/storm/apache-storm-1.1.0/apache-storm-1.1.0.tar.gz
 # http://mirror.navercorp.com/apache/storm/apache-storm-1.1.0/apache-storm-1.1.0.tar.gz
 
+#### NIFI 
+export NIFI_VERSION=1.3.0
+export NIFI_DOWNLOAD_URI="http://mirror.apache-kr.org/nifi/${NIFI_VERSION}/nifi-${NIFI_VERSION}-bin.tar.gz"
+##http://mirror.apache-kr.org/nifi/${NIFI_VERSION}/nifi-${NIFI_VERSION}-bin.tar.gz
+##http://mirror.apache-kr.org/nifi/1.3.0/nifi-1.3.0-bin.tar.gz
+NIFI_HOME="/opt/nifi-${NIFI_VERSION}"
+NIFI_LOG_DIR="/var/log/storm"
+NIFI_PREFIX="${NIFI_HOME}"
+NIFI_CONF_DIR="${NIFI_HOME}/conf"
+NIFI_DATA_DIR="/var/data/nifi"
+NIFI_MANAGES_ZK=false
+NIFI_PID_DIR=/var/run/nifi
+
+
+
 # If using local OpenJDK, it must be installed on all nodes.
 # If using ${JDK_RPM_NAME}, then
 # set JAVA_HOME="" and place ${JDK_RPM_NAME} in this directory
@@ -181,15 +196,44 @@ install()
         echo "File does not exist"
         wget ${HBASE_DOWNLOAD_URI}
     else 
-        echo "File exists"
+        echo "HBASE File exists"
     fi
-   
+ 
+    ## KAFKA DOWNLOAD
+    kafkafile=./kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz
+    if [ ! -e "$kafkafile" ]; then
+        echo "File does not exist"
+        wget ${KAFKA_DOWNLOAD_URI}
+    else 
+        echo "KAFKA File exists"
+    fi
+ 
+    ## STORM DOWNLOAD
+    stormfile=./apache-storm-${STORM_VERSION}.tar.gz
+    if [ ! -e "$stormfile" ]; then
+        echo "File does not exist"
+        wget ${STORM_DOWNLOAD_URI}
+    else 
+        echo "STORM File exists"
+    fi
+	
+    ## NIFI DOWNLOAD
+    nififile=./nifi-${NIFI_VERSION}-bin.tar.gz
+    if [ ! -e "$nififile" ]; then
+        echo "File does not exist"
+        wget ${NIFI_DOWNLOAD_URI}
+    else 
+        echo "NIFI File exists"
+    fi
     
-    echo "Copying hadoop-"$HADOOP_VERSION".tar.gz,  zookeeper-"$ZOOKEEPER_VERSION".tar.gz, hbase-${HBASE_VERSION}-bin.tar.gz to all hosts..."
+    echo "Copying hadoop-"$HADOOP_VERSION".tar.gz,  zookeeper-"$ZOOKEEPER_VERSION".tar.gz, hbase-${HBASE_VERSION}-bin.tar.gz, kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz, apache-storm-${STORM_VERSION}.tar.gz, nifi-${NIFI_VERSION}-bin.tar.gz to all hosts..."
 	pdcp -w ^all_hosts hadoop-"$HADOOP_VERSION".tar.gz /opt
     pdcp -w ^all_hosts zookeeper-"$ZOOKEEPER_VERSION".tar.gz /opt
     pdcp -w ^all_hosts hbase-${HBASE_VERSION}-bin.tar.gz /opt
-    
+	pdcp -w ^all_hosts kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz /opt
+	pdcp -w ^all_hosts apache-storm-${STORM_VERSION}.tar.gz /opt
+	pdcp -w ^all_hosts nifi-${NIFI_VERSION}-bin.tar.gz /opt    
+	
 if [ -z "$JAVA_HOME" ]; then
 	echo "Download & Copying JDK ${JDK_VERSION} to all hosts...${JDK_DOWNLOAD_URI}"
   ## JDK DOWNLOAD
