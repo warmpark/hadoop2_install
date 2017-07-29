@@ -158,10 +158,10 @@ fi
 	pdsh -w ^all_hosts "tar -zxf /opt/hbase-$HBASE_VERSION-bin.tar.gz -C /opt && chown -R hdfs:hadoop /opt/hbase-$HBASE_VERSION"
  
 	echo "Extracting KAFKA kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz distribution on all hosts..."
-	pdsh -w ^all_hosts "tar -xvzf  /opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz -C /opt && chown -R hdfs:hadoop /opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}"
+	pdsh -w ^all_hosts "tar -xzf /opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz -C /opt && chown -R hdfs:hadoop /opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}"
 
 	echo "Extracting STORM apache-storm-${STORM_VERSION}.tar.gz distribution on all hosts..."
-	pdsh -w ^all_hosts "tar -zxf apache-storm-${STORM_VERSION}.tar.gz -C /opt && chown -R hdfs:hadoop /opt/apache-storm-${STORM_VERSION}"
+	pdsh -w ^all_hosts "tar -xzf apache-storm-${STORM_VERSION}.tar.gz -C /opt && chown -R hdfs:hadoop /opt/apache-storm-${STORM_VERSION}"
 
 	echo "Extracting NIFI nifi-${NIFI_VERSION}-bin.tar.gz distribution on all hosts..."
 	pdsh -w ^all_hosts "tar -zxf /opt/nifi-${NIFI_VERSION}-bin.tar.gz -C /opt && chown -R hdfs:hadoop /opt/nifi-${NIFI_VERSION}"

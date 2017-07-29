@@ -93,8 +93,8 @@ HBASE_MANAGES_ZK=false
 HBASE_PID_DIR=/var/run/hbase
 
 #### KAFKA 
-export KAFKA_VERSION=0.10.1.1
-export SCALA_VERSION=2.10
+KAFKA_VERSION=0.10.1.1
+SCALA_VERSION=2.10
 KAFKA_DOWNLOAD_URI="http://mirror.apache-kr.org/kafka/${KAFKA_VERSION}/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz"
 ##http://mirror.apache-kr.org/kafka/0.10.1.1/kafka_2.10-0.10.1.1.tgz
 KAFKA_HOME="/opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}"
@@ -106,7 +106,7 @@ KAFKA_MANAGES_ZK=false
 KAFKA_PID_DIR=/var/run/kafka
 
 #### STORM 
-export STORM_VERSION=1.1.0
+STORM_VERSION=1.1.0
 STORM_DOWNLOAD_URI="http://apache.mirror.cdnetworks.com/storm/apache-storm-${STORM_VERSION}/apache-storm-${STORM_VERSION}.tar.gz"
 ##http://apache.mirror.cdnetworks.com/storm/apache-storm-1.1.0/apache-storm-1.1.0.tar.gz
 STORM_HOME="/opt/apache-storm-${STORM_VERSION}"
@@ -120,8 +120,8 @@ STORM_PID_DIR=/var/run/storm
 # http://mirror.navercorp.com/apache/storm/apache-storm-1.1.0/apache-storm-1.1.0.tar.gz
 
 #### NIFI 
-export NIFI_VERSION=1.3.0
-export NIFI_DOWNLOAD_URI="http://mirror.apache-kr.org/nifi/${NIFI_VERSION}/nifi-${NIFI_VERSION}-bin.tar.gz"
+NIFI_VERSION=1.3.0
+NIFI_DOWNLOAD_URI="http://mirror.apache-kr.org/nifi/${NIFI_VERSION}/nifi-${NIFI_VERSION}-bin.tar.gz"
 ##http://mirror.apache-kr.org/nifi/${NIFI_VERSION}/nifi-${NIFI_VERSION}-bin.tar.gz
 ##http://mirror.apache-kr.org/nifi/1.3.0/nifi-1.3.0-bin.tar.gz
 NIFI_HOME="/opt/nifi-${NIFI_VERSION}"
