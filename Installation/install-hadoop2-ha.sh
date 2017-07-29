@@ -303,35 +303,35 @@ fi
    
    	echo "HBASE hbase-env.sh"
     pdsh -w ^all_hosts echo "export HBASE_MANAGES_ZK=$HBASE_MANAGES_ZK >> $HBASE_CONF_DIR/hbase-env.sh"
-    
-###### ZOOKEEPER    
-    echo "Editing zookeeper conf zoo.cfg - TODO 나중에 보완할 필요...."
-    pdsh -w ^all_hosts "echo     'dataDir=$ZOOKEEPER_DATA_DIR
-    dataLogDir=$ZOOKEEPER_LOG_DIR
-    clientPort=2181
-    initLimit=5
-    syncLimit=2
-    server.1=big01:2888:3888
-    server.2=big02:2888:3888
-    server.3=big03:2888:3888' >  $ZOOKEEPER_CONF_DIR/zoo.cfg"
+		
+	###### ZOOKEEPER    
+	echo "Editing zookeeper conf zoo.cfg - TODO 나중에 보완할 필요...."
+	pdsh -w ^all_hosts "echo     'dataDir=$ZOOKEEPER_DATA_DIR
+	dataLogDir=$ZOOKEEPER_LOG_DIR
+	clientPort=2181
+	initLimit=5
+	syncLimit=2
+	server.1=big01:2888:3888
+	server.2=big02:2888:3888
+	server.3=big03:2888:3888' >  $ZOOKEEPER_CONF_DIR/zoo.cfg"
 
-    
-    echo "Make zookeeper id in  $ZOOKEEPER_DATA_DIR/myid - TODO 나중에 보완할 필요...."
-    pdsh -w big01 "echo 1 > $ZOOKEEPER_DATA_DIR/myid"
-    pdsh -w big02 "echo 2 > $ZOOKEEPER_DATA_DIR/myid"
-    pdsh -w big03 "echo 3 > $ZOOKEEPER_DATA_DIR/myid"
-    
-    
-    echo "Editing regionservers conf regionservers - 나중에 보완할 필요...  HBASE는 HMaster와 ResionServer가 동시에 수행될 수 없음.--> 확인필요."
-    pdsh -w ^all_hosts "echo    'big02
-big03' >  $HBASE_CONF_DIR/regionservers"
+		
+	echo "Make zookeeper id in  $ZOOKEEPER_DATA_DIR/myid - TODO 나중에 보완할 필요...."
+	pdsh -w big01 "echo 1 > $ZOOKEEPER_DATA_DIR/myid"
+	pdsh -w big02 "echo 2 > $ZOOKEEPER_DATA_DIR/myid"
+	pdsh -w big03 "echo 3 > $ZOOKEEPER_DATA_DIR/myid"
+
+		
+	echo "Editing regionservers conf regionservers - 나중에 보완할 필요...  HBASE는 HMaster와 ResionServer가 동시에 수행될 수 없음.--> 확인필요."
+	pdsh -w ^all_hosts "echo    'big02
+	big03' >  $HBASE_CONF_DIR/regionservers"
 
 
 
-###### KAFKA
-  echo "Editing zookeeper conf $KAFKA_CONF_DIR/zookeeper.properties - TODO 나중에 보완할 필요...."
+	###### KAFKA
+	echo "Editing zookeeper conf $KAFKA_CONF_DIR/zookeeper.properties - TODO 나중에 보완할 필요...."
 	pdsh -w ^all_hosts "mv $KAFKA_CONF_DIR/zookeeper.properties $KAFKA_CONF_DIR/zookeeper.properties.org"
-  
+
 	pdsh -w ^all_hosts "echo     'dataDir=/var/data/zookeeper
 	dataLogDir=/var/log/zookeeper
 	clientPort=2181
@@ -341,15 +341,15 @@ big03' >  $HBASE_CONF_DIR/regionservers"
 	server.1=big01:2888:3888
 	server.2=big02:2888:3888
 	server.3=big03:2888:3888' >  $KAFKA_CONF_DIR/zookeeper.properties"
-	
+
 	echo "Editing zookeeper conf $KAFKA_CONF_DIR/server.properties - TODO 나중에 보완할 필요...."
 	## 백업 
 	pdsh -w ^all_hosts "mv $KAFKA_CONF_DIR/server.properties $KAFKA_CONF_DIR/server.properties.org"
 	## server.properties 설정 
-    pdsh -w ^all_hosts "echo     'broker.id=0
+	pdsh -w ^all_hosts "echo     'broker.id=0
 	delete.topic.enable=true
 	zookeeper.connect=big01:2181,big02:2181,big03:2181
-	
+
 	#listeners=PLAINTEXT://:9092
 	num.network.threads=3
 	num.io.threads=8
@@ -370,30 +370,31 @@ big03' >  $HBASE_CONF_DIR/regionservers"
 	pdsh -w big01 "sed -i 's/broker.id=0/broker.id=1/g' $KAFKA_CONF_DIR/server.properties"
 	pdsh -w big02 "sed -i 's/broker.id=0/broker.id=2/g' $KAFKA_CONF_DIR/server.properties"
 	pdsh -w big03 "sed -i 's/broker.id=0/broker.id=3/g' $KAFKA_CONF_DIR/server.properties"
-	
+
 
 ###### STORM
-  echo "Editing zookeeper conf $STORM_CONF_DIR//storm.yaml - TODO 나중에 보완할 필요...."
-	pdsh -w ^all_hosts "cp $STORM_CONF_DIR//storm.yaml $STORM_CONF_DIR//storm.yaml.org"
-  
-	pdsh -w ^all_hosts "echo     '
-	storm.zookeeper.servers:
-	- "big01"
-	- "big02"
-	- "big03"
-	#storm.local.dir: "/tmp/storm"
-	storm.local.dir: "${STORM_DATA_DIR}"
-	
-	nimbus.seeds: ["big01","big02", "big03"]
-	
-	supervisor.slots.ports:
-		- 6700
-		- 6701
-		- 6702
-		- 6703
-	
-	storm.health.check.dir: "healthchecks"
-	storm.health.check.timeout.ms: 5000' >>  $STORM_CONF_DIR/storm.yaml"
+echo "Editing zookeeper conf $STORM_CONF_DIR//storm.yaml - TODO 나중에 보완할 필요...."
+pdsh -w ^all_hosts "cp $STORM_CONF_DIR//storm.yaml $STORM_CONF_DIR//storm.yaml.org"
+
+## "//t" 이 들어 있으면 안됨. 
+pdsh -w ^all_hosts "echo     '
+storm.zookeeper.servers:
+- "big01"
+- "big02"
+- "big03"
+#storm.local.dir: "/tmp/storm"
+storm.local.dir: "${STORM_DATA_DIR}"
+
+nimbus.seeds: ["big01","big02", "big03"]
+
+supervisor.slots.ports:
+	- 6700
+	- 6701
+	- 6702
+	- 6703
+
+storm.health.check.dir: "healthchecks"
+storm.health.check.timeout.ms: 5000' >>  $STORM_CONF_DIR/storm.yaml"
 
 ###### NIFI
 
