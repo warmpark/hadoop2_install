@@ -377,23 +377,23 @@ echo "Editing zookeeper conf $STORM_CONF_DIR//storm.yaml - TODO 나중에 보완
 pdsh -w ^all_hosts "mv $STORM_CONF_DIR//storm.yaml $STORM_CONF_DIR//storm.yaml.org"
 
 ## "//t" 이 들어 있으면 안됨. 
-pdsh -w ^all_hosts "echo     'storm.zookeeper.servers:
-- "big01"
-- "big02"
-- "big03"
-#storm.local.dir: "/tmp/storm"
-storm.local.dir: "${STORM_DATA_DIR}"
+	pdsh -w ^all_hosts "echo     'storm.zookeeper.servers:
+	- "big01"
+	- "big02"
+	- "big03"
+	#storm.local.dir: "/tmp/storm"
+	storm.local.dir: "${STORM_DATA_DIR}"
 
-nimbus.seeds: ["big01","big02", "big03"]
+	nimbus.seeds: ["big01","big02", "big03"]
 
-supervisor.slots.ports:
-- 6700
-- 6701
-- 6702
-- 6703
+	supervisor.slots.ports:
+	- 6700
+	- 6701
+	- 6702
+	- 6703
 
-storm.health.check.dir: "healthchecks"
-storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
+	storm.health.check.dir: "healthchecks"
+	storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 
 ###### NIFI
 
@@ -606,16 +606,16 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 	source /etc/profile.d/hadoop.sh
 	source /etc/hadoop/hadoop-env.sh
 	source /etc/hadoop/yarn-env.sh
-	hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-$HADOOP_VERSION.jar pi -Dmapreduce.clientfactory.class.name=org.apache.hadoop.mapred.YarnClientFactory -libjars $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-$HADOOP_VERSION.jar 16 10000
+	#hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-$HADOOP_VERSION.jar pi -Dmapreduce.clientfactory.class.name=org.apache.hadoop.mapred.YarnClientFactory -libjars $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-$HADOOP_VERSION.jar 16 10000
 
 	echo "#17. Start Storm"
-	pdsh -w ^all_hosts "${STORM_HOME}/bin/storm nimbus"
-	pdsh -w ^all_hosts "${STORM_HOME}/bin/storm supervisor"
-	pdsh -w ^all_hosts "${STORM_HOME}/bin/storm ui"
+	pdsh -w ^all_hosts "su - hdfs -c '${STORM_HOME}/bin/storm nimbus'"
+	pdsh -w ^all_hosts "su - hdfs -c '${STORM_HOME}/bin/storm supervisor'"
+	pdsh -w ^all_hosts "su - hdfs -c '${STORM_HOME}/bin/storm ui'"
 
 	echo "#18. Start Kafka"
 	#pdsh -w ^all_hosts "rm -rf ${KAFKA_LOG_DIR}"
-	pdsh -w ^all_hosts  "${KAFKA_HOME_DIR}/bin/kafka-server-start.sh ${KAFKA_LOG_DIR}/config/server.properties"
+	pdsh -w ^all_hosts  "su - hdfs -c '${KAFKA_HOME_DIR}/bin/kafka-server-start.sh ${KAFKA_LOG_DIR}/config/server.properties'"
 
 	
 }
