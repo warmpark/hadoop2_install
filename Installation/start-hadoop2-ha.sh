@@ -97,11 +97,11 @@ hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-$HADOOP
 
 
 echo "#17. Start Storm"
-pdsh -w big01,big02,big03 /opt/apache-storm-1.1.0/bin/storm nimbus &
-pdsh -w big01,big02,big03 /opt/apache-storm-1.1.0/bin/storm supervisor &
-pdsh -w big01,big02,big03 /opt/apache-storm-1.1.0/bin/storm ui &
+pdsh -w ^all_hosts "${STORM_HOME}/bin/storm nimbus"
+pdsh -w ^all_hosts "${STORM_HOME}/bin/storm supervisor"
+pdsh -w ^all_hosts "${STORM_HOME}/bin/storm ui"
 
 echo "#18. Start Kafka"
-pdsh -w big01,big02,big03 "rm -rf /tmp/kafka-logs/"
-pdsh -w big01,big02,big03  "/opt/kafka_2.10-0.10.1.1/bin/kafka-server-start.sh /opt/kafka_2.10-0.10.1.1/config/server.properties &"
+#pdsh -w ^all_hosts "rm -rf ${KAFKA_LOG_DIR}"
+pdsh -w ^all_hosts  "${KAFKA_LOG_DIR}/bin/kafka-server-start.sh ${KAFKA_LOG_DIR}/config/server.properties"
 

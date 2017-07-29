@@ -26,7 +26,8 @@ pdsh -w ^all_hosts "source $HADOOP_CONF_DIR/yarn-env.sh"
 pdsh -w ^all_hosts "source $HADOOP_CONF_DIR/mapred-env.sh"
 pdsh -w ^all_hosts "source $HBASE_CONF_DIR/hbase-env.sh"
 
-pdsh -w big01,big02,big03  /opt/kafka_2.10-0.10.1.1/bin/kafka-server-stop.sh 
+pdsh -w ^all_hosts  "${KAFKA_HOME}/bin/kafka-server-stop.sh" 
+## STORM .....
 
 
 pdsh -w ^hbase_regionservers "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh stop regionserver'"

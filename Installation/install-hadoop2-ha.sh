@@ -189,12 +189,39 @@ fi
     pdsh -w ^all_hosts "echo export PATH=$HBASE_HOME/bin:$PATH >> /etc/profile.d/hbase.sh"
     pdsh -w ^all_hosts "echo export CLASSPATH=$CLASSPATH:$HBASE_CONF_DIR >> /etc/profile.d/hbase.sh"
 	pdsh -w ^all_hosts "source /etc/profile.d/hbase.sh"
+
+    pdsh -w ^all_hosts "echo export KAFKA_HOME=$KAFKA_HOME > /etc/profile.d/kafka.sh"
+	pdsh -w ^all_hosts "echo export KAFKA_PREFIX=$KAFKA_HOME >> /etc/profile.d/kafka.sh"
+	pdsh -w ^all_hosts "echo export KAFKA_CONF_DIR=$KAFKA_CONF_DIR >> /etc/profile.d/kafka.sh"
+	pdsh -w ^all_hosts "echo export KAFKA_LOG_DIR=$KAFKA_LOG_DIR >> /etc/profile.d/kafka.sh"
+    pdsh -w ^all_hosts "echo export PATH=$KAFKA_HOME/bin:$PATH >> /etc/profile.d/kafka.sh"
+    pdsh -w ^all_hosts "echo export CLASSPATH=$CLASSPATH:$KAFKA_CONF_DIR >> /etc/profile.d/kafka.sh"
+	pdsh -w ^all_hosts "source /etc/profile.d/kafka.sh"
+
+    pdsh -w ^all_hosts "echo export STORM_HOME=$STORM_HOME > /etc/profile.d/storm.sh"
+	pdsh -w ^all_hosts "echo export STORM_PREFIX=$STORM_HOME >> /etc/profile.d/storm.sh"
+	pdsh -w ^all_hosts "echo export STORM_CONF_DIR=$STORM_CONF_DIR >> /etc/profile.d/storm.sh"
+	pdsh -w ^all_hosts "echo export STORM_LOG_DIR=$STORM_LOG_DIR >> /etc/profile.d/storm.sh"
+    pdsh -w ^all_hosts "echo export PATH=$STORM_HOME/bin:$PATH >> /etc/profile.d/storm.sh"
+    pdsh -w ^all_hosts "echo export CLASSPATH=$CLASSPATH:$STORM_CONF_DIR >> /etc/profile.d/storm.sh"
+	pdsh -w ^all_hosts "source /etc/profile.d/storm.sh"
+
+    
+    pdsh -w ^all_hosts "echo export NIFI_HOME=$NIFI_HOME > /etc/profile.d/nifi.sh"
+	pdsh -w ^all_hosts "echo export NIFI_PREFIX=$NIFI_HOME >> /etc/profile.d/nifi.sh"
+	pdsh -w ^all_hosts "echo export NIFI_CONF_DIR=$NIFI_CONF_DIR >> /etc/profile.d/nifi.sh"
+	pdsh -w ^all_hosts "echo export NIFI_LOG_DIR=$NIFI_LOG_DIR >> /etc/profile.d/nifi.sh"
+    pdsh -w ^all_hosts "echo export PATH=$NIFI_HOME/bin:$PATH >> /etc/profile.d/nifi.sh"
+    pdsh -w ^all_hosts "echo export CLASSPATH=$CLASSPATH:$NIFI_CONF_DIR >> /etc/profile.d/nifi.sh"
+	pdsh -w ^all_hosts "source /etc/profile.d/nifi.sh"
+
     
     ## log dir    
     echo "Editing Hadoop environment scripts for log directories on all hosts..."
 	pdsh -w ^all_hosts echo "export HADOOP_LOG_DIR=$HADOOP_LOG_DIR >> $HADOOP_CONF_DIR/hadoop-env.sh"
 	pdsh -w ^all_hosts echo "export YARN_LOG_DIR=$YARN_LOG_DIR >> $HADOOP_CONF_DIR/yarn-env.sh"
 	pdsh -w ^all_hosts echo "export HADOOP_MAPRED_LOG_DIR=$HADOOP_MAPRED_LOG_DIR >> $HADOOP_CONF_DIR/mapred-env.sh"
+	
 	## pid dir 
 	echo "Editing Hadoop environment scripts for pid directories on all hosts..."
 	pdsh -w ^all_hosts echo "export HADOOP_PID_DIR=$HADOOP_PID_DIR >> $HADOOP_CONF_DIR/hadoop-env.sh"
@@ -202,18 +229,24 @@ fi
 	pdsh -w ^all_hosts echo "export HADOOP_MAPRED_PID_DIR=$HADOOP_MAPRED_PID_DIR >> $HADOOP_CONF_DIR/mapred-env.sh"
     pdsh -w ^all_hosts echo "export HBASE_PID_DIR=$HBASE_PID_DIR >> $HBASE_CONF_DIR/hbase-env.sh"
     ### ZK  PID관리는 어떻게.....
+	
 	## 설정파일 다시 로드 
 	pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
 	pdsh -w ^zk_hosts "source /etc/profile.d/zookeeper.sh"
 	pdsh -w ^all_hosts "source /etc/profile.d/hbase.sh"
+	pdsh -w ^all_hosts "source /etc/profile.d/hbase.sh"
+	pdsh -w ^all_hosts "source /etc/profile.d/kafka.sh"
+	pdsh -w ^all_hosts "source /etc/profile.d/storm.sh"
+	pdsh -w ^all_hosts "source /etc/profile.d/nifi.sh"
 
 	
     ### 각종 저장 장소의 기본 사용자는 hdfs... 
-	## hadoop
+
 	echo "Creating hadoop data dir, log dir, pid dir ..."
     pdsh -w ^all_hosts "mkdir -p ${HADOOP_DATA_DIR} && chown -R hdfs:hadoop ${HADOOP_DATA_DIR}"
     pdsh -w ^all_hosts "mkdir -p /var/log/hadoop && chown -R hdfs:hadoop /var/log/hadoop"
     pdsh -w ^all_hosts "mkdir -p /var/run/hadoop && chown -R hdfs:hadoop /var/run/hadoop"
+	
     
 	echo "Creating HDFS data directories on NameNode host, JournalNode hosts, Secondary NameNode host, and DataNode hosts..."
     #pdsh -w ^all_hosts "mkdir -p $NN_DATA_DIR && chown hdfs:hadoop $NN_DATA_DIR"
@@ -221,8 +254,15 @@ fi
 	pdsh -w ^all_hosts "mkdir -p $DN_DATA_DIR && chown -R hdfs:hadoop $DN_DATA_DIR"
     pdsh -w ^all_hosts "mkdir -p $JN_EDITS_DIR && chown -R hdfs:hadoop $JN_EDITS_DIR"
     pdsh -w ^all_hosts "mkdir -p $ZOOKEEPER_DATA_DIR && chown -R hdfs:hadoop $ZOOKEEPER_DATA_DIR"
-    ## HBASE
+    #HBASE
     pdsh -w ^all_hosts "mkdir -p ${HBASE_DATA_DIR} && chown -R hdfs:hadoop ${HBASE_DATA_DIR}"
+    #KAFKA
+    pdsh -w ^all_hosts "mkdir -p ${KAFKA_DATA_DIR} && chown -R hdfs:hadoop ${KAFKA_DATA_DIR}"
+    #STORM
+    pdsh -w ^all_hosts "mkdir -p ${STORM_DATA_DIR} && chown -R hdfs:hadoop ${STORM_DATA_DIR}"
+    #NIFI
+    pdsh -w ^all_hosts "mkdir -p ${NIFI_DATA_DIR} && chown -R hdfs:hadoop ${NIFI_DATA_DIR}"
+	
         
 
 	echo "Creating log directories on all hosts..."
@@ -232,7 +272,13 @@ fi
     pdsh -w ^all_hosts "mkdir -p $ZOOKEEPER_LOG_DIR && chown -R hdfs:hadoop $ZOOKEEPER_LOG_DIR"
     ## HBASE
     pdsh -w ^all_hosts "mkdir -p ${HBASE_LOG_DIR} && chown -R hdfs:hadoop ${HBASE_LOG_DIR}"
-    
+    #KAFKA
+    pdsh -w ^all_hosts "mkdir -p ${KAFKA_LOG_DIR} && chown -R hdfs:hadoop ${KAFKA_LOG_DIR}"
+    #STORM
+    pdsh -w ^all_hosts "mkdir -p ${STORM_LOG_DIR} && chown -R hdfs:hadoop ${STORM_LOG_DIR}"
+    #NIFI
+    pdsh -w ^all_hosts "mkdir -p ${NIFI_LOG_DIR} && chown -R hdfs:hadoop ${NIFI_LOG_DIR}"
+   
 
 	echo "Creating pid directories on all hosts..."
 	pdsh -w ^all_hosts "mkdir -p $YARN_PID_DIR && chown -R yarn:hadoop $YARN_PID_DIR"
@@ -240,7 +286,13 @@ fi
 	pdsh -w ^all_hosts "mkdir -p $HADOOP_MAPRED_PID_DIR && chown -R mapred:hadoop $HADOOP_MAPRED_PID_DIR"
     pdsh -w ^all_hosts "mkdir -p $HBASE_PID_DIR && chown -R hdfs:hadoop $HBASE_PID_DIR"
     ##TODO JK PID는 어떻게 ? 어디에 ? 구글링해봐야...
-    
+    #KAFKA
+    pdsh -w ^all_hosts "mkdir -p ${KAFKA_PID_DIR} && chown -R hdfs:hadoop ${KAFKA_PID_DIR}"
+    #STORM
+    pdsh -w ^all_hosts "mkdir -p ${STORM_PID_DIR} && chown -R hdfs:hadoop ${STORM_PID_DIR}"
+    #NIFI
+    pdsh -w ^all_hosts "mkdir -p ${NIFI_PID_DIR} && chown -R hdfs:hadoop ${NIFI_PID_DIR}"
+   
 
 	if [ -n "$YARN_NODEMANAGER_HEAPSIZE" ]
 	then 
@@ -273,6 +325,25 @@ fi
     echo "Editing regionservers conf regionservers - 나중에 보완할 필요...  HBASE는 HMaster와 ResionServer가 동시에 수행될 수 없음.--> 확인필요."
     pdsh -w ^all_hosts "echo    'big02
 big03' >  $HBASE_CONF_DIR/regionservers"
+
+
+
+###### KAFKA
+   echo "Editing zookeeper conf /opt/kafka_2.10-0.10.1.1/config/zookeeper.properties - TODO 나중에 보완할 필요...."
+    pdsh -w ^all_hosts "echo     'dataDir=$ZOOKEEPER_DATA_DIR
+    dataLogDir=$ZOOKEEPER_LOG_DIR
+    clientPort=2181
+    initLimit=5
+    syncLimit=2
+	maxClientCnxns=0
+    server.1=big01:2888:3888
+    server.2=big02:2888:3888
+    server.3=big03:2888:3888' >  $KAFKA_CONF_DIR/zookeeper.properties"
+
+###### STORM
+
+###### NIFI
+
 
 
     
@@ -476,6 +547,17 @@ big03' >  $HBASE_CONF_DIR/regionservers"
 	source /etc/hadoop/hadoop-env.sh
 	source /etc/hadoop/yarn-env.sh
 	hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-$HADOOP_VERSION.jar pi -Dmapreduce.clientfactory.class.name=org.apache.hadoop.mapred.YarnClientFactory -libjars $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-$HADOOP_VERSION.jar 16 10000
+
+	echo "#17. Start Storm"
+	pdsh -w ^all_hosts "${STORM_HOME}/bin/storm nimbus"
+	pdsh -w ^all_hosts "${STORM_HOME}/bin/storm supervisor"
+	pdsh -w ^all_hosts "${STORM_HOME}/bin/storm ui"
+
+	echo "#18. Start Kafka"
+	#pdsh -w ^all_hosts "rm -rf ${KAFKA_LOG_DIR}"
+	pdsh -w ^all_hosts  "${KAFKA_LOG_DIR}/bin/kafka-server-start.sh ${KAFKA_LOG_DIR}/config/server.properties"
+
+	
 }
 
 interactive()
