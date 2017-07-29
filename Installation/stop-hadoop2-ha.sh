@@ -13,9 +13,9 @@ pdsh -w ^all_hosts "source /etc/profile.d/java.sh"
 pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
 pdsh -w ^zk_hosts  "source /etc/profile.d/zookeeper.sh"
 pdsh -w ^all_hosts "source /etc/profile.d/hbase.sh"
-pdsh -w ^all_hosts "source source /etc/profile.d/kafka.sh"
-pdsh -w ^all_hosts "source source /etc/profile.d/storm.sh"
-pdsh -w ^all_hosts "source source /etc/profile.d/nifi.sh"
+pdsh -w ^all_hosts "source /etc/profile.d/kafka.sh"
+pdsh -w ^all_hosts "source /etc/profile.d/storm.sh"
+pdsh -w ^all_hosts "source /etc/profile.d/nifi.sh"
 
 pdsh -w ^all_hosts "source $HADOOP_CONF_DIR/hadoop-env.sh"	
 pdsh -w ^all_hosts "source $HADOOP_CONF_DIR/yarn-env.sh"
@@ -35,7 +35,7 @@ source $HADOOP_CONF_DIR/mapred-env.sh
 source $HBASE_CONF_DIR/hbase-env.sh
 
 ## Stop kafka
-pdsh -w ^all_hosts  "${KAFKA_HOME}/bin/kafka-server-stop.sh" 
+pdsh -w ^all_hosts  "su - hdfs -c '${KAFKA_HOME}/bin/kafka-server-stop.sh'" 
 ## STORM .....
 
 pdsh -w ^hbase_regionservers "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh stop regionserver'"
