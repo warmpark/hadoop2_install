@@ -36,7 +36,7 @@ source $HBASE_CONF_DIR/hbase-env.sh
 
 ## Stop kafka
 pdsh -w ^all_hosts  "su - hdfs -c '${KAFKA_HOME}/bin/kafka-server-stop.sh'" 
-pdsh -w ^all_hosts  "kill -9 $(ps -ef | grep storm | awk '{print $2}')"
+pdsh -w ^all_hosts  kill -9 $(ps -ef | grep storm | awk '{print $2}')
 ## STORM .....
 
 pdsh -w ^hbase_regionservers "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh stop regionserver'"
