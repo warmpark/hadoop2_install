@@ -113,7 +113,7 @@ STORM_HOME="/opt/apache-storm-${STORM_VERSION}"
 STORM_LOG_DIR="/var/log/storm"
 STORM_PREFIX="${STORM_HOME}"
 STORM_CONF_DIR="${STORM_HOME}/conf"
-STORM_DATA_DIR="/var/data/strom"
+STORM_DATA_DIR="/var/data/storm"
 STORM_MANAGES_ZK=false
 STORM_PID_DIR=/var/run/storm
 # http://apache.mirror.cdnetworks.com/storm/apache-storm-1.1.0/apache-storm-1.1.0.tar.gz
