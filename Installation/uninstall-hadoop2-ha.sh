@@ -34,10 +34,22 @@ pdsh -w ^all_hosts "source $HADOOP_CONF_DIR/mapred-env.sh"
 pdsh -w ^all_hosts "source $HBASE_CONF_DIR/hbase-env.sh"
 
 
+## Stop kafka
 pdsh -w ^all_hosts  "su - hdfs -c '${KAFKA_HOME}/bin/kafka-server-stop.sh'" 
-pdsh -w ^all_hosts  "kill -9 $(ps -ef | grep storm | awk '{print $2}')"
 
+##_PIDFILE="./nimbus.pid"
+##_PID=`cat "${_PIDFILE}"` 
+##echo "Storm Nimbus (pid=${_PID}) is stopping..."
+## kill -15 $_PID
+## rm "${_PIDFILE}"
 
+## STORM .....
+#pdsh -w ^all_hosts  "kill -9 $(jps | grep nimbus | awk '{print $1}') | rm -f ${STORM_PID_DIR}/nimbus.pid"
+pdsh -w ^all_hosts  su - hdfs -c "jps | grep nimbus | grep -v grep | awk '{print $1}'| xargs kill -9 2>/dev/null"
+pdsh -w ^all_hosts  su - hdfs -c "jps | grep Supervisor | grep -v grep | awk '{print $1}'| xargs kill -9 2>/dev/null"
+pdsh -w ^all_hosts  su - hdfs -c "jps | grep core | grep -v grep | awk '{print $1}'| xargs kill -9 2>/dev/null"
+
+sleep 30
 
 echo "Stopping Hadoop 2 services..."
 #pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/stop-hbase.sh'"

@@ -105,12 +105,20 @@ echo "#16. Running YARN smoke test..."
 
 echo "#17. Start Kafka & create test topic"
 #pdsh -w ^all_hosts "rm -rf ${KAFKA_LOG_DIR}"
-pdsh -w ^all_hosts  "su - hdfs -c '${KAFKA_HOME}/bin/kafka-server-start.sh ${KAFKA_CONF_DIR}/server.properties &'"
+pdsh -w ^all_hosts  "su - hdfs -c '${KAFKA_HOME}/bin/kafka-server-start.sh -daemon ${KAFKA_CONF_DIR}/server.properties '"
 #su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --create --zookeeper big01:2181 --replication-factor 3 --partitions 20 --topic test"
 #su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --list --zookeeper big01:2181"
 su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --describe --zookeeper big01:2181 --topic test"
 
 echo "#18. Start Storm"
-pdsh -w ^all_hosts "su - hdfs -c '${STORM_HOME}/bin/storm nimbus &'"
-pdsh -w ^all_hosts "su - hdfs -c '${STORM_HOME}/bin/storm supervisor &'"
-pdsh -w ^all_hosts "su - hdfs -c '${STORM_HOME}/bin/storm ui &'"
+
+## eval "nohup ${STORM_HOME}/bin/storm nimbus > ${STORM_LOG_DIR}/nimbus.log 2>&1 &"
+## NIMBUS_BACKGROUND_PID=$!
+## export NIMBUS_BACKGROUND_PID
+## echo $NIMBUS_BACKGROUND_PID > "${STORM_PID_DIR}/nimbus.pid"
+
+pdsh -w big01  "su - hdfs -c 'nohup ${STORM_HOME}/bin/storm nimbus > ${STORM_LOG_DIR}/nimbus.log 2>&1 &'"
+pdsh -w ^all_hosts "su - hdfs -c '${STORM_HOME}/bin/storm supervisor > ${STORM_LOG_DIR}/supervisor.log 2>&1 &'"
+pdsh -w ^all_hosts "su - hdfs -c '${STORM_HOME}/bin/storm ui > ${STORM_LOG_DIR}/ui.log 2>&1 &'"
+
+
