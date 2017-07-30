@@ -621,13 +621,13 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 	## export NIMBUS_BACKGROUND_PID
 	## echo $NIMBUS_BACKGROUND_PID > "${STORM_PID_DIR}/nimbus.pid"
 
-	pdsh -w big01  "su - hdfs -c 'nohup ${STORM_HOME}/bin/storm nimbus > ${STORM_LOG_DIR}/nimbus.log 2>&1 &'"
-	pdsh -w ^all_hosts "su - hdfs -c '${STORM_HOME}/bin/storm supervisor > ${STORM_LOG_DIR}/supervisor.log 2>&1 &'"
-	pdsh -w ^all_hosts "su - hdfs -c '${STORM_HOME}/bin/storm ui > ${STORM_LOG_DIR}/ui.log 2>&1 &'"
-	sleep 30
+	pdsh -w big01,big02,big03  "su - hdfs -c 'nohup ${STORM_HOME}/bin/storm nimbus > ${STORM_LOG_DIR}/nimbus.log 2>&1 &'"
+	pdsh -w big01,big02,big03  "su - hdfs -c '${STORM_HOME}/bin/storm supervisor > ${STORM_LOG_DIR}/supervisor.log 2>&1 &'"
+	pdsh -w big01,big02,big03  "su - hdfs -c '${STORM_HOME}/bin/storm ui > ${STORM_LOG_DIR}/ui.log 2>&1 &'"
+	sleep 50
+	#pdsh -w big02,big03  "su - hdfs -c 'nohup ${STORM_HOME}/bin/storm nimbus > ${STORM_LOG_DIR}/nimbus.log 2>&1 &'"
 		
 }
-
 interactive()
 {
 	echo -n "Enter NameNode hostname: "
