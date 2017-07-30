@@ -525,6 +525,7 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
   
     echo "#1. Start ZK Quarum Daemon(su - hdfs -c '$ZOOKEEPER_HOME/bin/zkServer.sh start') :모든 ZK에서:  3,5 ... 홀수개수로 "
     pdsh -w ^zk_hosts "su - hdfs -c '$ZOOKEEPER_HOME/bin/zkServer.sh start'"
+	sleep 20
 
     echo "#2. ZK 내에 NameNode 이중화 관련 ZK 정보 초기화(su - hdfs -c '$HADOOP_HOME/bin/hdfs zkfc -formatZK'):Active NameNode 후보에서만: 반드시 ZK 가 실행 중이어야 함"
     #su - hdfs -c '$HADOOP_HOME/bin/hdfs zkfc -formatZK'
@@ -609,6 +610,7 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 	echo "#17. Start Kafka & create test topic"
 	#pdsh -w ^all_hosts "rm -rf ${KAFKA_LOG_DIR}"
 	pdsh -w ^all_hosts  "su - hdfs -c '${KAFKA_HOME}/bin/kafka-server-start.sh -daemon ${KAFKA_CONF_DIR}/server.properties '"
+	sleep 30
 	su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --create --zookeeper big01:2181 --replication-factor 3 --partitions 20 --topic test"
 	su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --list --zookeeper big01:2181"
 	su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --describe --zookeeper big01:2181 --topic test"
@@ -622,7 +624,7 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 	pdsh -w big01  "su - hdfs -c 'nohup ${STORM_HOME}/bin/storm nimbus > ${STORM_LOG_DIR}/nimbus.log 2>&1 &'"
 	pdsh -w ^all_hosts "su - hdfs -c '${STORM_HOME}/bin/storm supervisor > ${STORM_LOG_DIR}/supervisor.log 2>&1 &'"
 	pdsh -w ^all_hosts "su - hdfs -c '${STORM_HOME}/bin/storm ui > ${STORM_LOG_DIR}/ui.log 2>&1 &'"
-
+	sleep 30
 		
 }
 

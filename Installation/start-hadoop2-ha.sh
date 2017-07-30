@@ -44,6 +44,7 @@ pdsh -w ^all_hosts "mkdir -p $HBASE_PID_DIR && chown -R hdfs:hadoop $HBASE_PID_D
 
 echo "#1. Start ZK Quarum Daemon(su - hdfs -c '$ZOOKEEPER_HOME/bin/zkServer.sh start') :모든 ZK에서:  3,5 ... 홀수개수로 "
 pdsh -w ^zk_hosts "su - hdfs -c '$ZOOKEEPER_HOME/bin/zkServer.sh start'"
+sleep 20
 
 #echo "#2. ZK 내에 NameNode 이중화 관련 ZK 정보 초기화(su - hdfs -c '$HADOOP_HOME/bin/hdfs zkfc -formatZK'):Active NameNode 후보에서만: 반드시 ZK 가 실행 중이어야 함"
 #pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/bin/hdfs zkfc -formatZK'"
@@ -111,7 +112,6 @@ pdsh -w ^all_hosts  "su - hdfs -c '${KAFKA_HOME}/bin/kafka-server-start.sh -daem
 su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --describe --zookeeper big01:2181 --topic test"
 
 echo "#18. Start Storm"
-
 ## eval "nohup ${STORM_HOME}/bin/storm nimbus > ${STORM_LOG_DIR}/nimbus.log 2>&1 &"
 ## NIMBUS_BACKGROUND_PID=$!
 ## export NIMBUS_BACKGROUND_PID
@@ -120,5 +120,6 @@ echo "#18. Start Storm"
 pdsh -w big01  "su - hdfs -c 'nohup ${STORM_HOME}/bin/storm nimbus > ${STORM_LOG_DIR}/nimbus.log 2>&1 &'"
 pdsh -w ^all_hosts "su - hdfs -c '${STORM_HOME}/bin/storm supervisor > ${STORM_LOG_DIR}/supervisor.log 2>&1 &'"
 pdsh -w ^all_hosts "su - hdfs -c '${STORM_HOME}/bin/storm ui > ${STORM_LOG_DIR}/ui.log 2>&1 &'"
-
+sleep 30
+pdsh -w big02,big03  "su - hdfs -c 'nohup ${STORM_HOME}/bin/storm nimbus > ${STORM_LOG_DIR}/nimbus.log 2>&1 &'"
 
