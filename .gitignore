@@ -2,3 +2,5 @@
 *.gz
 *.zip
 *.class
+*.tar.gz
+*.tgz
