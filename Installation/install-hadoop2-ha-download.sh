@@ -114,7 +114,7 @@ install()
 	#pdcp -w ^all_hosts nifi-${NIFI_VERSION}-bin.tar.gz /opt  
 
     echo "Extracting PHOENIX apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-bin.tar.gz distribution on all ZK hosts..."
-	pdsh -w ^zk_hosts  "tar -zxf /opt/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-bin.tar.gz -C /opt && chown -R hdfs:hadoop /opt/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}"
+	pdsh -w ^zk_hosts  "tar -xzf /opt/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-bin.tar.gz -C /opt && chown -R hdfs:hadoop ${PHOENIX_HOME}"
 	pdsh -w ^all_hosts "su - hdfs -c 'cp -f ${PHOENIX_HOME}/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-server.jar  $HBASE_HOME/lib '"
 		
 }

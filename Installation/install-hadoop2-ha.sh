@@ -161,23 +161,28 @@ fi
 	
 	######  압축 해제... 
     echo "Extracting Hadoop hadoop-$HADOOP_VERSION.tar.gz distribution on all hosts..."
-	pdsh -w ^all_hosts "tar -zxf /opt/hadoop-$HADOOP_VERSION.tar.gz -C /opt && chown -R hdfs:hadoop /opt/hadoop-$HADOOP_VERSION"
+	pdsh -w ^all_hosts "tar -zxf /opt/hadoop-$HADOOP_VERSION.tar.gz -C /opt && chown -R hdfs:hadoop ${HADOOP_HOME}"
 
     echo "Extracting Zookeeper zookeeper-$ZOOKEEPER_VERSION.tar.gz distribution on all ZK hosts..."
-	pdsh -w ^zk_hosts  "tar -zxf /opt/zookeeper-$ZOOKEEPER_VERSION.tar.gz -C /opt && chown -R hdfs:hadoop /opt/zookeeper-$ZOOKEEPER_VERSION"
+	pdsh -w ^zk_hosts  "tar -zxf /opt/zookeeper-$ZOOKEEPER_VERSION.tar.gz -C /opt && chown -R hdfs:hadoop ${ZOOKEEPER_HOME}"
 
     echo "Extracting HBASE hbase-$HBASE_VERSION-bin.tar.gz distribution on all hosts..."
-	pdsh -w ^all_hosts "tar -zxf /opt/hbase-$HBASE_VERSION-bin.tar.gz -C /opt && chown -R hdfs:hadoop /opt/hbase-$HBASE_VERSION"
+	pdsh -w ^all_hosts "tar -zxf /opt/hbase-$HBASE_VERSION-bin.tar.gz -C /opt && chown -R hdfs:hadoop ${HBASE_HOME}"
  
 	echo "Extracting KAFKA kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz distribution on all hosts..."
-	pdsh -w ^all_hosts "tar -xzf /opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz -C /opt && chown -R hdfs:hadoop /opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}"
+	pdsh -w ^all_hosts "tar -xzf /opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz -C /opt && chown -R hdfs:hadoop ${KAFKA_HOME}"
 
 	echo "Extracting STORM apache-storm-${STORM_VERSION}.tar.gz distribution on all hosts..."
-	pdsh -w ^all_hosts "tar -xzf /opt/apache-storm-${STORM_VERSION}.tar.gz -C /opt && chown -R hdfs:hadoop /opt/apache-storm-${STORM_VERSION}"
+	pdsh -w ^all_hosts "tar -xzf /opt/apache-storm-${STORM_VERSION}.tar.gz -C /opt && chown -R hdfs:hadoop ${STORM_HOME}"
 
 	echo "Extracting NIFI nifi-${NIFI_VERSION}-bin.tar.gz distribution on all hosts..."
-	pdsh -w ^all_hosts "tar -zxf /opt/nifi-${NIFI_VERSION}-bin.tar.gz -C /opt && chown -R hdfs:hadoop /opt/nifi-${NIFI_VERSION}"
+	pdsh -w ^all_hosts "tar -zxf /opt/nifi-${NIFI_VERSION}-bin.tar.gz -C /opt && chown -R hdfs:hadoop ${NIFI_HOME}"
+	
+	echo "Extracting PHOENIX apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-bin.tar.gz distribution on all hosts..."
+	pdsh -w ^zk_hosts  "tar -xzf /opt/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-bin.tar.gz -C /opt && chown -R hdfs:hadoop ${PHOENIX_HOME}"
+	pdsh -w ^all_hosts "su - hdfs -c 'cp -f ${PHOENIX_HOME}/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-server.jar  $HBASE_HOME/lib '"
 
+	
 	
 	#### /etc/profile.d/xxx.sh 생성.... 
 	

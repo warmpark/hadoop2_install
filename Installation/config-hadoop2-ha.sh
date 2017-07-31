@@ -97,7 +97,7 @@ PHOENIX_VERSION=4.11.0
 PHOENIX_HBASE_VERSION=1.1
 HOENIX_DOWNLOAD_URI=" http://apache.tt.co.kr/phoenix/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}/bin/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-bin.tar.gz"
 ##http://apache.tt.co.kr/phoenix/apache-phoenix-4.11.0-HBase-1.1/bin/apache-phoenix-4.11.0-HBase-1.1-bin.tar.gz
-PHOENIX_HOME="/opt/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}"
+PHOENIX_HOME="/opt/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-bin"
 PHOENIX_LOG_DIR="/var/log/phoenix"
 PHOENIX_PREFIX="${PHOENIX_HOME}"
 PHOENIX_CONF_DIR="${PHOENIX_HOME}/conf"
