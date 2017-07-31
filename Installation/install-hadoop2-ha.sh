@@ -352,7 +352,7 @@ fi
 
 	#listeners=PLAINTEXT://:9092
 	num.network.threads=3
-	num.io.threads=8
+	num.io.threads=8s
 	socket.send.buffer.bytes=102400
 	socket.receive.buffer.bytes=102400
 	socket.request.max.bytes=104857600
@@ -383,6 +383,7 @@ pdsh -w ^all_hosts "echo     'storm.zookeeper.servers:
 - "big03"
 #storm.local.dir: "/tmp/storm"
 storm.local.dir: "${STORM_DATA_DIR}"
+storm.log.dir: "${STORM_LOG_DIR}"
 
 nimbus.seeds: ["big01","big02", "big03"]
 

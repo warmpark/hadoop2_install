@@ -79,7 +79,7 @@ YARN_NODEMANAGER_HEAPSIZE=308
 
 
 
-#### HBASE 
+#### HBASE
 #HBASE_VERSION=1.2.6
 HBASE_VERSION=1.1.11
 HBASE_DOWNLOAD_URI="http://apache.tt.co.kr/hbase/${HBASE_VERSION}/hbase-${HBASE_VERSION}-bin.tar.gz"
@@ -91,6 +91,19 @@ HBASE_CONF_DIR="${HBASE_HOME}/conf"
 HBASE_DATA_DIR="/var/data/hbase"
 HBASE_MANAGES_ZK=false
 HBASE_PID_DIR=/var/run/hbase
+
+#### HPOENIX
+PHOENIX_VERSION=4.11.0
+PHOENIX_HBASE_VERSION=1.1
+HOENIX_DOWNLOAD_URI=" http://apache.tt.co.kr/phoenix/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}/bin/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-bin.tar.gz"
+##http://apache.tt.co.kr/phoenix/apache-phoenix-4.11.0-HBase-1.1/bin/apache-phoenix-4.11.0-HBase-1.1-bin.tar.gz
+PHOENIX_HOME="/opt/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}"
+PHOENIX_LOG_DIR="/var/log/phoenix"
+PHOENIX_PREFIX="${PHOENIX_HOME}"
+PHOENIX_CONF_DIR="${PHOENIX_HOME}/conf"
+PHOENIX_DATA_DIR="/var/data/phoenix"
+PHOENIX_MANAGES_ZK=false
+PHOENIX_PID_DIR=/var/run/phoenix
 
 #### KAFKA 
 KAFKA_VERSION=0.10.1.1
