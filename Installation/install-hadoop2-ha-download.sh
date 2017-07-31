@@ -105,13 +105,13 @@ install()
     fi
     
     echo "Copying hadoop-"$HADOOP_VERSION".tar.gz,  zookeeper-"$ZOOKEEPER_VERSION".tar.gz, hbase-${HBASE_VERSION}-bin.tar.gz, kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz, apache-storm-${STORM_VERSION}.tar.gz, nifi-${NIFI_VERSION}-bin.tar.gz to all hosts..."
-	pdcp -w ^all_hosts hadoop-${HADOOP_VERSION}.tar.gz /opt
-    pdcp -w ^all_hosts zookeeper-${ZOOKEEPER_VERSION}.tar.gz /opt
-    pdcp -w ^all_hosts hbase-${HBASE_VERSION}-bin.tar.gz /opt
+	#pdcp -w ^all_hosts hadoop-${HADOOP_VERSION}.tar.gz /opt
+    #pdcp -w ^all_hosts zookeeper-${ZOOKEEPER_VERSION}.tar.gz /opt
+    #pdcp -w ^all_hosts hbase-${HBASE_VERSION}-bin.tar.gz /opt
 	pdcp -w ^all_hosts apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-bin.tar.gz /opt
-	pdcp -w ^all_hosts kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz /opt
-	pdcp -w ^all_hosts apache-storm-${STORM_VERSION}.tar.gz /opt
-	pdcp -w ^all_hosts nifi-${NIFI_VERSION}-bin.tar.gz /opt  
+	#pdcp -w ^all_hosts kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz /opt
+	#pdcp -w ^all_hosts apache-storm-${STORM_VERSION}.tar.gz /opt
+	#pdcp -w ^all_hosts nifi-${NIFI_VERSION}-bin.tar.gz /opt  
 	pdsh -w ^all_hosts "su - hdfs -c 'cp -f ${PHOENIX_HOME}/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-server.jar  $HBASE_HOME/lib '"
 		
 }
