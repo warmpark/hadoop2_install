@@ -112,7 +112,7 @@ install()
 	#pdcp -w ^all_hosts kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz /opt
 	#pdcp -w ^all_hosts apache-storm-${STORM_VERSION}.tar.gz /opt
 	#pdcp -w ^all_hosts nifi-${NIFI_VERSION}-bin.tar.gz /opt  
-	pdsh -w ^all_hosts "su - hdfs -c 'cp -f ${PHOENIX_HOME}/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-server.jar  $HBASE_HOME/lib '"
+	pdsh -w ^all_hosts "su - hdfs -c 'cp -f /opt/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-server.jar  $HBASE_HOME/lib '"
 		
 }
 interactive()
