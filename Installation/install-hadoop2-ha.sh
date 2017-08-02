@@ -215,13 +215,9 @@ fi
     pdsh -w ^all_hosts "echo export PATH=$PHOENIX_HOME/bin:$PATH >> /etc/profile.d/hbase.sh"
     pdsh -w ^all_hosts "echo export CLASSPATH=$CLASSPATH:$PHOENIX_CONF_DIR >> /etc/profile.d/hbase.sh"
 	
-	
 	pdsh -w ^all_hosts "source /etc/profile.d/hbase.sh"
 	
-
-	
-
-    pdsh -w ^all_hosts "echo export KAFKA_HOME=$KAFKA_HOME > /etc/profile.d/kafka.sh"
+	pdsh -w ^all_hosts "echo export KAFKA_HOME=$KAFKA_HOME > /etc/profile.d/kafka.sh"
 	pdsh -w ^all_hosts "echo export KAFKA_PREFIX=$KAFKA_HOME >> /etc/profile.d/kafka.sh"
 	pdsh -w ^all_hosts "echo export KAFKA_CONF_DIR=$KAFKA_CONF_DIR >> /etc/profile.d/kafka.sh"
 	pdsh -w ^all_hosts "echo export KAFKA_LOG_DIR=$KAFKA_LOG_DIR >> /etc/profile.d/kafka.sh"
@@ -383,7 +379,7 @@ fi
 
 	#listeners=PLAINTEXT://:9092
 	num.network.threads=3
-	num.io.threads=8s
+	num.io.threads=8
 	socket.send.buffer.bytes=102400
 	socket.receive.buffer.bytes=102400
 	socket.request.max.bytes=104857600
@@ -640,7 +636,7 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 
 	echo "#17. Start Kafka & create test topic"
 	#pdsh -w ^all_hosts "rm -rf ${KAFKA_LOG_DIR}"
-	pdsh -w ^all_hosts  "su - hdfs -c '${KAFKA_HOME}/bin/kafka-server-start.sh -daemon ${KAFKA_CONF_DIR}/server.properties '"
+	pdsh -w ^all_hosts  "su - hdfs -c '${KAFKA_HOME}/bin/kafka-server-start.sh -daemon ${KAFKA_CONF_DIR}/server.properties'"
 	sleep 30
 	su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --create --zookeeper big01:2181 --replication-factor 3 --partitions 20 --topic test"
 	su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --list --zookeeper big01:2181"
