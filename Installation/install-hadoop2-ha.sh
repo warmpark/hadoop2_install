@@ -208,7 +208,7 @@ fi
     pdsh -w ^all_hosts "echo export PATH=$HBASE_HOME/bin:$PATH >> /etc/profile.d/hbase.sh"
     pdsh -w ^all_hosts "echo export CLASSPATH=$CLASSPATH:$HBASE_CONF_DIR >> /etc/profile.d/hbase.sh"
 
-    pdsh -w ^all_hosts "echo export PHOENIX_HOME=$PHOENIX_HOME > /etc/profile.d/hbase.sh"
+    pdsh -w ^all_hosts "echo export PHOENIX_HOME=$PHOENIX_HOME >> /etc/profile.d/hbase.sh"
 	pdsh -w ^all_hosts "echo export PHOENIX_PREFIX=$PHOENIX_HOME >> /etc/profile.d/hbase.sh"
 	pdsh -w ^all_hosts "echo export PHOENIX_CONF_DIR=$PHOENIX_CONF_DIR >> /etc/profile.d/hbase.sh"
 	pdsh -w ^all_hosts "echo export PHOENIX_LOG_DIR=$PHOENIX_LOG_DIR >> /etc/profile.d/hbase.sh"

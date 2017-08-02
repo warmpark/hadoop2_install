@@ -106,7 +106,7 @@ echo "#16. Running YARN smoke test..."
 
 echo "#17. Start Kafka & create test topic"
 #pdsh -w ^all_hosts "rm -rf ${KAFKA_LOG_DIR}"
-pdsh -w ^all_hosts  "su - hdfs -c '${KAFKA_HOME}/bin/kafka-server-start.sh -daemon ${KAFKA_CONF_DIR}/server.properties '"
+pdsh -w ^all_hosts  "su - hdfs -c '${KAFKA_HOME}/bin/kafka-server-start.sh -daemon ${KAFKA_CONF_DIR}/server.properties'"
 #su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --create --zookeeper big01:2181 --replication-factor 3 --partitions 20 --topic test"
 #su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --list --zookeeper big01:2181"
 su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --describe --zookeeper big01:2181 --topic test"

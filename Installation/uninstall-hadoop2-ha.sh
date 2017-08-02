@@ -219,6 +219,8 @@ pdsh -w ^all_hosts "rm -rf /var/run/hadoop"
 pdsh -w ^all_hosts "rm -rf $HADOOP_HOME"
 pdsh -w ^all_hosts "rm -rf $ZOOKEEPER_HOME"
 pdsh -w ^all_hosts "rm -rf $HBASE_HOME"
+pdsh -w ^all_hosts "rm -rf $PHOENIX_HOME"
+
 pdsh -w ^all_hosts "rm -rf $KAFKA_HOME"
 pdsh -w ^all_hosts "rm -rf $STORM_HOME"
 pdsh -w ^all_hosts "rm -rf $NIFI_HOME"
