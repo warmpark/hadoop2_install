@@ -189,6 +189,9 @@ fi
 	pdsh -w ^all_hosts "echo export HADOOP_HOME=$HADOOP_HOME > /etc/profile.d/hadoop.sh"
 	pdsh -w ^all_hosts "echo export HADOOP_PREFIX=$HADOOP_HOME >> /etc/profile.d/hadoop.sh"
     pdsh -w ^all_hosts "echo export HADOOP_CONF_DIR=$HADOOP_CONF_DIR >> /etc/profile.d/hadoop.sh"
+	##HADOOP Native Lib .
+	pdsh -w ^all_hosts echo "export HADOOP_COMMON_LIB_NATIVE_DIR=\\\${HADOOP_PREFIX}/lib/native >> /etc/profile.d/hadoop.sh"
+	pdsh -w ^all_hosts echo "export HADOOP_OPTS=\\\"-Djava.library.path=\\\${HADOOP_PREFIX}/lib/native\\\" >> /etc/profile.d/hadoop.sh"
 	pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
     
 	pdsh -w ^zk_hosts "echo export ZOOKEEPER_HOME=$ZOOKEEPER_HOME > /etc/profile.d/zookeeper.sh"
@@ -197,15 +200,26 @@ fi
 	pdsh -w ^zk_hosts "echo export ZOOKEEPER_CONF_DIR=$ZOOKEEPER_CONF_DIR >> /etc/profile.d/zookeeper.sh"
 	pdsh -w ^zk_hosts "echo export ZOO_LOG_DIR=$ZOOKEEPER_LOG_DIR >> /etc/profile.d/zookeeper.sh"
 	pdsh -w ^zk_hosts "source /etc/profile.d/zookeeper.sh"
-    
-    
+    ## HBASE && PHOENIX
     pdsh -w ^all_hosts "echo export HBASE_HOME=$HBASE_HOME > /etc/profile.d/hbase.sh"
 	pdsh -w ^all_hosts "echo export HBASE_PREFIX=$HBASE_HOME >> /etc/profile.d/hbase.sh"
 	pdsh -w ^all_hosts "echo export HBASE_CONF_DIR=$HBASE_CONF_DIR >> /etc/profile.d/hbase.sh"
 	pdsh -w ^all_hosts "echo export HBASE_LOG_DIR=$HBASE_LOG_DIR >> /etc/profile.d/hbase.sh"
     pdsh -w ^all_hosts "echo export PATH=$HBASE_HOME/bin:$PATH >> /etc/profile.d/hbase.sh"
     pdsh -w ^all_hosts "echo export CLASSPATH=$CLASSPATH:$HBASE_CONF_DIR >> /etc/profile.d/hbase.sh"
+
+    pdsh -w ^all_hosts "echo export PHOENIX_HOME=$PHOENIX_HOME > /etc/profile.d/hbase.sh"
+	pdsh -w ^all_hosts "echo export PHOENIX_PREFIX=$PHOENIX_HOME >> /etc/profile.d/hbase.sh"
+	pdsh -w ^all_hosts "echo export PHOENIX_CONF_DIR=$PHOENIX_CONF_DIR >> /etc/profile.d/hbase.sh"
+	pdsh -w ^all_hosts "echo export PHOENIX_LOG_DIR=$PHOENIX_LOG_DIR >> /etc/profile.d/hbase.sh"
+    pdsh -w ^all_hosts "echo export PATH=$PHOENIX_HOME/bin:$PATH >> /etc/profile.d/hbase.sh"
+    pdsh -w ^all_hosts "echo export CLASSPATH=$CLASSPATH:$PHOENIX_CONF_DIR >> /etc/profile.d/hbase.sh"
+	
+	
 	pdsh -w ^all_hosts "source /etc/profile.d/hbase.sh"
+	
+
+	
 
     pdsh -w ^all_hosts "echo export KAFKA_HOME=$KAFKA_HOME > /etc/profile.d/kafka.sh"
 	pdsh -w ^all_hosts "echo export KAFKA_PREFIX=$KAFKA_HOME >> /etc/profile.d/kafka.sh"
@@ -232,7 +246,6 @@ fi
     pdsh -w ^all_hosts "echo export CLASSPATH=$CLASSPATH:$NIFI_CONF_DIR >> /etc/profile.d/nifi.sh"
 	pdsh -w ^all_hosts "source /etc/profile.d/nifi.sh"
 
-    
     ## log dir    
     echo "Editing Hadoop environment scripts for log directories on all hosts..."
 	pdsh -w ^all_hosts echo "export HADOOP_LOG_DIR=$HADOOP_LOG_DIR >> $HADOOP_CONF_DIR/hadoop-env.sh"
@@ -246,6 +259,7 @@ fi
 	pdsh -w ^all_hosts echo "export HADOOP_MAPRED_PID_DIR=$HADOOP_MAPRED_PID_DIR >> $HADOOP_CONF_DIR/mapred-env.sh"
     pdsh -w ^all_hosts echo "export HBASE_PID_DIR=$HBASE_PID_DIR >> $HBASE_CONF_DIR/hbase-env.sh"
     ### ZK  PID관리는 어떻게.....
+	
 	
 	## 설정파일 다시 로드 
 	pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
@@ -497,7 +511,6 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
     put_config --file hbase-site.xml --property hbase.cluster.distributed --value true
     put_config --file hbase-site.xml --property dfs.datanode.max.xcievers --value 4096
 
-
     echo "Copying base Hadoop XML config files to all hosts..."
 	pdcp -w ^all_hosts core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml $HADOOP_CONF_DIR
     
@@ -623,7 +636,7 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 	source /etc/profile.d/hadoop.sh
 	source /etc/hadoop/hadoop-env.sh
 	source /etc/hadoop/yarn-env.sh
-	#hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-$HADOOP_VERSION.jar pi -Dmapreduce.clientfactory.class.name=org.apache.hadoop.mapred.YarnClientFactory -libjars $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-$HADOOP_VERSION.jar 16 10000
+	hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-$HADOOP_VERSION.jar pi -Dmapreduce.clientfactory.class.name=org.apache.hadoop.mapred.YarnClientFactory -libjars $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-$HADOOP_VERSION.jar 16 10000
 
 	echo "#17. Start Kafka & create test topic"
 	#pdsh -w ^all_hosts "rm -rf ${KAFKA_LOG_DIR}"
