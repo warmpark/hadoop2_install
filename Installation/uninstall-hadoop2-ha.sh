@@ -82,7 +82,8 @@ pdsh -w ^rm_host "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh stop resource
 
 
 
-echo "Removing hbase distribution tarball..."
+echo "Removing hbase & PHOENIX distribution tarball..."
+pdsh -w ^all_hosts "rm -r /opt/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-bin.tar.gz"
 pdsh -w ^all_hosts "rm -r /opt/hbase-$HBASE_VERSION-bin.tar.gz"
 echo "Removing Zookeeper distribution tarball..."
 pdsh -w ^zk_hosts "rm -r /opt/zookeeper-$ZOOKEEPER_VERSION.tar.gz"
