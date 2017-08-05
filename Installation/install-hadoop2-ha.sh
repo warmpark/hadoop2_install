@@ -623,6 +623,10 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
     # pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/start-hbase.sh'"
 	pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh start master'"
 	pdsh -w ^hbase_regionservers "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh start regionserver'"
+	
+	echo "#15. Start PHOENIX on HBASE Region Server(su - hdfs -c '$PHOENIX_HOME/bin/queryserver.py start') "
+	pdsh -w ^hbase_regionservers "su - hdfs -c '$PHOENIX_HOME/bin/queryserver.py start'"
+
     
 	echo "#16. Running YARN smoke test..."
 	pdsh -w ^all_hosts "usermod -a -G hadoop $(whoami)"

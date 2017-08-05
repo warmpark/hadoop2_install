@@ -96,9 +96,12 @@ pdsh -w ^yarn_proxy_host "su - yarn -c '$HADOOP_HOME/sbin/yarn-daemon.sh start p
 echo "#14. Start History Server(su - mapred -c '$HADOOP_HOME/sbin/mr-jobhistory-daemon.sh  start historyserver') "
 pdsh -w ^mr_history_host "su - mapred -c '$HADOOP_HOME/sbin/mr-jobhistory-daemon.sh  start historyserver'"
 
-echo "#15. Start HBASE Server(su - hbase -c '$HBASE_HOME/bin/start-hbase.sh') "
+echo "#15. Start HBASE Server(su - hdfs -c '$HBASE_HOME/bin/start-hbase.sh') "
 pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh start master'"
 pdsh -w ^hbase_regionservers "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh start regionserver'"
+
+echo "#15. Start PHOENIX on HBASE Region Server(su - hdfs -c '$PHOENIX_HOME/bin/queryserver.py start') "
+pdsh -w ^hbase_regionservers "su - hdfs -c '$PHOENIX_HOME/bin/queryserver.py start'"
 
 echo "#16. Running YARN smoke test..."
 #export HADOOP_VERSION=2.7.3
