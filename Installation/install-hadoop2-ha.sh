@@ -103,7 +103,21 @@ install()
     else 
         echo "NIFI File exists"
     fi
-    
+
+	echo "Creating system accounts and groups on all hosts..."
+	# useradd 계정명 -m -s /bin/bash
+	#→ -m 옵션을 명시해야 홈 디렉토리가 생성됨
+	#-s /bin/bash 옵션을 명시해야 쉘 환경이 설정됨
+	
+	pdsh -w ^all_hosts groupadd hadoop
+	pdsh -w ^all_hosts useradd -g hadoop yarn -m -s /bin/bash
+	pdsh -w ^all_hosts useradd -g hadoop hdfs -m -s /bin/bash
+	pdsh -w ^all_hosts useradd -g hadoop mapred -m -s /bin/bash
+    pdsh -w ^all_hosts useradd -g hadoop hbase -m -s /bin/bash
+    pdsh -w ^all_hosts useradd -g hadoop kafka -m -s /bin/bash
+    pdsh -w ^all_hosts useradd -g hadoop storm -m -s /bin/bash
+    pdsh -w ^all_hosts useradd -g hadoop nifi -m -s /bin/bash
+	    
     echo "Copying hadoop-"$HADOOP_VERSION".tar.gz,  zookeeper-"$ZOOKEEPER_VERSION".tar.gz, hbase-${HBASE_VERSION}-bin.tar.gz, kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz, apache-storm-${STORM_VERSION}.tar.gz, nifi-${NIFI_VERSION}-bin.tar.gz to all hosts..."
 	pdcp -w ^all_hosts hadoop-${HADOOP_VERSION}.tar.gz /opt
     pdcp -w ^all_hosts zookeeper-${ZOOKEEPER_VERSION}.tar.gz /opt
@@ -144,20 +158,7 @@ fi
 	pdsh -w ^all_hosts "source /etc/profile.d/java.sh"
     
     
- 	echo "Creating system accounts and groups on all hosts..."
-	# useradd 계정명 -m -s /bin/bash
-	#→ -m 옵션을 명시해야 홈 디렉토리가 생성됨
-	#-s /bin/bash 옵션을 명시해야 쉘 환경이 설정됨
-	
-	pdsh -w ^all_hosts groupadd hadoop
-	pdsh -w ^all_hosts useradd -g hadoop yarn -m -s /bin/bash
-	pdsh -w ^all_hosts useradd -g hadoop hdfs -m -s /bin/bash
-	pdsh -w ^all_hosts useradd -g hadoop mapred -m -s /bin/bash
-    pdsh -w ^all_hosts useradd -g hadoop hbase -m -s /bin/bash
-    pdsh -w ^all_hosts useradd -g hadoop kafka -m -s /bin/bash
-    pdsh -w ^all_hosts useradd -g hadoop storm -m -s /bin/bash
-    pdsh -w ^all_hosts useradd -g hadoop nifi -m -s /bin/bash
-	
+ 
 	
 	######  압축 해제... 
     echo "Extracting Hadoop hadoop-$HADOOP_VERSION.tar.gz distribution on all hosts..."
@@ -642,9 +643,10 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 	#pdsh -w ^all_hosts "rm -rf ${KAFKA_LOG_DIR}"
 	pdsh -w ^all_hosts  "su - hdfs -c '${KAFKA_HOME}/bin/kafka-server-start.sh -daemon ${KAFKA_CONF_DIR}/server.properties'"
 	sleep 30
-	su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --create --zookeeper big01:2181 --replication-factor 3 --partitions 20 --topic test"
-	su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --list --zookeeper big01:2181"
-	su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --describe --zookeeper big01:2181 --topic test"
+	su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --create --zookeeper  big01:2181,big02:2181,big03:2181 --replication-factor 3 --partitions 20 --topic test"
+	su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --create --zookeeper  big01:2181,big02:2181,big03:2181 --replication-factor 3 --partitions 3 --topic onlytest"
+	su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --list --zookeeper  big01:2181,big02:2181,big03:2181"
+	su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --describe --zookeeper  big01:2181,big02:2181,big03:2181 --topic test"
 
 	echo "#18. Start Storm"
 	## eval "nohup ${STORM_HOME}/bin/storm nimbus > ${STORM_LOG_DIR}/nimbus.log 2>&1 &"

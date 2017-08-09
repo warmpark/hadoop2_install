@@ -112,7 +112,7 @@ echo "#17. Start Kafka & create test topic"
 pdsh -w ^all_hosts  "su - hdfs -c '${KAFKA_HOME}/bin/kafka-server-start.sh -daemon ${KAFKA_CONF_DIR}/server.properties'"
 #su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --create --zookeeper big01:2181 --replication-factor 3 --partitions 20 --topic test"
 #su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --list --zookeeper big01:2181"
-su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --describe --zookeeper big01:2181 --topic test"
+su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --describe --zookeeper  big01:2181,big02:2181,big03:2181 --topic test"
 
 echo "#18. Start Storm"
 ## eval "nohup ${STORM_HOME}/bin/storm nimbus > ${STORM_LOG_DIR}/nimbus.log 2>&1 &"
