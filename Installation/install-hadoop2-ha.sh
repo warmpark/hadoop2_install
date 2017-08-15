@@ -336,8 +336,9 @@ fi
 	pdsh -w ^all_hosts "echo     'dataDir=$ZOOKEEPER_DATA_DIR
 	dataLogDir=$ZOOKEEPER_LOG_DIR
 	clientPort=2181
-	initLimit=5
-	syncLimit=2
+	tickTime=2000
+	initLimit=10
+	syncLimit=5
 	server.1=big01:2888:3888
 	server.2=big02:2888:3888
 	server.3=big03:2888:3888' >  $ZOOKEEPER_CONF_DIR/zoo.cfg"
