@@ -126,7 +126,6 @@ install()
 	pdcp -w ^all_hosts kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz /opt
 	pdcp -w ^all_hosts apache-storm-${STORM_VERSION}.tar.gz /opt
 	pdcp -w ^all_hosts nifi-${NIFI_VERSION}-bin.tar.gz /opt  
-	pdsh -w ^all_hosts "su - hdfs -c 'cp -f ${PHOENIX_HOME}/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-server.jar  $HBASE_HOME/lib '"
 		
 	
 if [ -z "$JAVA_HOME" ]; then
@@ -181,7 +180,7 @@ fi
 	
 	echo "Extracting PHOENIX apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-bin.tar.gz distribution on all hosts..."
 	pdsh -w ^zk_hosts  "tar -xzf /opt/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-bin.tar.gz -C /opt && chown -R hdfs:hadoop ${PHOENIX_HOME}"
-	pdsh -w ^all_hosts "su - hdfs -c 'cp -f ${PHOENIX_HOME}/phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-server.jar  $HBASE_HOME/lib '"
+	pdsh -w ^all_hosts "su - hdfs -c 'cp -f ${PHOENIX_HOME}/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-server.jar  $HBASE_HOME/lib '"
 
 	
 	
