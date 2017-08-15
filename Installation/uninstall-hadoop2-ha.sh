@@ -8,8 +8,6 @@
 #
 
 . $(dirname "$0")/stop-hadoop2-ha.sh
-##. $(dirname "$0")/config-hadoop2-ha.sh
-
 
 #pdsh -w ^dn_hosts "service hadoop-datanode stop"
 #pdsh -w ^nn_host "service hadoop-namenode stop"
