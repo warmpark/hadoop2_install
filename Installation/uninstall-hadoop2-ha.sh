@@ -7,71 +7,9 @@
 # after running this installation script.
 #
 
-. $(dirname "$0")/config-hadoop2-ha.sh
+. $(dirname "$0")/stop-hadoop2-ha.sh
+##. $(dirname "$0")/config-hadoop2-ha.sh
 
-
-# If using local OpenJDK, it must be installed on all nodes.
-# If using ${JDK_RPM_NAME}, then
-# set JAVA_HOME="" and place ${JDK_RPM_NAME} in this directory
-#JAVA_HOME=/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64/
-#JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.101-2.6.6.1.el7_2.x86_64/jre/
-JAVA_HOME=""
-source ./hadoop-xml-conf.sh
-CMD_OPTIONS=$(getopt -n "$0"  -o hif --long "help,interactive,file"  -- "$@")
-
-pdsh -w ^all_hosts "source /etc/profile.d/java.sh"
-pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
-pdsh -w ^zk_hosts  "source /etc/profile.d/zookeeper.sh"
-pdsh -w ^all_hosts "source /etc/profile.d/hbase.sh"
-
-pdsh -w ^all_hosts "source /etc/profile.d/kafka.sh"
-pdsh -w ^all_hosts "source /etc/profile.d/storm.sh"
-pdsh -w ^all_hosts "source /etc/profile.d/nifi.sh"
-
-pdsh -w ^all_hosts "source $HADOOP_CONF_DIR/hadoop-env.sh"	
-pdsh -w ^all_hosts "source $HADOOP_CONF_DIR/yarn-env.sh"
-pdsh -w ^all_hosts "source $HADOOP_CONF_DIR/mapred-env.sh"
-pdsh -w ^all_hosts "source $HBASE_CONF_DIR/hbase-env.sh"
-
-
-## Stop kafka
-pdsh -w ^all_hosts  "su - hdfs -c '${KAFKA_HOME}/bin/kafka-server-stop.sh'" 
-
-##_PIDFILE="./nimbus.pid"
-##_PID=`cat "${_PIDFILE}"` 
-##echo "Storm Nimbus (pid=${_PID}) is stopping..."
-## kill -15 $_PID
-## rm "${_PIDFILE}"
-
-## STORM .....
-#pdsh -w ^all_hosts  "kill -9 $(jps | grep nimbus | awk '{print $1}') | rm -f ${STORM_PID_DIR}/nimbus.pid"
-pdsh -w ^all_hosts  su - hdfs -c "jps | grep nimbus | grep -v grep | awk '{print $1}'| xargs kill -9 2>/dev/null"
-pdsh -w ^all_hosts  su - hdfs -c "jps | grep Supervisor | grep -v grep | awk '{print $1}'| xargs kill -9 2>/dev/null"
-pdsh -w ^all_hosts  su - hdfs -c "jps | grep core | grep -v grep | awk '{print $1}'| xargs kill -9 2>/dev/null"
-
-sleep 30
-
-echo "Stopping Hadoop 2 services..."
-#pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/stop-hbase.sh'"
-pdsh -w ^hbase_regionservers "su - hdfs -c '$PHOENIX_HOME/bin/queryserver.py stop'"
-
-pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh stop master'"
-pdsh -w ^hbase_regionservers "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh stop regionserver'"
-    
-pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh stop zkfc'"
-pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh stop zkfc'"
-pdsh -w ^dn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh  stop datanode'"
-pdsh -w ^nn_host "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh stop namenode'"
-pdsh -w ^snn_host "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh stop namenode'"
-pdsh -w ^jn_hosts "su - hdfs -c '$HADOOP_HOME/sbin/hadoop-daemon.sh stop journalnode'"
-pdsh -w ^zk_hosts "su - hdfs -c '$ZOOKEEPER_HOME/bin/zkServer.sh stop'"
-pdsh -w ^mr_history_host "su - mapred -c '${HADOOP_HOME}/sbin/mr-jobhistory-daemon.sh  stop historyserver'"
-pdsh -w ^yarn_proxy_host "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh stop proxyserver'"
-pdsh -w ^nm_hosts "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh stop nodemanager'"
-pdsh -w ^rm_host "su - yarn -c '${HADOOP_HOME}/sbin/yarn-daemon.sh stop resourcemanager'"
-
-
- 
 
 #pdsh -w ^dn_hosts "service hadoop-datanode stop"
 #pdsh -w ^nn_host "service hadoop-namenode stop"
