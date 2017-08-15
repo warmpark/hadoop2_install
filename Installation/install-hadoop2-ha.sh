@@ -345,9 +345,10 @@ fi
 
 		
 	echo "Make zookeeper id in  $ZOOKEEPER_DATA_DIR/myid - TODO 나중에 보완할 필요...."
-	pdsh -w big01 "echo 1 > $ZOOKEEPER_DATA_DIR/myid"
-	pdsh -w big02 "echo 2 > $ZOOKEEPER_DATA_DIR/myid"
-	pdsh -w big03 "echo 3 > $ZOOKEEPER_DATA_DIR/myid"
+	num=1
+	pdsh -w big01 "echo  $((num++)) > $ZOOKEEPER_DATA_DIR/myid"
+	pdsh -w big02 "echo  $((num++)) > $ZOOKEEPER_DATA_DIR/myid"
+	pdsh -w big03 "echo  $((num++)) > $ZOOKEEPER_DATA_DIR/myid"
 
 		
 	echo "Editing regionservers conf regionservers - 나중에 보완할 필요...  HBASE는 HMaster와 ResionServer가 동시에 수행될 수 없음.--> 확인필요."
@@ -409,11 +410,10 @@ pdsh -w ^all_hosts "echo     'storm.zookeeper.servers:
 - "big01"
 - "big02"
 - "big03"
-#storm.local.dir: "/tmp/storm"
 storm.local.dir: "${STORM_DATA_DIR}"
 storm.log.dir: "${STORM_LOG_DIR}"
 
-nimbus.seeds: ["big01","big02", "big03"]
+nimbus.seeds: ["big01","big02","big03"]
 
 supervisor.slots.ports:
 - 6700
