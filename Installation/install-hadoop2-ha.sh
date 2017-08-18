@@ -364,8 +364,9 @@ fi
 	pdsh -w ^all_hosts "echo     'dataDir=/var/data/zookeeper
 	dataLogDir=/var/log/zookeeper
 	clientPort=2181
-	initLimit=5
-	syncLimit=2
+	tickTime=2000
+	initLimit=10
+	syncLimit=5
 	maxClientCnxns=0
 	server.1=big01:2888:3888
 	server.2=big02:2888:3888
@@ -425,6 +426,47 @@ storm.health.check.dir: "healthchecks"
 storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 
 ###### NIFI
+	echo "Editing zookeeper conf $NIFI_CONF_DIR/zookeeper.properties - TODO 나중에 보완할 필요...."
+	pdsh -w ^all_hosts "mv $NIFI_CONF_DIR/zookeeper.properties $NIFI_CONF_DIR/zookeeper.properties.org"
+
+	pdsh -w ^all_hosts "echo     'dataDir=/var/data/zookeeper
+	dataLogDir=/var/log/zookeeper
+	clientPort=2181
+	tickTime=2000
+	initLimit=10
+	syncLimit=5
+	maxClientCnxns=0
+	server.1=big01:2888:3888
+	server.2=big02:2888:3888
+	server.3=big03:2888:3888' >  $NIFI_CONF_DIR/zookeeper.properties"
+
+	
+	## nifi.properties 설정 ( 단어가 들어 있는 전체 라인을 바꾸기)
+	pdsh -w ^all_hosts "cp $NIFI_CONF_DIR/nifi.properties $NIFI_CONF_DIR/nifi.properties.org"
+	#pdsh -w ^all_hosts "cp $NIFI_CONF_DIR/nifi.properties.org $NIFI_CONF_DIR/nifi.properties"
+	pdsh -w ^all_hosts "sed -i '/nifi.state.management.embedded.zookeeper.start/c\nifi.state.management.embedded.zookeeper.start=false' $NIFI_CONF_DIR/nifi.properties"
+	pdsh -w ^all_hosts "sed -i '/nifi.cluster.protocol.is.secure/c\nifi.cluster.protocol.is.secure=false' $NIFI_CONF_DIR/nifi.properties"
+	pdsh -w ^all_hosts "sed -i '/nifi.zookeeper.connect.string/c\nifi.zookeeper.connect.string=big01:2181,big02:2181,big03:2181' $NIFI_CONF_DIR/nifi.properties"
+	pdsh -w ^all_hosts "sed -i '/nifi.cluster.is.node/c\nifi.cluster.is.node=true' $NIFI_CONF_DIR/nifi.properties"
+	pdsh -w ^all_hosts "sed -i '/nifi.cluster.node.protocol.port/c\nifi.cluster.node.protocol.port=9999' $NIFI_CONF_DIR/nifi.properties"
+
+	pdsh -w big01 "sed -i '/nifi.cluster.node.address/c\nifi.cluster.node.address=big01' $NIFI_CONF_DIR/nifi.properties"
+	pdsh -w big02 "sed -i '/nifi.cluster.node.address/c\nifi.cluster.node.address=big02' $NIFI_CONF_DIR/nifi.properties"
+	pdsh -w big03 "sed -i '/nifi.cluster.node.address/c\nifi.cluster.node.address=big03' $NIFI_CONF_DIR/nifi.properties"
+
+
+	pdsh -w ^all_hosts "sed -i '/nifi.remote.input.secure/c\nifi.remote.input.secure=false' $NIFI_CONF_DIR/nifi.properties"
+	pdsh -w ^all_hosts "sed -i '/nifi.remote.input.socket.port/c\nifi.remote.input.socket.port=9998' $NIFI_CONF_DIR/nifi.properties"
+	pdsh -w big01 "sed -i '/nifi.remote.input.host/c\nifi.remote.input.host=big01' $NIFI_CONF_DIR/nifi.properties"
+	pdsh -w big02 "sed -i '/nifi.remote.input.host/c\nifi.remote.input.host=big02' $NIFI_CONF_DIR/nifi.properties"
+	pdsh -w big03 "sed -i '/nifi.remote.input.host/c\nifi.remote.input.host=big03' $NIFI_CONF_DIR/nifi.properties"
+
+	
+	pdsh -w ^all_hosts "sed -i '/nifi.web.http.port/c\nifi.web.http.port=9090' $NIFI_CONF_DIR/nifi.properties"
+	pdsh -w big01 "sed -i '/nifi.web.http.host/c\nifi.web.http.host=big01' $NIFI_CONF_DIR/nifi.properties"
+	pdsh -w big02 "sed -i '/nifi.web.http.host/c\nifi.web.http.host=big02' $NIFI_CONF_DIR/nifi.properties"
+	pdsh -w big03 "sed -i '/nifi.web.http.host/c\nifi.web.http.host=big03' $NIFI_CONF_DIR/nifi.properties"
+	### web port 8080--> 9090
 
 
 ############
@@ -657,8 +699,12 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 	pdsh -w big01,big02,big03  "su - hdfs -c 'nohup ${STORM_HOME}/bin/storm nimbus > ${STORM_LOG_DIR}/nimbus.log 2>&1 &'"
 	pdsh -w big01,big02,big03  "su - hdfs -c '${STORM_HOME}/bin/storm supervisor > ${STORM_LOG_DIR}/supervisor.log 2>&1 &'"
 	pdsh -w big01,big02,big03  "su - hdfs -c '${STORM_HOME}/bin/storm ui > ${STORM_LOG_DIR}/ui.log 2>&1 &'"
+
+	echo "#19. Start NIFI"
+	pdsh -w big01,big02,big03  "su - hdfs -c '${NIFI_HOME}/bin/nifi.sh start'"
+
+
 	sleep 50
-	#pdsh -w big02,big03  "su - hdfs -c 'nohup ${STORM_HOME}/bin/storm nimbus > ${STORM_LOG_DIR}/nimbus.log 2>&1 &'"
 		
 }
 interactive()
