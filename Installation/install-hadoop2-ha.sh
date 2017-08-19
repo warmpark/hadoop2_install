@@ -461,12 +461,12 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 	pdsh -w big02 "sed -i '/nifi.remote.input.host/c\nifi.remote.input.host=big02' $NIFI_CONF_DIR/nifi.properties"
 	pdsh -w big03 "sed -i '/nifi.remote.input.host/c\nifi.remote.input.host=big03' $NIFI_CONF_DIR/nifi.properties"
 
-	
+	### web port 8080--> 9090
 	pdsh -w ^all_hosts "sed -i '/nifi.web.http.port/c\nifi.web.http.port=9090' $NIFI_CONF_DIR/nifi.properties"
 	pdsh -w big01 "sed -i '/nifi.web.http.host/c\nifi.web.http.host=big01' $NIFI_CONF_DIR/nifi.properties"
 	pdsh -w big02 "sed -i '/nifi.web.http.host/c\nifi.web.http.host=big02' $NIFI_CONF_DIR/nifi.properties"
 	pdsh -w big03 "sed -i '/nifi.web.http.host/c\nifi.web.http.host=big03' $NIFI_CONF_DIR/nifi.properties"
-	### web port 8080--> 9090
+	
 
 
 ############
