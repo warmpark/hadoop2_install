@@ -129,4 +129,4 @@ echo "#19. Start NIFI"
 pdsh -w big01,big02,big03  "su - hdfs -c '${NIFI_HOME}/bin/nifi.sh start'"
 
 
-sleep 50
+#sleep 50

@@ -146,7 +146,7 @@ if [ -z "$JAVA_HOME" ]; then
 	pdsh -w ^all_hosts chmod a+x /opt/${JDK_RPM_NAME}
 	#pdsh -w ^all_hosts /opt/${JDK_RPM_NAME} -noregister 1>&- 2>&-
 	pdsh -w ^all_hosts rpm -ivh /opt/${JDK_RPM_NAME} 1>&- 2>&-
-	JAVA_HOME=/usr/java/jdk${JDK_VERSION}
+	export JAVA_HOME=/usr/java/jdk${JDK_VERSION}
 	echo "JAVA_HOME=$JAVA_HOME"
 fi
 	echo "Setting JAVA_HOME and HADOOP_HOME environment variables on all hosts..."
@@ -687,6 +687,7 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 	sleep 30
 	su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --create --zookeeper  big01:2181,big02:2181,big03:2181 --replication-factor 3 --partitions 20 --topic test"
 	su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --create --zookeeper  big01:2181,big02:2181,big03:2181 --replication-factor 3 --partitions 3 --topic onlytest"
+	su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --create --zookeeper  big01:2181,big02:2181,big03:2181 --replication-factor 3 --partitions 1 --topic nifi"
 	su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --list --zookeeper  big01:2181,big02:2181,big03:2181"
 	su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --describe --zookeeper  big01:2181,big02:2181,big03:2181 --topic test"
 
@@ -704,7 +705,7 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 	pdsh -w big01,big02,big03  "su - hdfs -c '${NIFI_HOME}/bin/nifi.sh start'"
 
 
-	sleep 50
+	#sleep 50
 		
 }
 interactive()

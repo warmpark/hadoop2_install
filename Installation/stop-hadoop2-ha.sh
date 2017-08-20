@@ -51,6 +51,8 @@ pdsh -w ^all_hosts  su - hdfs -c "jps | grep core | grep -v grep | awk '{print $
 
 sleep 30
 
+pdsh -w big01,big02,big03  "su - hdfs -c '${NIFI_HOME}/bin/nifi.sh stop'"
+
 pdsh -w ^hbase_regionservers "su - hdfs -c '$PHOENIX_HOME/bin/queryserver.py stop'"
 pdsh -w ^hbase_regionservers "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh stop regionserver'"
 pdsh -w ^nn_host "su - hdfs -c '$HBASE_HOME/bin/hbase-daemon.sh stop master'"

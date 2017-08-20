@@ -163,6 +163,9 @@ pdsh -w ^all_hosts "rm -rf $KAFKA_HOME"
 pdsh -w ^all_hosts "rm -rf $STORM_HOME"
 pdsh -w ^all_hosts "rm -rf $NIFI_HOME"
 
+## JPS 가지지 삭제 -- 프로세스를 죽이는 건 아님
+pdsh -w ^all_hosts "rm -rf /tmp/hsperfdata_*"
+
 echo "Removing nifi system account..."
 pdsh -w ^all_hosts "userdel -rf nifi"
 
