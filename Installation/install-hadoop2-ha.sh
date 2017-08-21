@@ -545,8 +545,8 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
     #put_config --file hbase-site.xml --property hbase.rootdir --value "hdfs://big01:8020/hbase"
     put_config --file hbase-site.xml --property hbase.master --value "big01:6000"
     put_config --file hbase-site.xml --property hbase.zookeeper.quorum --value "$HBASE_ZOOKEEPER_QUORUM"
-	put_config --file hbase-site.xml --hbase.zookeeper.property.clientPort --value "$HBASE_ZOOKEEPER_CLIENT_PORT"
     #put_config --file hbase-site.xml --property hbase.zookeeper.quorum --value "big01,big02,big03"
+	put_config --file hbase-site.xml --property hbase.zookeeper.property.clientPort --value "$HBASE_ZOOKEEPER_CLIENT_PORT"
     put_config --file hbase-site.xml --property hbase.zookeeper.property.dataDir --value "$ZOOKEEPER_DATA_DIR"
     put_config --file hbase-site.xml --property hbase.cluster.distributed --value true
     put_config --file hbase-site.xml --property dfs.datanode.max.xcievers --value 4096
