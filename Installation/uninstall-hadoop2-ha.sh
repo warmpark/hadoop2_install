@@ -75,13 +75,13 @@ pdsh -w ^all_hosts "rm -f /etc/profile.d/nifi.sh"
 
 
 echo "Removing /etc/hadoop, zookeeper, hbase link..."
-pdsh -w ^all_hosts "rm /etc/hadoop"
-pdsh -w ^all_hosts "rm /etc/zookeeper"
-pdsh -w ^all_hosts "rm /etc/hbase"
+pdsh -w ^all_hosts "rm -rf /etc/hadoop"
+pdsh -w ^all_hosts "rm -rf /etc/zookeeper"
+pdsh -w ^all_hosts "rm -rf /etc/hbase"
 
-pdsh -w ^all_hosts "rm /etc/kafka"
-pdsh -w ^all_hosts "rm /etc/storm"
-pdsh -w ^all_hosts "rm /etc/nifi"
+pdsh -w ^all_hosts "rm -rf /etc/kafka"
+pdsh -w ^all_hosts "rm -rf /etc/storm"
+pdsh -w ^all_hosts "rm -rf /etc/nifi"
 
 
 echo "Removing Hadoop 2 command links..."

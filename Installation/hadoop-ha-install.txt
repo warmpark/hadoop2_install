@@ -1,0 +1,145 @@
+
+	1. Cent07 설치
+	2. sudo yum -y update
+	3. sudo yum -y install epel-release
+	4. yum Daum Repo 생성 
+		* epel repo는 남겨 두어야. 
+		* bzip2를 이용한 압축백업 및 원복 - http://mwultong.blogspot.com/2007/08/bz2-bzip2.html
+		* http://homaki.tistory.com/86
+		* sudo yum -y update
+
+	5. 네트워크 관리 툴 설치 : sudo yum install -y net-tools
+	6. 원격접속실행 툴 설치
+		* sudo yum -y install pdsh
+		* sudo yum -y install wget
+		* 실행 방법  pdsh -w big01,big02  ls -al  원격호스트 수행명령
+
+	7. Host Name 변경 ( 확인 : hostname )
+		* #CentOS 6[root@localhost ~]# vi /etc/sysconfig/network
+                                                 HOSTNAME=bigxx 
+		* #CentOS 7[root@localhost ~]# hostnamectl set-hostname bigxx
+
+	8. Hadoop Cluster에서 사용한 전체 호스트 설정
+		* sudo vi /etc/hosts
+		* 
+			192.168.0.1     big00   big00   big00.warmpark.com
+			192.168.0.101   big01   big01   big01.warmpark.com
+			192.168.0.102   big02   big02   big02.warmpark.com
+			192.168.0.103   big03   big03   big03.warmpark.com
+		* 
+
+
+	9. ip 설정
+		* ls -la /etc/sysconfig/network-scripts/ifcfg*
+		* vi /etc/sysconfig/network-scripts/ifcfg-eth0 .(eht뒤의 숫자는 시스템마다 다를수 있다.)
+			bonding 설정이 되었다면 /etc/sysconfig/network-scripts/ifcfg-bond0 파일을 수정해야 한다.(bond뒤의 숫자는 시스템마다 다를수 있다.)
+		* 다음 내용을 추가한다. ((warning)  IP 는 10.211.55.101, GateWay=10.211.55.1, DNS1=10.211.55.101, DNS2=10.211.55.1, MAC=00:21:5e:30:10:9e 로 가정한다.)
+			DEVICE=eth0
+			IPV6INIT=yes
+			BOOTPROTO=none
+			UUID=f789c14f-34e9-4b22-9a98d77c67e49cc4
+			ONBOOT=yes
+			TYPE=Ethernet
+			DEFROUTE=yes
+			IPV4_FAILURE_FATAL=no
+			IPV6_AUTOCONF=yes
+			IPV6_DEFROUTE=yes
+			IPV6_FAILURE_FATAL=no
+			NAME="System eth0"
+			DNS1=168.126.63.1
+			DNS2=10.211.55.1
+			DNS3=8.8.8.8
+			IPADDR=10.211.55.101
+			PREFIX=24
+			GATEWAY=10.211.55.1
+			IPV6_PEERDNS=yes
+			IPV6_PEERROUTES=yes
+		* systemctl restart NetworkManager
+		* systemctl restart network
+
+	10. 방화벽 해제
+		* systemctl stop firewalld (서비스중지) / start (서비스시작)
+		#리부팅 뒤에도 실행 안되게끔
+		systemctl disable firewalld (부팅시 시작하는 서비스에서 제외) / enable (부팅시 시작하는 서비스로 등록)
+		* 여러 서버에 수행 하기. 
+			pdsh -w ^all_hosts systemctl stop firewalld
+			pdsh -w ^all_hosts systemctl disable firewalld
+		* sudo vi /etc/hosts.allow 를 이용하여 제한적으로 IP를 허용할 수 있음.
+
+	11. Root ssh 접근 권한 풀기 ( 자세한 설명 : http://www.wasakuni.com/bbs/board.php?bo_table=linux&wr_id=14 )
+		* sudo vi /etc/ssh/sshd_config
+		.....
+		PermitRootLogin yes / no (허용하면 Yes, 불허하면 No) 
+		....
+		* Centos 6 이하 : service sshd restart
+		* Centos 7 : systemctl restart sshd.service
+
+	12.  ssh key 생성 및 배포. ( 설치계정-root을 공유해야 하고, NameNode끼리는 서로 NameNode Daemon Start 계정을 공유해야 함)  big01에서 사설키를 만들고 해당 공개키를 big02, big03에 복사. 
+     사설키를 만들고 만든 공개키를 공유하면 사설키 만든곳에서 공개키를 공유한 곳으로 접근 가능 
+     사설키만든 곳이 ==> Client
+     공개키를 공유 받은 곳이 ==>  Server
+    Client에서 Server 접속이
+		* sudo ssh-keygen -t rsa 
+		* sudo ssh-copy-id -i /root/.ssh/id_rsa.pub bigxx    (현재 계정의 이름의 계정에 카피)
+		* sudo ssh-copy-id -i /root/.ssh/id_rsa.pub usr@bigxx    (현재 계정의 이름의 계정에 카피)
+		* 접속 테스트 :  ssh big01
+
+	13. Git 설치
+		* yum -y install git 
+		* mkdir git
+		* cd git
+		* git clone https://github.com/warmpark/hadoop2_install.git
+		* cd hadoop2_insall/Installation
+
+
+	14. 기존 설치된 자바 삭제  (필요시 옵션)
+		* yum list installed |grep java-   와 yum list installed |grep jdk 로 확인
+		* yum remove java-x.x.x-openjdk
+		* yum remove java-x.x.x-openjdk-headless
+
+	15. 다른 VM 설치(복사 후 Host 이름 변경)
+		* hostnamectl set-hostname bigxx
+		* ip 변경 . 
+		* ssh key 복사. (https://opentutorials.org/module/432/3742) root 계정으로
+			sudo ssh-copy-id -i /root/.ssh/id_rsa.pub root@big01
+			sudo ssh-copy-id -i /root/.ssh/id_rsa.pub root@big02
+			sudo ssh-copy-id -i /root/.ssh/id_rsa.pub root@big03
+
+	16. Install Hadoop / HBase (big01에서 수행 / root 계정으로 수행)
+		* cd /root/git/hadoop2_install/Installation/
+		* ./install-hadoop2-ha.sh -f
+		* 확인 : http://[big01]:8080 혹은 http://192.168.0.101:8080
+		
+	17. Hadoop / HBase 설치제거 (big01에서 수행 / root 계정으로 수행)
+		* cd /root/git/hadoop2_install/Installation/
+		* ./uninstall-hadoop2-ha.sh   
+
+
+
+
+
+
+
+
+	1. Hadoop
+		1. Hadoop Admin
+		http://big01:50070/
+		2. HDFS
+
+
+		3. YARN
+		YARN Resource Manager용 웹 UI (Hadoop Cluster)
+		http://big01:8088/cluster
+		4. Job History 
+		http://big03:19888/jobhistory
+
+	2. HBase
+		1. HBase 마스터 웹 UI에 대한 포트
+		http://big01:16010/
+
+
+	3. Storm UI
+		http://big01:8080 (big01 ~ big03)
+	4. NiFi
+		http://big01:9090/nifi/ (big01 ~ big03)
+
