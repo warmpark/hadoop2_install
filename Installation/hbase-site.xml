@@ -10,7 +10,11 @@
   </property>
   <property>
     <name>hbase.zookeeper.quorum</name>
-    <value>big01:2181,big02:2181,big03:2181</value>
+    <value>big01,big02,big03</value>
+  </property>
+  <property>
+    <name>hbase.zookeeper.property.clientPort</name>
+    <value>2181</value>
   </property>
   <property>
     <name>hbase.zookeeper.property.dataDir</name>
