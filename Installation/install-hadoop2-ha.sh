@@ -500,16 +500,16 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 
 ###ZEPPELIN
 	cp -f ${ZEPPELIN_CONF_DIR}/zeppelin-site.xml.template ./zeppelin-site.xml
+	cp -f ${ZEPPELIN_CONF_DIR}/zeppelin-env.sh.template ./zeppelin-env.sh
+	cp -f ${ZEPPELIN_CONF_DIR}/shiro.ini.template ./shiro.ini
  
     del_config --file zeppelin-site.xml --property zeppelin.server.addr
     put_config --file zeppelin-site.xml --property zeppelin.server.addr --value "localhost"
 
-    del_config --file zeppelin-site.xml --property zeppelin.server.port"
+    del_config --file zeppelin-site.xml --property zeppelin.server.port
     put_config --file ./zeppelin-site.xml --property zeppelin.server.port --value "7070"
 
 	
-	cp -f ${ZEPPELIN_CONF_DIR}/zeppelin-env.sh.template ./zeppelin-env.sh
-	cp -f ${ZEPPELIN_CONF_DIR}/shiro.ini.template ./shiro.ini
 	
 	pdcp -w ^all_hosts ./zeppelin-site.xml ${ZEPPELIN_CONF_DIR}/zeppelin-site.xml
 	pdcp -w ^all_hosts ./zeppelin-env.sh ${ZEPPELIN_CONF_DIR}/zeppelin-env.sh
@@ -628,7 +628,7 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 	pdsh -w ^all_hosts "ln -s $NIFI_HOME/bin/*zeppelin* /usr/bin"
 
 
-    echo "Copying startup scripts to all hosts..."
+    #echo "Copying startup scripts to all hosts..."
 	#pdcp -w ^all_hosts hadoop-namenode /etc/init.d/
 	#pdcp -w ^all_hosts hadoop-secondarynamenode /etc/init.d/
 	#pdcp -w ^all_hosts hadoop-datanode /etc/init.d/
@@ -638,7 +638,7 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 	#pdcp -w ^all_hosts hadoop-proxyserver /etc/init.d/
     #pdcp -w ^all_hosts hadoop-zookeeper /etc/init.d/
     
-    echo "#1. Start ZK Quarum Daemon(su - hdfs -c '$ZOOKEEPER_HOME/bin/zkServer.sh start') :모든 ZK에서:  3,5 ... 홀수개수로 "
+    echo "#1. Start ZK Quarum Daemon(su - hdfs -c '$ZOOKEEPER_HOME/bin/zkServer.sh start') :모든 ZK에서:  3,5 ... 홀수개수로"
     pdsh -w ^zk_hosts "su - hdfs -c '$ZOOKEEPER_HOME/bin/zkServer.sh start'"
 	sleep 20
 
