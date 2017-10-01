@@ -36,6 +36,9 @@ pdsh -w ^all_hosts "rm -r /opt/apache-storm-${STORM_VERSION}.tar.gz"
 echo "Removing kafka distribution tarball..."
 pdsh -w ^all_hosts "rm -r /opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz"
 
+echo "Removing ZEPPELIN distribution tarball..."
+pdsh -w ^all_hosts "rm -r /opt/zeppelin-${ZEPPELIN_VERSION}-bin-all.tgz"
+
 
 
 
@@ -72,6 +75,8 @@ echo "Removing Storm bash environment setting..."
 pdsh -w ^all_hosts "rm -f /etc/profile.d/storm.sh"
 echo "Removing NiFi bash environment setting..."
 pdsh -w ^all_hosts "rm -f /etc/profile.d/nifi.sh"
+echo "Removing ZEPPELIN bash environment setting..."
+pdsh -w ^all_hosts "rm -f /etc/profile.d/zeppelin.sh"
 
 
 echo "Removing /etc/hadoop, zookeeper, hbase link..."
@@ -82,6 +87,7 @@ pdsh -w ^all_hosts "rm -rf /etc/hbase"
 pdsh -w ^all_hosts "rm -rf /etc/kafka"
 pdsh -w ^all_hosts "rm -rf /etc/storm"
 pdsh -w ^all_hosts "rm -rf /etc/nifi"
+pdsh -w ^all_hosts "rm -rf /etc/zeppelin"
 
 
 echo "Removing Hadoop 2 command links..."
@@ -98,6 +104,7 @@ pdsh -w ^all_hosts "rm /usr/bin/*hbase*"
 pdsh -w ^all_hosts "rm /usr/bin/*kafka*"
 pdsh -w ^all_hosts "rm /usr/bin/*storm*"
 pdsh -w ^all_hosts "rm /usr/bin/*nifi*"
+pdsh -w ^all_hosts "rm /usr/bin/*zeppelin*"
 
 
 echo "Removing Hadoop 2 script links..."
@@ -123,6 +130,7 @@ pdsh -w ^all_hosts "rm -rf $HBASE_DATA_DIR"
 pdsh -w ^all_hosts "rm -rf $KAFKA_DATA_DIR"
 pdsh -w ^all_hosts "rm -rf $STORM_DATA_DIR"
 pdsh -w ^all_hosts "rm -rf $NIFI_DATA_DIR"
+pdsh -w ^all_hosts "rm -rf $ZEPPELIN_DATA_DIR"
 
 pdsh -w ^all_hosts "rm -rf $YARN_LOG_DIR"
 pdsh -w ^all_hosts "rm -rf $HADOOP_LOG_DIR"
@@ -132,6 +140,7 @@ pdsh -w ^all_hosts "rm -rf $HBASE_LOG_DIR"
 pdsh -w ^all_hosts "rm -rf $KAFKA_LOG_DIR"
 pdsh -w ^all_hosts "rm -rf $STORM_LOG_DIR"
 pdsh -w ^all_hosts "rm -rf $NIFI_LOG_DIR"
+pdsh -w ^all_hosts "rm -rf $ZEPPELIN_LOG_DIR"
 
 pdsh -w ^all_hosts "rm -rf $YARN_PID_DIR"
 pdsh -w ^all_hosts "rm -rf $HADOOP_PID_DIR"
@@ -140,6 +149,7 @@ pdsh -w ^all_hosts "rm -rf $HBASE_PID_DIR"
 pdsh -w ^all_hosts "rm -rf $KAFKA_PID_DIR"
 pdsh -w ^all_hosts "rm -rf $STORM_PID_DIR"
 pdsh -w ^all_hosts "rm -rf $NIFI_PID_DIR"
+pdsh -w ^all_hosts "rm -rf $ZEPPELIN_PID_DIR"
 
 pdsh -w ^all_hosts "rm -rf $ZOOKEEPER_CONF_DIR"
 pdsh -w ^all_hosts "rm -rf $HADOOP_CONF_DIR"
@@ -147,6 +157,7 @@ pdsh -w ^all_hosts "rm -rf $HBASE_CONF_DIR"
 pdsh -w ^all_hosts "rm -rf $KAFKA_CONF_DIR"
 pdsh -w ^all_hosts "rm -rf $STORM_CONF_DIR"
 pdsh -w ^all_hosts "rm -rf $NIFI_CONF_DIR"
+pdsh -w ^all_hosts "rm -rf $ZEPPELIN_CONF_DIR"
 
 
 pdsh -w ^all_hosts "rm -rf /var/data/hadoop"
@@ -162,9 +173,13 @@ pdsh -w ^all_hosts "rm -rf $PHOENIX_HOME"
 pdsh -w ^all_hosts "rm -rf $KAFKA_HOME"
 pdsh -w ^all_hosts "rm -rf $STORM_HOME"
 pdsh -w ^all_hosts "rm -rf $NIFI_HOME"
+pdsh -w ^all_hosts "rm -rf $ZEPPELIN_HOME"
 
 ## JPS 가지지 삭제 -- 프로세스를 죽이는 건 아님
 pdsh -w ^all_hosts "rm -rf /tmp/hsperfdata_*"
+
+echo "Removing zeppelin system account..."
+pdsh -w ^all_hosts "userdel -rf zeppelin"
 
 echo "Removing nifi system account..."
 pdsh -w ^all_hosts "userdel -rf nifi"
@@ -190,3 +205,5 @@ pdsh -w ^all_hosts "userdel -rf yarn"
 echo "Removing hadoop system group..."
 pdsh -w ^all_hosts "groupdel hadoop"
 
+
+pdsh -w ^all_hosts "rm -rf /tmp/hsperfdata_*"

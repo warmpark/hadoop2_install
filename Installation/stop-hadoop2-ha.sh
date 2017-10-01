@@ -16,6 +16,7 @@ pdsh -w ^all_hosts "source /etc/profile.d/hbase.sh"
 pdsh -w ^all_hosts "source /etc/profile.d/kafka.sh"
 pdsh -w ^all_hosts "source /etc/profile.d/storm.sh"
 pdsh -w ^all_hosts "source /etc/profile.d/nifi.sh"
+pdsh -w ^all_hosts "source /etc/profile.d/zeppelin.sh"
 
 pdsh -w ^all_hosts "source $HADOOP_CONF_DIR/hadoop-env.sh"	
 pdsh -w ^all_hosts "source $HADOOP_CONF_DIR/yarn-env.sh"
@@ -30,9 +31,15 @@ source /etc/profile.d/hbase.sh
 source /etc/profile.d/kafka.sh
 source /etc/profile.d/storm.sh
 source /etc/profile.d/nifi.sh
+source /etc/profile.d/zeppelin.sh
 source $HADOOP_CONF_DIR/yarn-env.sh
 source $HADOOP_CONF_DIR/mapred-env.sh
 source $HBASE_CONF_DIR/hbase-env.sh
+
+
+## Stop zeppelin
+pdsh -w ^all_hosts  "su - hdfs -c '${ZEPPELIN_HOME}/bin/zeppelin-daemon.sh stop'" 
+
 
 ## Stop kafka
 pdsh -w ^all_hosts  "su - hdfs -c '${KAFKA_HOME}/bin/kafka-server-stop.sh'" 
