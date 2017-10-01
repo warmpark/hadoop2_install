@@ -128,5 +128,8 @@ pdsh -w big01,big02,big03  "su - hdfs -c '${STORM_HOME}/bin/storm ui > ${STORM_L
 echo "#19. Start NIFI"
 pdsh -w big01,big02,big03  "su - hdfs -c '${NIFI_HOME}/bin/nifi.sh start'"
 
+echo "#20. Start ZEPPELIN 8888 port"
+pdsh -w big03  "su - hdfs -c '${ZEPPELIN_HOME}/bin/zeppelin-daemon.sh start'"
+
 
 #sleep 50

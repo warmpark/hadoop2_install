@@ -128,7 +128,7 @@ install()
     pdsh -w ^all_hosts useradd -g hadoop nifi -m -s /bin/bash
     pdsh -w ^all_hosts useradd -g hadoop zeppelin -m -s /bin/bash
 	    
-    echo "Copying hadoop-"$HADOOP_VERSION".tar.gz,  zookeeper-"$ZOOKEEPER_VERSION".tar.gz, hbase-${HBASE_VERSION}-bin.tar.gz, kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz, apache-storm-${STORM_VERSION}.tar.gz, nifi-${NIFI_VERSION}-bin.tar.gz to all hosts..."
+    echo "Copying hadoop-"$HADOOP_VERSION".tar.gz,  zookeeper-"$ZOOKEEPER_VERSION".tar.gz, hbase-${HBASE_VERSION}-bin.tar.gz, kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz, apache-storm-${STORM_VERSION}.tar.gz, nifi-${NIFI_VERSION}-bin.tar.gz, zeppelin-${ZEPPELIN_VERSION}-bin-all.tgz to all hosts..."
 	pdcp -w ^all_hosts hadoop-${HADOOP_VERSION}.tar.gz /opt
     pdcp -w ^all_hosts zookeeper-${ZOOKEEPER_VERSION}.tar.gz /opt
     pdcp -w ^all_hosts hbase-${HBASE_VERSION}-bin.tar.gz /opt
@@ -507,7 +507,7 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
     put_config --file zeppelin-site.xml --property zeppelin.server.addr --value "localhost"
 
     del_config --file zeppelin-site.xml --property zeppelin.server.port
-    put_config --file ./zeppelin-site.xml --property zeppelin.server.port --value "7070"
+    put_config --file ./zeppelin-site.xml --property zeppelin.server.port --value "8888"
 
 	
 	
@@ -736,7 +736,7 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 	su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --list --zookeeper  big01:2181,big02:2181,big03:2181"
 	su - hdfs -c "${KAFKA_HOME}/bin/kafka-topics.sh --describe --zookeeper  big01:2181,big02:2181,big03:2181 --topic test"
 
-	echo "#18. Start Storm"
+	echo "#18. Start Storm : UI 8080"
 	## eval "nohup ${STORM_HOME}/bin/storm nimbus > ${STORM_LOG_DIR}/nimbus.log 2>&1 &"
 	## NIMBUS_BACKGROUND_PID=$!
 	## export NIMBUS_BACKGROUND_PID
@@ -746,11 +746,11 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 	pdsh -w big01,big02,big03  "su - hdfs -c '${STORM_HOME}/bin/storm supervisor > ${STORM_LOG_DIR}/supervisor.log 2>&1 &'"
 	pdsh -w big01,big02,big03  "su - hdfs -c '${STORM_HOME}/bin/storm ui > ${STORM_LOG_DIR}/ui.log 2>&1 &'"
 
-	echo "#19. Start NIFI"
+	echo "#19. Start NIFI 9090"
 	pdsh -w big01,big02,big03  "su - hdfs -c '${NIFI_HOME}/bin/nifi.sh start'"
 
-	echo "#20. Start ZEPPELIN"
-	pdsh -w big01,big02,big03  "su - hdfs -c '${ZEPPELIN_HOME}/bin/zeppelin-daemon.sh start'"
+	echo "#20. Start ZEPPELIN 8888 port"
+	pdsh -w big03  "su - hdfs -c '${ZEPPELIN_HOME}/bin/zeppelin-daemon.sh start'"
 
 		
 }
