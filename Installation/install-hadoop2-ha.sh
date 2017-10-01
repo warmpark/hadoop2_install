@@ -209,9 +209,11 @@ fi
 	pdsh -w ^all_hosts "source /etc/profile.d/hadoop.sh"
     
 	pdsh -w ^zk_hosts "echo export ZOOKEEPER_HOME=$ZOOKEEPER_HOME > /etc/profile.d/zookeeper.sh"
-	#pdsh -w ^zk_hosts "echo export ZOOKEEPER_PREFIX=$ZOOKEEPER_HOME >> /etc/profile.d/zookeeper.sh"
+	pdsh -w ^zk_hosts "echo export ZOOKEEPER_PREFIX=$ZOOKEEPER_HOME >> /etc/profile.d/zookeeper.sh"
 	pdsh -w ^zk_hosts "echo export ZOOKEEPER_LOG_DIR=$ZOOKEEPER_LOG_DIR >> /etc/profile.d/zookeeper.sh"
 	pdsh -w ^zk_hosts "echo export ZOOKEEPER_CONF_DIR=$ZOOKEEPER_CONF_DIR >> /etc/profile.d/zookeeper.sh"
+	pdsh -w ^zk_hosts "echo export ZOOKEEPER_PID_DIR=$ZOOKEEPER_PID_DIR >> /etc/profile.d/zookeeper.sh"
+	pdsh -w ^zk_hosts "echo export ZOO_PID_DIR=$ZOOKEEPER_PID_DIR >> /etc/profile.d/zookeeper.sh"
 	pdsh -w ^zk_hosts "echo export ZOO_LOG_DIR=$ZOOKEEPER_LOG_DIR >> /etc/profile.d/zookeeper.sh"
 	pdsh -w ^zk_hosts "source /etc/profile.d/zookeeper.sh"
     ## HBASE && PHOENIX
@@ -235,6 +237,7 @@ fi
 	pdsh -w ^all_hosts "echo export KAFKA_PREFIX=$KAFKA_HOME >> /etc/profile.d/kafka.sh"
 	pdsh -w ^all_hosts "echo export KAFKA_CONF_DIR=$KAFKA_CONF_DIR >> /etc/profile.d/kafka.sh"
 	pdsh -w ^all_hosts "echo export KAFKA_LOG_DIR=$KAFKA_LOG_DIR >> /etc/profile.d/kafka.sh"
+	pdsh -w ^all_hosts "echo export KAFKA_PID_DIR=$KAFKA_PID_DIR >> /etc/profile.d/kafka.sh"
     pdsh -w ^all_hosts "echo export PATH=$KAFKA_HOME/bin:$PATH >> /etc/profile.d/kafka.sh"
     pdsh -w ^all_hosts "echo export CLASSPATH=$CLASSPATH:$KAFKA_CONF_DIR >> /etc/profile.d/kafka.sh"
 	pdsh -w ^all_hosts "source /etc/profile.d/kafka.sh"
@@ -243,6 +246,7 @@ fi
 	pdsh -w ^all_hosts "echo export STORM_PREFIX=$STORM_HOME >> /etc/profile.d/storm.sh"
 	pdsh -w ^all_hosts "echo export STORM_CONF_DIR=$STORM_CONF_DIR >> /etc/profile.d/storm.sh"
 	pdsh -w ^all_hosts "echo export STORM_LOG_DIR=$STORM_LOG_DIR >> /etc/profile.d/storm.sh"
+	pdsh -w ^all_hosts "echo export STORM_PID_DIR=$STORM_PID_DIR >> /etc/profile.d/storm.sh"
     pdsh -w ^all_hosts "echo export PATH=$STORM_HOME/bin:$PATH >> /etc/profile.d/storm.sh"
     pdsh -w ^all_hosts "echo export CLASSPATH=$CLASSPATH:$STORM_CONF_DIR >> /etc/profile.d/storm.sh"
 	pdsh -w ^all_hosts "source /etc/profile.d/storm.sh"
@@ -260,6 +264,7 @@ fi
 	pdsh -w ^all_hosts "echo export ZEPPELIN_PREFIX=$ZEPPELIN_HOME >> /etc/profile.d/zeppelin.sh"
 	pdsh -w ^all_hosts "echo export ZEPPELIN_CONF_DIR=$ZEPPELIN_CONF_DIR >> /etc/profile.d/zeppelin.sh"
 	pdsh -w ^all_hosts "echo export ZEPPELIN_LOG_DIR=$ZEPPELIN_LOG_DIR >> /etc/profile.d/zeppelin.sh"
+	pdsh -w ^all_hosts "echo export ZEPPELIN_PID_DIR=$ZEPPELIN_PID_DIR >> /etc/profile.d/zeppelin.sh"
     pdsh -w ^all_hosts "echo export PATH=$ZEPPELIN_HOME/bin:$PATH >> /etc/profile.d/zeppelin.sh"
     pdsh -w ^all_hosts "echo export CLASSPATH=$CLASSPATH:$ZEPPELIN_CONF_DIR >> /etc/profile.d/zeppelin.sh"
 	pdsh -w ^all_hosts "source /etc/profile.d/zeppelin.sh"
@@ -342,6 +347,7 @@ fi
 	pdsh -w ^all_hosts "mkdir -p $HADOOP_MAPRED_PID_DIR && chown -R mapred:hadoop $HADOOP_MAPRED_PID_DIR"
     pdsh -w ^all_hosts "mkdir -p $HBASE_PID_DIR && chown -R hdfs:hadoop $HBASE_PID_DIR"
     ##TODO JK PID는 어떻게 ? 어디에 ? 구글링해봐야...
+    pdsh -w ^all_hosts "mkdir -p $ZOOKEEPER_PID_DIR && chown -R hdfs:hadoop $ZOOKEEPER_PID_DIR"
     #KAFKA
     pdsh -w ^all_hosts "mkdir -p ${KAFKA_PID_DIR} && chown -R hdfs:hadoop ${KAFKA_PID_DIR}"
     #STORM
@@ -508,10 +514,12 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 
     del_config --file zeppelin-site.xml --property zeppelin.server.port
     put_config --file ./zeppelin-site.xml --property zeppelin.server.port --value "8888"
-
-	
-	
 	pdcp -w ^all_hosts ./zeppelin-site.xml ${ZEPPELIN_CONF_DIR}/zeppelin-site.xml
+	pdsh -w big01 "sed -i '/<value>localhost<\/value>/c\    <value>big01<\/value>' ${ZEPPELIN_CONF_DIR}/zeppelin-site.xml"
+	pdsh -w big02 "sed -i '/<value>localhost<\/value>/c\    <value>big02<\/value>' ${ZEPPELIN_CONF_DIR}/zeppelin-site.xml"
+	pdsh -w big03 "sed -i '/<value>localhost<\/value>/c\    <value>big03<\/value>' ${ZEPPELIN_CONF_DIR}/zeppelin-site.xml"
+	
+	
 	pdcp -w ^all_hosts ./zeppelin-env.sh ${ZEPPELIN_CONF_DIR}/zeppelin-env.sh
 	pdcp -w ^all_hosts ./shiro.ini ${ZEPPELIN_CONF_DIR}/shiro.ini
 
@@ -750,7 +758,7 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 	pdsh -w big01,big02,big03  "su - hdfs -c '${NIFI_HOME}/bin/nifi.sh start'"
 
 	echo "#20. Start ZEPPELIN 8888 port"
-	pdsh -w big03  "su - hdfs -c '${ZEPPELIN_HOME}/bin/zeppelin-daemon.sh start'"
+	pdsh -w big01,big02,big03  "su - hdfs -c '${ZEPPELIN_HOME}/bin/zeppelin-daemon.sh start'"
 
 		
 }
