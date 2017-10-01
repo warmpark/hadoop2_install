@@ -507,12 +507,13 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
     del_config --file zeppelin-site.xml --property zeppelin.server.port"
     put_config --file ./zeppelin-site.xml --property zeppelin.server.port --value "7070"
 
+	
+	cp -f ${ZEPPELIN_CONF_DIR}/zeppelin-env.sh.template ./zeppelin-env.sh
+	cp -f ${ZEPPELIN_CONF_DIR}/shiro.ini.template ./shiro.ini
+	
 	pdcp -w ^all_hosts ./zeppelin-site.xml ${ZEPPELIN_CONF_DIR}/zeppelin-site.xml
-	
-	
-	#pdcp -w ^all_hosts ${ZEPPELIN_CONF_DIR}/zeppelin-env.sh.template ${ZEPPELIN_CONF_DIR}/zeppelin-env.sh
-	#pdcp -w ^all_hosts ${ZEPPELIN_CONF_DIR}/shiro.ini.template ${ZEPPELIN_CONF_DIR}/shiro.ini
-	
+	pdcp -w ^all_hosts ./zeppelin-env.sh ${ZEPPELIN_CONF_DIR}/zeppelin-env.sh
+	pdcp -w ^all_hosts ./shiro.ini ${ZEPPELIN_CONF_DIR}/shiro.ini
 
 
 ############
@@ -750,6 +751,9 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 
 	echo "#19. Start NIFI"
 	pdsh -w big01,big02,big03  "su - hdfs -c '${NIFI_HOME}/bin/nifi.sh start'"
+
+	echo "#20. Start ZEPPELIN"
+	pdsh -w big01,big02,big03  "su - hdfs -c '${ZEPPELIN_HOME}/bin/zeppelin-daemon.sh'"
 
 
 	#sleep 50
