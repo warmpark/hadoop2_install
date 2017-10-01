@@ -625,6 +625,7 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 	pdsh -w ^all_hosts "ln -s $STORM_HOME/bin/*storm* /usr/bin"
 	pdsh -w ^all_hosts "ln -s $NIFI_CONF_DIR /etc/nifi"
 	pdsh -w ^all_hosts "ln -s $NIFI_HOME/bin/*nifi* /usr/bin"
+	pdsh -w ^all_hosts "ln -s $NIFI_HOME/bin/*zeppelin* /usr/bin"
 
 
     echo "Copying startup scripts to all hosts..."
@@ -637,10 +638,6 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 	#pdcp -w ^all_hosts hadoop-proxyserver /etc/init.d/
     #pdcp -w ^all_hosts hadoop-zookeeper /etc/init.d/
     
-
-
-    
-  
     echo "#1. Start ZK Quarum Daemon(su - hdfs -c '$ZOOKEEPER_HOME/bin/zkServer.sh start') :모든 ZK에서:  3,5 ... 홀수개수로 "
     pdsh -w ^zk_hosts "su - hdfs -c '$ZOOKEEPER_HOME/bin/zkServer.sh start'"
 	sleep 20
@@ -753,10 +750,8 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 	pdsh -w big01,big02,big03  "su - hdfs -c '${NIFI_HOME}/bin/nifi.sh start'"
 
 	echo "#20. Start ZEPPELIN"
-	pdsh -w big01,big02,big03  "su - hdfs -c '${ZEPPELIN_HOME}/bin/zeppelin-daemon.sh'"
+	pdsh -w big01,big02,big03  "su - hdfs -c '${ZEPPELIN_HOME}/bin/zeppelin-daemon.sh start'"
 
-
-	#sleep 50
 		
 }
 interactive()
