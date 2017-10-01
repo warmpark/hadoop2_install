@@ -104,6 +104,15 @@ install()
         echo "NIFI File exists"
     fi
 
+	## ZEPPELIN DOWNLOAD
+    zeppelinfile=./zeppelin-${ZEPPELIN_VERSION}-bin-all.tgz
+    if [ ! -e "$zeppelinfile" ]; then
+        echo "File does not exist"
+        wget ${ZEPPELIN_DOWNLOAD_URI}
+    else 
+        echo "ZEPPELIN File exists"
+    fi
+
 	echo "Creating system accounts and groups on all hosts..."
 	# useradd 계정명 -m -s /bin/bash
 	#→ -m 옵션을 명시해야 홈 디렉토리가 생성됨
@@ -117,6 +126,7 @@ install()
     pdsh -w ^all_hosts useradd -g hadoop kafka -m -s /bin/bash
     pdsh -w ^all_hosts useradd -g hadoop storm -m -s /bin/bash
     pdsh -w ^all_hosts useradd -g hadoop nifi -m -s /bin/bash
+    pdsh -w ^all_hosts useradd -g hadoop zeppelin -m -s /bin/bash
 	    
     echo "Copying hadoop-"$HADOOP_VERSION".tar.gz,  zookeeper-"$ZOOKEEPER_VERSION".tar.gz, hbase-${HBASE_VERSION}-bin.tar.gz, kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz, apache-storm-${STORM_VERSION}.tar.gz, nifi-${NIFI_VERSION}-bin.tar.gz to all hosts..."
 	pdcp -w ^all_hosts hadoop-${HADOOP_VERSION}.tar.gz /opt
@@ -126,6 +136,7 @@ install()
 	pdcp -w ^all_hosts kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz /opt
 	pdcp -w ^all_hosts apache-storm-${STORM_VERSION}.tar.gz /opt
 	pdcp -w ^all_hosts nifi-${NIFI_VERSION}-bin.tar.gz /opt  
+	pdcp -w ^all_hosts zeppelin-${ZEPPELIN_VERSION}-bin-all.tgz /opt  
 		
 	
 if [ -z "$JAVA_HOME" ]; then
@@ -181,6 +192,9 @@ fi
 	echo "Extracting PHOENIX apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-bin.tar.gz distribution on all hosts..."
 	pdsh -w ^zk_hosts  "tar -xzf /opt/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-bin.tar.gz -C /opt && chown -R hdfs:hadoop ${PHOENIX_HOME}"
 	pdsh -w ^all_hosts "su - hdfs -c 'cp -f ${PHOENIX_HOME}/phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-server.jar  $HBASE_HOME/lib '"
+
+	echo "Extracting ZEPPELIN zeppelin-${ZEPPELIN_VERSION}-bin-all.tgz distribution on all hosts..."
+	pdsh -w ^all_hosts  "tar -xzf /opt/zeppelin-${ZEPPELIN_VERSION}-bin-all.tgz -C /opt && chown -R hdfs:hadoop ${ZEPPELIN_HOME}"
 
 	
 	
@@ -242,6 +256,14 @@ fi
     pdsh -w ^all_hosts "echo export CLASSPATH=$CLASSPATH:$NIFI_CONF_DIR >> /etc/profile.d/nifi.sh"
 	pdsh -w ^all_hosts "source /etc/profile.d/nifi.sh"
 
+    pdsh -w ^all_hosts "echo export ZEPPELIN_HOME=$ZEPPELIN_HOME > /etc/profile.d/zeppelin.sh"
+	pdsh -w ^all_hosts "echo export ZEPPELIN_PREFIX=$ZEPPELIN_HOME >> /etc/profile.d/zeppelin.sh"
+	pdsh -w ^all_hosts "echo export ZEPPELIN_CONF_DIR=$ZEPPELIN_CONF_DIR >> /etc/profile.d/zeppelin.sh"
+	pdsh -w ^all_hosts "echo export ZEPPELIN_LOG_DIR=$ZEPPELIN_LOG_DIR >> /etc/profile.d/zeppelin.sh"
+    pdsh -w ^all_hosts "echo export PATH=$ZEPPELIN_HOME/bin:$PATH >> /etc/profile.d/zeppelin.sh"
+    pdsh -w ^all_hosts "echo export CLASSPATH=$CLASSPATH:$ZEPPELIN_CONF_DIR >> /etc/profile.d/zeppelin.sh"
+	pdsh -w ^all_hosts "source /etc/profile.d/zeppelin.sh"
+
     ## log dir    
     echo "Editing Hadoop environment scripts for log directories on all hosts..."
 	pdsh -w ^all_hosts echo "export HADOOP_LOG_DIR=$HADOOP_LOG_DIR >> $HADOOP_CONF_DIR/hadoop-env.sh"
@@ -265,6 +287,7 @@ fi
 	pdsh -w ^all_hosts "source /etc/profile.d/kafka.sh"
 	pdsh -w ^all_hosts "source /etc/profile.d/storm.sh"
 	pdsh -w ^all_hosts "source /etc/profile.d/nifi.sh"
+	pdsh -w ^all_hosts "source /etc/profile.d/zeppelin.sh"
 
 	
     ### 각종 저장 장소의 기본 사용자는 hdfs... 
@@ -290,7 +313,10 @@ fi
     #NIFI
     pdsh -w ^all_hosts "mkdir -p ${NIFI_DATA_DIR} && chown -R hdfs:hadoop ${NIFI_DATA_DIR}"
 	
-        
+    #ZEPPELIN
+    pdsh -w ^all_hosts "mkdir -p ${ZEPPELIN_DATA_DIR} && chown -R hdfs:hadoop ${ZEPPELIN_DATA_DIR}"
+	
+
 
 	echo "Creating log directories on all hosts..."
 	pdsh -w ^all_hosts "mkdir -p $YARN_LOG_DIR && chown -R yarn:hadoop $YARN_LOG_DIR"
@@ -306,6 +332,9 @@ fi
     #NIFI
     pdsh -w ^all_hosts "mkdir -p ${NIFI_LOG_DIR} && chown -R hdfs:hadoop ${NIFI_LOG_DIR}"
    
+    #ZEPPELIN
+    pdsh -w ^all_hosts "mkdir -p ${ZEPPELIN_LOG_DIR} && chown -R hdfs:hadoop ${ZEPPELIN_LOG_DIR}"
+   
 
 	echo "Creating pid directories on all hosts..."
 	pdsh -w ^all_hosts "mkdir -p $YARN_PID_DIR && chown -R yarn:hadoop $YARN_PID_DIR"
@@ -319,6 +348,8 @@ fi
     pdsh -w ^all_hosts "mkdir -p ${STORM_PID_DIR} && chown -R hdfs:hadoop ${STORM_PID_DIR}"
     #NIFI
     pdsh -w ^all_hosts "mkdir -p ${NIFI_PID_DIR} && chown -R hdfs:hadoop ${NIFI_PID_DIR}"
+    #ZEPPELIN
+    pdsh -w ^all_hosts "mkdir -p ${ZEPPELIN_PID_DIR} && chown -R hdfs:hadoop ${ZEPPELIN_PID_DIR}"
    
 
 	if [ -n "$YARN_NODEMANAGER_HEAPSIZE" ]
@@ -455,7 +486,7 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 	pdsh -w big03 "sed -i '/nifi.cluster.node.address/c\nifi.cluster.node.address=big03' $NIFI_CONF_DIR/nifi.properties"
 
 
-	pdsh -w ^all_hosts "sed -i '/nifi.remote.input.secure/c\nifi.remote.input.secure=false' $NIFI_CONF_DIR/nifi.properties"
+	pdsh -w ^all_hosts "sed -i '/nifi.remote.input.secure/c\nifi.remote.input.secure=falsezeppelin.server.addr' $NIFI_CONF_DIR/nifi.properties"
 	pdsh -w ^all_hosts "sed -i '/nifi.remote.input.socket.port/c\nifi.remote.input.socket.port=9998' $NIFI_CONF_DIR/nifi.properties"
 	pdsh -w big01 "sed -i '/nifi.remote.input.host/c\nifi.remote.input.host=big01' $NIFI_CONF_DIR/nifi.properties"
 	pdsh -w big02 "sed -i '/nifi.remote.input.host/c\nifi.remote.input.host=big02' $NIFI_CONF_DIR/nifi.properties"
@@ -466,6 +497,21 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 	pdsh -w big01 "sed -i '/nifi.web.http.host/c\nifi.web.http.host=big01' $NIFI_CONF_DIR/nifi.properties"
 	pdsh -w big02 "sed -i '/nifi.web.http.host/c\nifi.web.http.host=big02' $NIFI_CONF_DIR/nifi.properties"
 	pdsh -w big03 "sed -i '/nifi.web.http.host/c\nifi.web.http.host=big03' $NIFI_CONF_DIR/nifi.properties"
+
+###ZEPPELIN
+	cp -f ${ZEPPELIN_CONF_DIR}/zeppelin-site.xml.template ./zeppelin-site.xml
+ 
+    del_config --file zeppelin-site.xml --property zeppelin.server.addr
+    put_config --file zeppelin-site.xml --property zeppelin.server.addr --value "localhost"
+
+    del_config --file zeppelin-site.xml --property zeppelin.server.port"
+    put_config --file ./zeppelin-site.xml --property zeppelin.server.port --value "7070"
+
+	pdcp -w ^all_hosts ./zeppelin-site.xml ${ZEPPELIN_CONF_DIR}/zeppelin-site.xml
+	
+	
+	#pdcp -w ^all_hosts ${ZEPPELIN_CONF_DIR}/zeppelin-env.sh.template ${ZEPPELIN_CONF_DIR}/zeppelin-env.sh
+	#pdcp -w ^all_hosts ${ZEPPELIN_CONF_DIR}/shiro.ini.template ${ZEPPELIN_CONF_DIR}/shiro.ini
 	
 
 

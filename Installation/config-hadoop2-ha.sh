@@ -152,3 +152,17 @@ NIFI_CONF_DIR="${NIFI_HOME}/conf"
 NIFI_DATA_DIR="/var/data/nifi"
 NIFI_MANAGES_ZK=false
 NIFI_PID_DIR=/var/run/nifi
+
+
+#### ZEPPELIN
+ZEPPELIN_VERSION=0.7.3
+ZEPPELIN_DOWNLOAD_URI="http://mirror.apache-kr.org/zeppelin/zeppelin-${ZEPPELIN_VERSION}/zeppelin-${ZEPPELIN_VERSION}-bin-all.tgz"
+##http://mirror.apache-kr.org/zeppelin/zeppelin-0.7.3/zeppelin-0.7.3-bin-all.tgz
+ZEPPELIN_HOME="/opt/zeppelin-${ZEPPELIN_VERSION}-bin-all"
+ZEPPELIN_LOG_DIR="/var/log/zeppelin"
+ZEPPELIN_PREFIX="${ZEPPELIN_HOME}"
+ZEPPELIN_CONF_DIR="${ZEPPELIN_HOME}/conf"
+ZEPPELIN_DATA_DIR="/var/data/zeppelin"
+ZEPPELIN_MANAGES_ZK=false
+ZEPPELIN_PID_DIR=/var/run/zeppelin
+
