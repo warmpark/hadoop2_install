@@ -492,7 +492,7 @@ storm.health.check.timeout.ms: 5000' >  $STORM_CONF_DIR/storm.yaml"
 	pdsh -w big03 "sed -i '/nifi.cluster.node.address/c\nifi.cluster.node.address=big03' $NIFI_CONF_DIR/nifi.properties"
 
 
-	pdsh -w ^all_hosts "sed -i '/nifi.remote.input.secure/c\nifi.remote.input.secure=falsezeppelin.server.addr' $NIFI_CONF_DIR/nifi.properties"
+	pdsh -w ^all_hosts "sed -i '/nifi.remote.input.secure/c\nifi.remote.input.secure=false' $NIFI_CONF_DIR/nifi.properties"
 	pdsh -w ^all_hosts "sed -i '/nifi.remote.input.socket.port/c\nifi.remote.input.socket.port=9998' $NIFI_CONF_DIR/nifi.properties"
 	pdsh -w big01 "sed -i '/nifi.remote.input.host/c\nifi.remote.input.host=big01' $NIFI_CONF_DIR/nifi.properties"
 	pdsh -w big02 "sed -i '/nifi.remote.input.host/c\nifi.remote.input.host=big02' $NIFI_CONF_DIR/nifi.properties"
