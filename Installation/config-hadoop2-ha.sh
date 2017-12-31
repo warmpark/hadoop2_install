@@ -6,7 +6,7 @@
 ## JDK_VERSION=1.8.0_131
 JDK_VERSION=1.8.0_152
 ## JDK_RPM_NAME=jdk-8u131-linux-x64.rpm
-JDK_RPM_NAME=jdk-8u144-linux-x64.rpm
+JDK_RPM_NAME=jdk-8u152-linux-x64.rpm
 
 ## JDK_DOWNLOAD_URI="http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/${JDK_RPM_NAME}"
 JDK_DOWNLOAD_URI="http://download.oracle.com/otn-pub/java/jdk/8u152-b16/aa0333dd3019491ca4f6ddbe78cdb6d0/${JDK_RPM_NAME}"
@@ -15,8 +15,8 @@ JDK_DOWNLOAD_URI="http://download.oracle.com/otn-pub/java/jdk/8u152-b16/aa0333dd
 ## wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u152-b16/aa0333dd3019491ca4f6ddbe78cdb6d0/jdk-8u152-linux-x64.rpm"
 
 
-#ZOOKEEPER_VERSION=3.4.9
-ZOOKEEPER_VERSION=3.4.6 
+#ZOOKEEPER_VERSION=3.4.6
+ZOOKEEPER_VERSION=3.4.10 
 ZOOKEEPER_DOWNLOAD_URI="http://mirror.navercorp.com/apache/zookeeper/zookeeper-${ZOOKEEPER_VERSION}/zookeeper-${ZOOKEEPER_VERSION}.tar.gz"
 ZOOKEEPER_HOME="/opt/zookeeper-${ZOOKEEPER_VERSION}"
 ZOOKEEPER_LOG_DIR="/var/log/zookeeper"
@@ -66,8 +66,8 @@ NAMENODE_SHARED_EDITS_DIR="qjournal://big01:8485;big02:8485;big03:8485/${DFS_NAM
 
 
 
-#HADOOP_VERSION=2.7.2
-HADOOP_VERSION=2.7.4
+#HADOOP_VERSION=2.7.4
+HADOOP_VERSION=2.7.5
 HADOOP_DATA_DIR=/var/data/hadoop
 HADOOP_DOWNLOAD_URI="http://apache.tt.co.kr/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz"
 HADOOP_HOME="/opt/hadoop-${HADOOP_VERSION}"
@@ -102,8 +102,8 @@ HBASE_DATA_DIR="/var/data/hbase"
 HBASE_MANAGES_ZK=false
 HBASE_PID_DIR=/var/run/hbase
 
-#### HPOENIX
-PHOENIX_VERSION=4.11.0
+#### HPOENIX apache-phoenix-4.13.1-HBase-1.1-bin.tar.gz 
+PHOENIX_VERSION=4.13.1
 PHOENIX_HBASE_VERSION=1.1
 HOENIX_DOWNLOAD_URI=" http://apache.tt.co.kr/phoenix/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}/bin/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-bin.tar.gz"
 ##http://apache.tt.co.kr/phoenix/apache-phoenix-4.11.0-HBase-1.1/bin/apache-phoenix-4.11.0-HBase-1.1-bin.tar.gz
@@ -115,11 +115,11 @@ PHOENIX_DATA_DIR="/var/data/phoenix"
 PHOENIX_MANAGES_ZK=false
 PHOENIX_PID_DIR=/var/run/phoenix
 
-#### KAFKA 
-KAFKA_VERSION=0.10.1.1
-SCALA_VERSION=2.10
+#### KAFKA kafka_2.11-1.0.0.tgz 
+KAFKA_VERSION=1.0.0
+SCALA_VERSION=2.11
 KAFKA_DOWNLOAD_URI="http://mirror.apache-kr.org/kafka/${KAFKA_VERSION}/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz"
-##http://mirror.apache-kr.org/kafka/0.10.1.1/kafka_2.10-0.10.1.1.tgz
+##http://mirror.apache-kr.org/kafka/1.0.0/kafka_2.11-1.0.0.tgz
 KAFKA_HOME="/opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}"
 KAFKA_LOG_DIR="/var/log/kafka"
 KAFKA_PREFIX="${KAFKA_HOME}"
@@ -129,7 +129,7 @@ KAFKA_MANAGES_ZK=false
 KAFKA_PID_DIR=/var/run/kafka
 
 #### STORM 
-STORM_VERSION=1.1.0
+STORM_VERSION=1.1.1
 STORM_DOWNLOAD_URI="http://apache.mirror.cdnetworks.com/storm/apache-storm-${STORM_VERSION}/apache-storm-${STORM_VERSION}.tar.gz"
 ##http://apache.mirror.cdnetworks.com/storm/apache-storm-1.1.0/apache-storm-1.1.0.tar.gz
 STORM_HOME="/opt/apache-storm-${STORM_VERSION}"
