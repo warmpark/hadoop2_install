@@ -67,7 +67,7 @@ NAMENODE_SHARED_EDITS_DIR="qjournal://big01:8485;big02:8485;big03:8485/${DFS_NAM
 
 
 #HADOOP_VERSION=2.7.4
-HADOOP_VERSION=2.7.5
+HADOOP_VERSION=2.7.6
 HADOOP_DATA_DIR=/var/data/hadoop
 HADOOP_DOWNLOAD_URI="http://apache.tt.co.kr/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz"
 HADOOP_HOME="/opt/hadoop-${HADOOP_VERSION}"
@@ -91,9 +91,9 @@ YARN_NODEMANAGER_HEAPSIZE=308
 
 #### HBASE
 #HBASE_VERSION=1.2.6
-HBASE_VERSION=1.1.13
+HBASE_VERSION=1.4.6
 HBASE_DOWNLOAD_URI="http://apache.tt.co.kr/hbase/${HBASE_VERSION}/hbase-${HBASE_VERSION}-bin.tar.gz"
-#http://mirror.apache-kr.org/hbase/1.1.13/hbase-1.1.13-bin.tar.gz
+#http://mirror.apache-kr.org/hbase/1.4.6/hbase-1.4.6-bin.tar.gz
 HBASE_HOME="/opt/hbase-${HBASE_VERSION}"
 HBASE_LOG_DIR="/var/log/hbase"
 HBASE_PREFIX="${HBASE_HOME}"
@@ -102,11 +102,10 @@ HBASE_DATA_DIR="/var/data/hbase"
 HBASE_MANAGES_ZK=false
 HBASE_PID_DIR=/var/run/hbase
 
-#### HPOENIX apache-phoenix-4.13.1-HBase-1.1-bin.tar.gz 
-PHOENIX_VERSION=4.13.1
-PHOENIX_HBASE_VERSION=1.1
+PHOENIX_VERSION=4.14.0
+PHOENIX_HBASE_VERSION=1.4
 HOENIX_DOWNLOAD_URI=" http://apache.tt.co.kr/phoenix/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}/bin/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-bin.tar.gz"
-##http://apache.tt.co.kr/phoenix/apache-phoenix-4.11.0-HBase-1.1/bin/apache-phoenix-4.11.0-HBase-1.1-bin.tar.gz
+##http://apache.tt.co.kr/phoenix/apache-phoenix-4.14.0-HBase-1.4/bin/apache-phoenix-4.14.0-HBase-1.4-bin.tar.gz
 PHOENIX_HOME="/opt/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-bin"
 PHOENIX_LOG_DIR="/var/log/phoenix"
 PHOENIX_PREFIX="${PHOENIX_HOME}"
@@ -115,11 +114,10 @@ PHOENIX_DATA_DIR="/var/data/phoenix"
 PHOENIX_MANAGES_ZK=false
 PHOENIX_PID_DIR=/var/run/phoenix
 
-#### KAFKA kafka_2.11-1.0.0.tgz 
-KAFKA_VERSION=1.0.0
-SCALA_VERSION=2.11
+KAFKA_VERSION=2.0.0
+SCALA_VERSION=2.12
 KAFKA_DOWNLOAD_URI="http://mirror.apache-kr.org/kafka/${KAFKA_VERSION}/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz"
-##http://mirror.apache-kr.org/kafka/1.0.0/kafka_2.11-1.0.0.tgz
+##http://mirror.apache-kr.org/kafka/2.0.0/kafka_2.12-2.0.0.tgz
 KAFKA_HOME="/opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}"
 KAFKA_LOG_DIR="/var/log/kafka"
 KAFKA_PREFIX="${KAFKA_HOME}"
@@ -129,9 +127,9 @@ KAFKA_MANAGES_ZK=false
 KAFKA_PID_DIR=/var/run/kafka
 
 #### STORM 
-STORM_VERSION=1.1.1
+STORM_VERSION=1.2.2
 STORM_DOWNLOAD_URI="http://apache.mirror.cdnetworks.com/storm/apache-storm-${STORM_VERSION}/apache-storm-${STORM_VERSION}.tar.gz"
-##http://apache.mirror.cdnetworks.com/storm/apache-storm-1.1.0/apache-storm-1.1.0.tar.gz
+##http://apache.mirror.cdnetworks.com/storm/apache-storm-1.2.2/apache-storm-1.2.2.tar.gz
 STORM_HOME="/opt/apache-storm-${STORM_VERSION}"
 STORM_LOG_DIR="/var/log/storm"
 STORM_PREFIX="${STORM_HOME}"
@@ -143,10 +141,10 @@ STORM_PID_DIR=/var/run/storm
 # http://mirror.navercorp.com/apache/storm/apache-storm-1.1.0/apache-storm-1.1.0.tar.gz
 
 #### NIFI 
-NIFI_VERSION=1.3.0
+NIFI_VERSION=1.7.1
 NIFI_DOWNLOAD_URI="http://mirror.apache-kr.org/nifi/${NIFI_VERSION}/nifi-${NIFI_VERSION}-bin.tar.gz"
 ##http://mirror.apache-kr.org/nifi/${NIFI_VERSION}/nifi-${NIFI_VERSION}-bin.tar.gz
-##http://mirror.apache-kr.org/nifi/1.3.0/nifi-1.3.0-bin.tar.gz
+##http://mirror.apache-kr.org/nifi/1.7.1/nifi-1.7.1-bin.tar.gz
 NIFI_HOME="/opt/nifi-${NIFI_VERSION}"
 NIFI_LOG_DIR="/var/log/nifi"
 NIFI_PREFIX="${NIFI_HOME}"
@@ -157,9 +155,9 @@ NIFI_PID_DIR=/var/run/nifi
 
 
 #### ZEPPELIN
-ZEPPELIN_VERSION=0.7.3
+ZEPPELIN_VERSION=0.8.0
 ZEPPELIN_DOWNLOAD_URI="http://mirror.apache-kr.org/zeppelin/zeppelin-${ZEPPELIN_VERSION}/zeppelin-${ZEPPELIN_VERSION}-bin-all.tgz"
-##http://mirror.apache-kr.org/zeppelin/zeppelin-0.7.3/zeppelin-0.7.3-bin-all.tgz
+##http://mirror.apache-kr.org/zeppelin/zeppelin-0.8.0/zeppelin-0.8.0-bin-all.tgz
 ZEPPELIN_HOME="/opt/zeppelin-${ZEPPELIN_VERSION}-bin-all"
 ZEPPELIN_LOG_DIR="/var/log/zeppelin"
 ZEPPELIN_PREFIX="${ZEPPELIN_HOME}"
