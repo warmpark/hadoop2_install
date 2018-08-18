@@ -3,9 +3,9 @@
 #http://apache.mirror.cdnetworks.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz
 
 ## JDK_VERSION=1.8.0_131
-JDK_VERSION=1.8.0_152
+JDK_VERSION=1.8.0_181
 ## JDK_RPM_NAME=jdk-8u131-linux-x64.rpm
-JDK_RPM_NAME=jdk-8u152-linux-x64.rpm
+JDK_RPM_NAME=jdk-8u181-linux-x64.rpm
 
 ## JDK_DOWNLOAD_URI="http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/${JDK_RPM_NAME}"
 JDK_DOWNLOAD_URI="http://download.oracle.com/otn-pub/java/jdk/8u152-b16/aa0333dd3019491ca4f6ddbe78cdb6d0/${JDK_RPM_NAME}"
