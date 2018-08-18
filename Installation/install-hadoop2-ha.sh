@@ -157,7 +157,9 @@ if [ -z "$JAVA_HOME" ]; then
 	pdsh -w ^all_hosts chmod a+x /opt/${JDK_RPM_NAME}
 	#pdsh -w ^all_hosts /opt/${JDK_RPM_NAME} -noregister 1>&- 2>&-
 	pdsh -w ^all_hosts rpm -ivh /opt/${JDK_RPM_NAME} 1>&- 2>&-
-	export JAVA_HOME=/usr/java/jdk${JDK_VERSION}
+	#export JAVA_HOME=/usr/java/jdk${JDK_VERSION}
+	### jdk${JDK_VERSION}-amd64  왜 -amd64가 붙는지 확인 필요...
+	export JAVA_HOME=/usr/java/jdk${JDK_VERSION}-amd64
 	echo "JAVA_HOME=$JAVA_HOME"
 fi
 	echo "Setting JAVA_HOME and HADOOP_HOME environment variables on all hosts..."
