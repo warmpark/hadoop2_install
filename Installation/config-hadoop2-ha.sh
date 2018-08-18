@@ -1,4 +1,3 @@
-
 # Basic environment variables.  Edit as necessary
 # zookeeper-3.4.8.tar.gz
 #http://apache.mirror.cdnetworks.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz
@@ -104,7 +103,7 @@ HBASE_PID_DIR=/var/run/hbase
 
 PHOENIX_VERSION=4.14.0
 PHOENIX_HBASE_VERSION=1.4
-HOENIX_DOWNLOAD_URI=" http://apache.tt.co.kr/phoenix/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}/bin/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-bin.tar.gz"
+HOENIX_DOWNLOAD_URI="http://apache.tt.co.kr/phoenix/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}/bin/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-bin.tar.gz"
 ##http://apache.tt.co.kr/phoenix/apache-phoenix-4.14.0-HBase-1.4/bin/apache-phoenix-4.14.0-HBase-1.4-bin.tar.gz
 PHOENIX_HOME="/opt/apache-phoenix-${PHOENIX_VERSION}-HBase-${PHOENIX_HBASE_VERSION}-bin"
 PHOENIX_LOG_DIR="/var/log/phoenix"
